@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Ujjwal Academy · Home</title>
+  <!-- Google Font & Font Awesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* ----- RESET & GLOBAL ----- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      /* light mode (default) */
+      --bg-body: #f4f7fc;
+      --bg-card: #ffffff;
+      --bg-header: #ffffff;
+      --bg-sidebar: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #5b6e8c;
+      --border-light: #e2e8f0;
+      --shadow-sm: 0 12px 28px -8px rgba(0,0,0,0.06);
+      --shadow-hover: 0 24px 40px -12px rgba(0,0,0,0.12);
+      --accent: #2563eb;
+      --accent-soft: rgba(37, 99, 235, 0.08);
+      --card-border: 1px solid rgba(0,0,0,0.04);
+      --gradient-hero: linear-gradient(145deg, #f0f5ff 0%, #e9effa 100%);
+      --logo-filter: none;
+      --overlay-bg: rgba(0,0,0,0.3);
+    }
+
+    [data-theme="dark"] {
+      --bg-body: #0a0f1c;
+      --bg-card: #1e293b;
+      --bg-header: #111827;
+      --bg-sidebar: #111827;
+      --text-main: #f1f5f9;
+      --text-muted: #9ca3af;
+      --border-light: #1f2a3e;
+      --shadow-sm: 0 12px 28px -8px rgba(0,0,0,0.6);
+      --shadow-hover: 0 24px 40px -12px rgba(0,0,0,0.8);
+      --accent: #3b82f6;
+      --accent-soft: rgba(59, 130, 246, 0.15);
+      --card-border: 1px solid rgba(255,255,255,0.04);
+      --gradient-hero: linear-gradient(145deg, #111827 0%, #0f172a 100%);
+      --logo-filter: brightness(0) invert(1);
+      --overlay-bg: rgba(0,0,0,0.6);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-body);
+      color: var(--text-main);
+      transition: background 0.25s ease, color 0.25s ease;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* scrollbar hide */
+    ::-webkit-scrollbar { width: 0; height: 0; display: none; }
+    * { scrollbar-width: none; -ms-overflow-style: none; }
+
+    /* ----- APP WRAPPER ----- */
+    .app-wrapper {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 1.2rem 1.8rem 2.5rem;
+      width: 100%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* ----- TOP BAR (desktop) ----- */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem 1.5rem;
+      background: var(--bg-header);
+      padding: 0.6rem 1.5rem;
+      border-radius: 60px;
+      border: var(--card-border);
+      box-shadow: var(--shadow-sm);
+      transition: background 0.25s, box-shadow 0.25s;
+      margin-bottom: 1.8rem;
+    }
+
+    .brand-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-logo {
+      height: 44px;
+      width: auto;
+      filter: var(--logo-filter);
+      transition: filter 0.25s;
+      object-fit: contain;
+    }
+
+    .brand-text {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    /* mobile hamburger (visible only on small screens) */
+    .hamburger-btn {
+      display: none;
+      background: transparent;
+      border: none;
+      font-size: 1.8rem;
+      color: var(--text-main);
+      cursor: pointer;
+      padding: 0.2rem 0.6rem;
+      border-radius: 12px;
+      transition: 0.2s;
+    }
+    .hamburger-btn:hover { background: var(--accent-soft); }
+
+    /* desktop account button */
+    .account-btn-desktop {
+      background: var(--accent-soft);
+      border: 1px solid var(--border-light);
+      padding: 0.4rem 1.2rem;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: 0.2s;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .account-btn-desktop i { color: var(--accent); }
+    .account-btn-desktop:hover {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+    .account-btn-desktop:hover i { color: white; }
+
+    .right-actions { display: flex; align-items: center; gap: 1rem; }
+
+    /* ----- SIDEBAR (mobile) ----- */
+    .sidebar-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--overlay-bg);
+      backdrop-filter: blur(4px);
+      z-index: 998;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.35s ease, visibility 0.35s ease;
+    }
+    .sidebar-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 280px;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border-light);
+      z-index: 999;
+      transform: translateX(-100%);
+      transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+      display: flex;
+      flex-direction: column;
+      padding: 2rem 1.5rem 2rem;
+      box-shadow: 8px 0 30px rgba(0,0,0,0.15);
+      overflow-y: auto;
+    }
+    .sidebar.open {
+      transform: translateX(0%);
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 2.2rem;
+    }
+    .sidebar-brand img {
+      height: 44px;
+      filter: var(--logo-filter);
+    }
+    .sidebar-brand span {
+      font-size: 1.3rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .sidebar-menu {
+      list-style: none;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .sidebar-menu li {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0.8rem 1rem;
+      border-radius: 16px;
+      font-weight: 500;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .sidebar-menu li i {
+      width: 24px;
+      font-size: 1.2rem;
+      color: var(--accent);
+    }
+    .sidebar-menu li:hover {
+      background: var(--accent-soft);
+      transform: translateX(4px);
+    }
+    .sidebar-menu li.active {
+      background: var(--accent);
+      color: white;
+    }
+    .sidebar-menu li.active i { color: white; }
+
+    .sidebar-account {
+      margin-top: 1.8rem;
+      padding-top: 1.2rem;
+      border-top: 1px solid var(--border-light);
+    }
+    .sidebar-account a {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0.8rem 1rem;
+      border-radius: 16px;
+      font-weight: 500;
+      color: var(--text-main);
+      text-decoration: none;
+      transition: 0.2s;
+    }
+    .sidebar-account a i { color: var(--accent); width: 24px; }
+    .sidebar-account a:hover {
+      background: var(--accent-soft);
+      transform: translateX(4px);
+    }
+
+    .sidebar-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0.3rem 0.6rem;
+      border-radius: 12px;
+      transition: 0.2s;
+    }
+    .sidebar-close:hover { background: var(--accent-soft); }
+
+    /* ----- MENU (desktop nav) ----- */
+    .menu-nav {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.4rem 0.8rem;
+      background: var(--bg-card);
+      padding: 0.5rem 1.5rem;
+      border-radius: 60px;
+      border: var(--card-border);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 2rem;
+      transition: background 0.25s, box-shadow 0.25s;
+    }
+
+    .menu-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0.5rem 1.2rem;
+      border-radius: 40px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: 0.2s;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .menu-item i { font-size: 1rem; color: var(--accent); width: 18px; text-align: center; }
+    .menu-item:hover { background: var(--accent-soft); transform: translateY(-2px); color: var(--accent); }
+    .menu-item.active { background: var(--accent); color: white; box-shadow: 0 6px 14px -4px rgba(37,99,235,0.3); }
+    .menu-item.active i { color: white; }
+
+    /* ===== SLIDER (hero) ===== */
+    .slider-wrapper {
+      position: relative;
+      width: 100%;
+      border-radius: 32px;
+      overflow: hidden;
+      margin-bottom: 2.2rem;
+      box-shadow: var(--shadow-sm);
+      background: var(--gradient-hero);
+      aspect-ratio: 16 / 6;
+      min-height: 200px;
+      transition: background 0.3s;
+    }
+
+    .slider-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slider-slide {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 0.8s ease-in-out;
+      background: var(--gradient-hero);
+    }
+
+    .slider-slide.active {
+      opacity: 1;
+      z-index: 2;
+    }
+
+    .slider-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* slider controls */
+    .slider-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(4px);
+      color: white;
+      border: none;
+      padding: 0.8rem 1rem;
+      cursor: pointer;
+      font-size: 1.4rem;
+      border-radius: 60px;
+      z-index: 10;
+      transition: 0.2s;
+      line-height: 1;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    .slider-btn:hover {
+      background: rgba(0,0,0,0.6);
+      transform: translateY(-50%) scale(1.05);
+    }
+    .slider-btn.prev { left: 16px; }
+    .slider-btn.next { right: 16px; }
+
+    .slider-dots {
+      position: absolute;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      z-index: 10;
+    }
+    .slider-dots span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.4);
+      cursor: pointer;
+      transition: 0.25s;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .slider-dots span.active {
+      background: white;
+      transform: scale(1.25);
+      border-color: white;
+    }
+
+    .slider-wrapper.hidden {
+      display: none;
+    }
+
+    /* ----- FRONT GRID (cards) ----- */
+    .front-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.8rem;
+      margin: 0.5rem 0 1.5rem;
+    }
+
+    .hero-card {
+      background: var(--bg-card);
+      border-radius: 28px;
+      padding: 1.8rem 1.2rem 1.5rem;
+      border: var(--card-border);
+      box-shadow: var(--shadow-sm);
+      transition: 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      text-align: center;
+      cursor: pointer;
+    }
+    .hero-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-hover);
+    }
+    .hero-card .card-icon {
+      font-size: 2.4rem;
+      color: var(--accent);
+      background: var(--accent-soft);
+      width: 72px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 28px;
+      margin: 0 auto 1rem;
+      transition: 0.2s;
+    }
+    .hero-card:hover .card-icon {
+      background: var(--accent);
+      color: white;
+    }
+    .hero-card h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.2rem; }
+    .hero-card p { color: var(--text-muted); font-size: 0.85rem; line-height: 1.5; }
+    .badge-new {
+      background: var(--accent);
+      color: white;
+      font-size: 0.6rem;
+      font-weight: 600;
+      padding: 0.2rem 0.9rem;
+      border-radius: 40px;
+      display: inline-block;
+      margin-top: 0.6rem;
+    }
+
+    /* info row */
+    .info-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      background: var(--bg-card);
+      border-radius: 40px;
+      padding: 1rem 2rem;
+      border: var(--card-border);
+      box-shadow: var(--shadow-sm);
+      margin-top: 0.8rem;
+    }
+    .info-row .highlight { display: flex; align-items: center; gap: 10px; }
+    .info-row .highlight i { color: var(--accent); font-size: 1.4rem; }
+    .info-row .highlight span { font-weight: 500; }
+    .info-row .meta { color: var(--text-muted); font-size: 0.85rem; }
+
+    .footer-note {
+      margin-top: 2.2rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-light);
+      padding-top: 1.5rem;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 820px) {
+      .hamburger-btn { display: inline-flex; }
+      .account-btn-desktop { display: none; }
+      .top-bar { border-radius: 32px; padding: 0.6rem 1.2rem; }
+      .brand-text { font-size: 1.2rem; }
+      .brand-logo { height: 38px; }
+      .menu-nav { display: none; }
+      .app-wrapper { padding: 0.8rem 1rem 2rem; }
+
+      .slider-wrapper {
+        border-radius: 24px;
+        aspect-ratio: 16 / 9;
+        min-height: 160px;
+      }
+      .slider-btn { padding: 0.5rem 0.8rem; font-size: 1rem; }
+      .slider-btn.prev { left: 8px; }
+      .slider-btn.next { right: 8px; }
+      .slider-dots { bottom: 12px; gap: 8px; }
+      .slider-dots span { width: 8px; height: 8px; }
+
+      .front-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; }
+      .hero-card { padding: 1.2rem 0.8rem; }
+      .hero-card .card-icon { width: 60px; height: 60px; font-size: 2rem; }
+    }
+
+    @media (max-width: 480px) {
+      .slider-wrapper { aspect-ratio: 4 / 3; min-height: 140px; }
+      .info-row { flex-direction: column; align-items: flex-start; padding: 1rem 1.2rem; }
+    }
+
+    body.sidebar-open { overflow: hidden; }
+
+    /* loading shimmer */
+    .shimmer {
+      background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-body) 50%, var(--bg-card) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+  </style>
+</head>
+<body data-theme="light">
+<div class="app-wrapper">
+
+  <!-- TOP BAR -->
+  <header class="top-bar">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <button class="hamburger-btn" id="hamburgerOpen" aria-label="Open menu">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="brand-area">
+        <img class="brand-logo" src="https://lh3.googleusercontent.com/d/1HUjvQXeYLxFtt5StZMinVh8sXRZ_TI0F" alt="Ujjwal Academy logo">
+        <span class="brand-text">Ujjwal Academy</span>
+      </div>
+    </div>
+
+    <div class="right-actions">
+      <a href="Study Material/My Account/myaccount.html" class="account-btn-desktop">
+        <i class="fas fa-user-circle"></i> My Account
+      </a>
+    </div>
+  </header>
+
+  <!-- DESKTOP MENU (hidden on mobile) -->
+  <nav class="menu-nav" id="desktopMenu">
+    <a href="textbook.html" class="menu-item active" data-key="textbooks"><i class="fas fa-book-open"></i> Textbooks</a>
+    <a href="notes.html" class="menu-item" data-key="notes"><i class="fas fa-sticky-note"></i> Notes</a>
+    <a href="solution.html" class="menu-item" data-key="solutions"><i class="fas fa-check-circle"></i> Solutions</a>
+    <a href="questionpaper.html" class="menu-item" data-key="papers"><i class="fas fa-file-alt"></i> Questions Paper</a>
+    <a href="project.html" class="menu-item" data-key="project"><i class="fas fa-box"></i> Project</a>
+  </nav>
+
+  <!-- ===== SLIDER ===== -->
+  <div class="slider-wrapper" id="sliderWrapper">
+    <div class="slider-container" id="sliderContainer">
+      <!-- slides injected by JS -->
+    </div>
+    <button class="slider-btn prev" id="sliderPrev"><i class="fas fa-chevron-left"></i></button>
+    <button class="slider-btn next" id="sliderNext"><i class="fas fa-chevron-right"></i></button>
+    <div class="slider-dots" id="sliderDots"></div>
+  </div>
+
+  <!-- FRONT CARDS - now links to pages -->
+  <div class="front-grid" id="frontGrid">
+    <a href="textbook.html" class="hero-card" data-menu="textbooks" style="text-decoration: none; color: inherit;">
+      <div class="card-icon"><i class="fas fa-book-open"></i></div>
+      <h3>Textbooks</h3>
+      <p>Complete curriculum &amp; reference.</p>
+      <span class="badge-new">new</span>
+    </a>
+    <a href="notes.html" class="hero-card" data-menu="notes" style="text-decoration: none; color: inherit;">
+      <div class="card-icon"><i class="fas fa-sticky-note"></i></div>
+      <h3>Notes</h3>
+      <p>Concise, exam-ready notes.</p>
+      <span class="badge-new">top</span>
+    </a>
+    <a href="solution.html" class="hero-card" data-menu="solutions" style="text-decoration: none; color: inherit;">
+      <div class="card-icon"><i class="fas fa-check-circle"></i></div>
+      <h3>Solutions</h3>
+      <p>Step-by-step problem solving.</p>
+      <span class="badge-new">verified</span>
+    </a>
+    <a href="questionpaper.html" class="hero-card" data-menu="papers" style="text-decoration: none; color: inherit;">
+      <div class="card-icon"><i class="fas fa-file-alt"></i></div>
+      <h3>Questions Paper</h3>
+      <p>Mock tests &amp; past papers.</p>
+      <span class="badge-new">2026</span>
+    </a>
+    <a href="project.html" class="hero-card" data-menu="project" style="text-decoration: none; color: inherit;">
+      <div class="card-icon"><i class="fas fa-box"></i></div>
+      <h3>Project</h3>
+      <p>Learning kits &amp; tools.</p>
+      <span class="badge-new">shop</span>
+    </a>
+  </div>
+
+  <div class="info-row">
+    <div class="highlight"><i class="fas fa-graduation-cap"></i><span>12,000+ learners</span></div>
+    <div class="highlight"><i class="fas fa-star"></i><span>4.9 · 2.3k reviews</span></div>
+    <div class="meta"><i class="far fa-calendar-alt"></i> 2026 – Ujjwal Academy</div>
+  </div>
+
+  <div class="footer-note">
+    <i class="fas fa-arrow-right" style="opacity:0.5; margin-right:6px;"></i> 
+    Explore resources &amp; elevate your learning.
+  </div>
+</div>
+
+<!-- ===== SIDEBAR (mobile) ===== -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<aside class="sidebar" id="mobileSidebar">
+  <button class="sidebar-close" id="sidebarClose"><i class="fas fa-times"></i></button>
+
+  <div class="sidebar-brand">
+    <img src="https://lh3.googleusercontent.com/d/1HUjvQXeYLxFtt5StZMinVh8sXRZ_TI0F" alt="logo">
+    <span>Ujjwal Academy</span>
+  </div>
+
+  <ul class="sidebar-menu" id="sidebarMenu">
+    <li data-key="textbooks"><i class="fas fa-book-open"></i> <a href="textbook.html" style="color: inherit; text-decoration: none; width: 100%;">Textbooks</a></li>
+    <li data-key="notes"><i class="fas fa-sticky-note"></i> <a href="notes.html" style="color: inherit; text-decoration: none; width: 100%;">Notes</a></li>
+    <li data-key="solutions"><i class="fas fa-check-circle"></i> <a href="solution.html" style="color: inherit; text-decoration: none; width: 100%;">Solutions</a></li>
+    <li data-key="papers"><i class="fas fa-file-alt"></i> <a href="questionpaper.html" style="color: inherit; text-decoration: none; width: 100%;">Questions Paper</a></li>
+    <li data-key="project"><i class="fas fa-box"></i> <a href="project.html" style="color: inherit; text-decoration: none; width: 100%;">Project</a></li>
+  </ul>
+
+  <div class="sidebar-account">
+    <a href="myaccount.html"><i class="fas fa-user-circle"></i> My Account</a>
+  </div>
+</aside>
+
+<script>
+  (function() {
+    // ============================================================
+    // THEME: Unified with myaccount.html
+    // ============================================================
+    const body = document.body;
+    const THEME_KEY = 'user-theme-preference'; // Same as myaccount.html
+
+    function getStoredTheme() {
+      return localStorage.getItem(THEME_KEY) || 'light';
+    }
+
+    function applyTheme(theme) {
+      body.setAttribute('data-theme', theme);
+      localStorage.setItem(THEME_KEY, theme);
+      
+      // Notify other tabs/windows about theme change
+      try {
+        localStorage.setItem('theme-change-trigger', Date.now().toString());
+      } catch(e) {}
+      
+      // Notify iframes/child windows
+      try {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({
+            type: 'themeChange',
+            theme: theme
+          }, '*');
+        }
+      } catch(e) {}
+    }
+
+    // Apply saved theme on load
+    const saved = getStoredTheme();
+    applyTheme(saved);
+
+    // Listen for theme changes from other tabs
+    window.addEventListener('storage', function(e) {
+      if (e.key === THEME_KEY && e.newValue) {
+        body.setAttribute('data-theme', e.newValue);
+      }
+      if (e.key === 'theme-change-trigger') {
+        const currentTheme = localStorage.getItem(THEME_KEY);
+        if (currentTheme) {
+          body.setAttribute('data-theme', currentTheme);
+        }
+      }
+    });
+
+    // Listen for theme changes from iframe/child windows
+    window.addEventListener('message', function(event) {
+      if (event.data && event.data.type === 'themeChange') {
+        const newTheme = event.data.theme;
+        if (newTheme && newTheme !== body.getAttribute('data-theme')) {
+          applyTheme(newTheme);
+        }
+      }
+    });
+
+    // Custom event listener
+    window.addEventListener('themeChanged', function(e) {
+      if (e.detail && e.detail.theme) {
+        applyTheme(e.detail.theme);
+      }
+    });
+
+    // Fallback: periodic check for cross-tab sync
+    let lastTheme = getStoredTheme();
+    setInterval(function() {
+      const currentTheme = getStoredTheme();
+      if (currentTheme !== lastTheme) {
+        lastTheme = currentTheme;
+        body.setAttribute('data-theme', currentTheme);
+      }
+    }, 2000);
+
+    // ============================================================
+    // SIDEBAR TOGGLE + TOUCH GESTURES
+    // ============================================================
+    const sidebar = document.getElementById('mobileSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const hamburger = document.getElementById('hamburgerOpen');
+    const closeBtn = document.getElementById('sidebarClose');
+
+    function openSidebar() {
+      sidebar.classList.add('open');
+      overlay.classList.add('active');
+      document.body.classList.add('sidebar-open');
+    }
+
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('active');
+      document.body.classList.remove('sidebar-open');
+    }
+
+    hamburger.addEventListener('click', openSidebar);
+    closeBtn.addEventListener('click', closeSidebar);
+    overlay.addEventListener('click', closeSidebar);
+
+    let touchStartX = 0;
+    let touchStartY = 0;
+    const appWrapper = document.querySelector('.app-wrapper');
+
+    appWrapper.addEventListener('touchstart', function(e) {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    appWrapper.addEventListener('touchend', function(e) {
+      const touchEndX = e.changedTouches[0].screenX;
+      const touchEndY = e.changedTouches[0].screenY;
+      const diffX = touchEndX - touchStartX;
+      const diffY = Math.abs(touchEndY - touchStartY);
+      if (diffY > 50) return;
+
+      const isOpen = sidebar.classList.contains('open');
+      if (diffX > 60 && touchStartX < 40 && !isOpen) {
+        openSidebar();
+      } else if (diffX < -60 && isOpen) {
+        closeSidebar();
+      }
+    }, { passive: true });
+
+    // ============================================================
+    // MENU SYNC
+    // ============================================================
+    const menuItems = document.querySelectorAll('.menu-item');
+    const sidebarItems = document.querySelectorAll('.sidebar-menu li');
+    const cards = document.querySelectorAll('.hero-card');
+
+    function setActiveMenu(key) {
+      menuItems.forEach(el => {
+        el.classList.toggle('active', el.dataset.key === key);
+      });
+      sidebarItems.forEach(el => {
+        el.classList.toggle('active', el.dataset.key === key);
+      });
+      cards.forEach(card => {
+        const menu = card.dataset.menu;
+        if (menu === key) {
+          card.style.boxShadow = '0 0 0 2px var(--accent), var(--shadow-hover)';
+          card.style.transform = 'scale(1.02)';
+        } else {
+          card.style.boxShadow = '';
+          card.style.transform = '';
+        }
+      });
+    }
+
+    const pageMap = {
+      'textbook': 'textbooks',
+      'notes': 'notes',
+      'solution': 'solutions',
+      'questionpaper': 'papers',
+      'project': 'project'
+    };
+    const path = window.location.pathname.split('/').pop().replace('.html', '');
+    const activeKey = pageMap[path] || 'textbooks';
+    setActiveMenu(activeKey);
+
+    document.querySelectorAll('.sidebar-menu a, .sidebar-account a').forEach(link => {
+      link.addEventListener('click', function(e) {
+        if (window.innerWidth <= 820) {
+          closeSidebar();
+        }
+      });
+    });
+
+    window.addEventListener('resize', function() {
+      if (window.innerWidth > 820) closeSidebar();
+    });
+
+    // ============================================================
+    // SLIDER
+    // ============================================================
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzoDds81u8M5N8micA_hoIBgCS7aCFm0NUmwW6XLH4m_fRJ8R9pGqjgFGMeBxBd2dSL/exec';
+    const SPREADSHEET_ID = '1RWV15Wa0HW3HTkGn_Qdc-YChrb05aZ5vN3q9iAIVUgM';
+    const SHEET_NAME = 'Slider';
+    const CACHE_KEY = 'ujjwal_slider_data';
+    const CACHE_TIME_KEY = 'ujjwal_slider_time';
+    const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
+
+    const sliderWrapper = document.getElementById('sliderWrapper');
+    const sliderContainer = document.getElementById('sliderContainer');
+    const dotsContainer = document.getElementById('sliderDots');
+    const prevBtn = document.getElementById('sliderPrev');
+    const nextBtn = document.getElementById('sliderNext');
+
+    let slides = [];
+    let currentIndex = 0;
+    let autoSlideInterval = null;
+    const AUTO_SLIDE_DELAY = 5000;
+
+    function isDesktop() {
+      return window.innerWidth > 820;
+    }
+
+    function getImageUrls(row) {
+      const desktopImages = [];
+      const mobileImages = [];
+      for (let i = 1; i <= 5; i++) {
+        const desktopKey = `Desktop Image ${i}`;
+        const mobileKey = `Mobile Image ${i}`;
+        if (row[desktopKey] && row[desktopKey].toString().trim() !== '') {
+          desktopImages.push(row[desktopKey].toString().trim());
+        }
+        if (row[mobileKey] && row[mobileKey].toString().trim() !== '') {
+          mobileImages.push(row[mobileKey].toString().trim());
+        }
+      }
+      return { desktopImages, mobileImages };
+    }
+
+    function getCachedData() {
+      try {
+        const cached = localStorage.getItem(CACHE_KEY);
+        const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
+        if (cached && cachedTime) {
+          const age = Date.now() - parseInt(cachedTime);
+          if (age < CACHE_DURATION) {
+            return JSON.parse(cached);
+          }
+        }
+      } catch (e) { /* ignore */ }
+      return null;
+    }
+
+    function setCacheData(data) {
+      try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+        localStorage.setItem(CACHE_TIME_KEY, String(Date.now()));
+      } catch (e) { /* ignore */ }
+    }
+
+    function fetchSliderData() {
+      const cached = getCachedData();
+      if (cached && cached.slides && cached.slides.length > 0) {
+        slides = cached.slides;
+        renderSlider();
+        fetchFreshData();
+        return;
+      }
+      fetchFreshData();
+    }
+
+    function fetchFreshData() {
+      const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}&action=getData`;
+      fetch(url)
+        .then(response => {
+          if (!response.ok) throw new Error('Network response was not ok');
+          return response.json();
+        })
+        .then(data => {
+          if (data.status === 'success' && data.data && data.data.length > 0) {
+            const activeRow = data.data.find(row => {
+              const status = row['Status'] ? row['Status'].toString().trim().toLowerCase() : '';
+              return status === 'active';
+            });
+
+            if (activeRow) {
+              const { desktopImages, mobileImages } = getImageUrls(activeRow);
+              const images = isDesktop() ? desktopImages : mobileImages;
+              const validImages = images.filter(url => url && url.trim() !== '');
+              if (validImages.length > 0) {
+                slides = validImages;
+                setCacheData({ slides: slides });
+                renderSlider();
+                return;
+              }
+            }
+          }
+          sliderWrapper.classList.add('hidden');
+        })
+        .catch(error => {
+          console.error('Error fetching slider data:', error);
+          const cached = getCachedData();
+          if (cached && cached.slides && cached.slides.length > 0) {
+            slides = cached.slides;
+            renderSlider();
+          } else {
+            sliderWrapper.classList.add('hidden');
+          }
+        });
+    }
+
+    function renderSlider() {
+      if (!slides || slides.length === 0) {
+        sliderWrapper.classList.add('hidden');
+        return;
+      }
+
+      sliderWrapper.classList.remove('hidden');
+      sliderContainer.innerHTML = '';
+      dotsContainer.innerHTML = '';
+
+      slides.forEach((url, index) => {
+        const slide = document.createElement('div');
+        slide.className = 'slider-slide' + (index === 0 ? ' active' : '');
+        const img = document.createElement('img');
+        img.src = url;
+        img.alt = `Slide ${index + 1}`;
+        img.loading = 'lazy';
+        img.style.background = 'var(--gradient-hero)';
+        slide.appendChild(img);
+        sliderContainer.appendChild(slide);
+
+        const dot = document.createElement('span');
+        dot.className = index === 0 ? 'active' : '';
+        dot.dataset.index = index;
+        dot.addEventListener('click', () => goToSlide(index));
+        dotsContainer.appendChild(dot);
+      });
+
+      if (slides.length > 1) {
+        prevBtn.style.display = 'block';
+        nextBtn.style.display = 'block';
+        startAutoSlide();
+      } else {
+        prevBtn.style.display = 'none';
+        nextBtn.style.display = 'none';
+      }
+
+      currentIndex = 0;
+    }
+
+    function goToSlide(index) {
+      if (!slides || slides.length === 0) return;
+      if (index < 0) index = slides.length - 1;
+      if (index >= slides.length) index = 0;
+
+      const slideElements = sliderContainer.querySelectorAll('.slider-slide');
+      const dotElements = dotsContainer.querySelectorAll('span');
+
+      slideElements.forEach((el, i) => {
+        el.classList.toggle('active', i === index);
+      });
+      dotElements.forEach((el, i) => {
+        el.classList.toggle('active', i === index);
+      });
+
+      currentIndex = index;
+      resetAutoSlide();
+    }
+
+    function nextSlide() { goToSlide(currentIndex + 1); }
+    function prevSlide() { goToSlide(currentIndex - 1); }
+
+    function startAutoSlide() {
+      if (autoSlideInterval) clearInterval(autoSlideInterval);
+      if (slides.length > 1) {
+        autoSlideInterval = setInterval(nextSlide, AUTO_SLIDE_DELAY);
+      }
+    }
+
+    function resetAutoSlide() {
+      if (autoSlideInterval) {
+        clearInterval(autoSlideInterval);
+        startAutoSlide();
+      }
+    }
+
+    prevBtn.addEventListener('click', prevSlide);
+    nextBtn.addEventListener('click', nextSlide);
+
+    sliderWrapper.addEventListener('mouseenter', () => {
+      if (autoSlideInterval) clearInterval(autoSlideInterval);
+    });
+    sliderWrapper.addEventListener('mouseleave', startAutoSlide);
+
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        if (!sliderWrapper.classList.contains('hidden')) {
+          fetchFreshData();
+        }
+      }, 400);
+    });
+
+    // Init slider
+    fetchSliderData();
+
+  })();
+</script>
+</body>
+</html>
