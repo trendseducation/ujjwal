@@ -1,0 +1,2213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>👨‍🏫 Teacher Registry Management | Smart Dashboard</title>
+    
+    <!-- Cropper.js for image editing -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    
+    <style>
+        /* ======================== CSS VARIABLES FOR THEMING ======================== */
+        :root {
+            /* Light Mode Colors */
+            --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-secondary: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-light: #94a3b8;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            
+            /* Brand Colors */
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --primary-light: #60a5fa;
+            --secondary: #f59e0b;
+            --secondary-dark: #d97706;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #fbbf24;
+            --info: #06b6d4;
+            
+            /* Gradients */
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-warning: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            
+            /* Table Colors */
+            --table-header-bg: #f8fafc;
+            --table-row-hover: #f1f5f9;
+            --table-border: #e2e8f0;
+            
+            /* Animation */
+            --transition-fast: 150ms ease;
+            --transition-normal: 300ms ease;
+            --transition-slow: 500ms ease;
+        }
+
+        /* Dark Mode Variables */
+        [data-theme="dark"] {
+            --bg-primary: linear-gradient(135deg, #1e1e2e 0%, #2d1b4e 100%);
+            --bg-secondary: #1e1e2e;
+            --card-bg: rgba(30, 30, 46, 0.98);
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-light: #64748b;
+            --border-color: #334155;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4);
+            
+            --table-header-bg: #1e293b;
+            --table-row-hover: #334155;
+            --table-border: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            background: var(--bg-primary);
+            min-height: 100vh;
+            padding: 20px 16px;
+            color: var(--text-primary);
+            transition: background var(--transition-normal), color var(--transition-normal);
+            position: relative;
+        }
+
+        /* App Container */
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Page animations */
+        .page {
+            display: none;
+            animation: fadeSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .page.active-page {
+            display: block;
+        }
+        
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(20px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Cards */
+        .soft-card {
+            background: var(--card-bg);
+            border-radius: 2rem;
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 24px;
+        }
+
+        .soft-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        /* Headers */
+        .card-header {
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: nowrap;
+            gap: 14px;
+        }
+
+        [data-theme="dark"] .card-header {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+        }
+
+        .card-header h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.02em;
+            flex: 1;
+            min-width: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Search Section */
+        .search-section {
+            padding: 1.5rem 2rem;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* Buttons */
+        .btn {
+            border: none;
+            padding: 10px 24px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            filter: brightness(1.05);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-sm {
+            padding: 6px 16px;
+            font-size: 0.75rem;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Search Input */
+        .search-wrapper {
+            width: 100%;
+        }
+
+        .search-wrapper input {
+            width: 100%;
+            padding: 14px 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 60px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all var(--transition-fast);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .search-wrapper input::placeholder {
+            color: var(--text-light);
+        }
+
+        .search-wrapper input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            transform: translateY(-1px);
+        }
+
+        /* Table Styles */
+        .table-wrapper {
+            overflow-x: auto;
+            overflow-y: visible;
+            scrollbar-width: thin;
+            padding: 0;
+        }
+
+        .table-wrapper::-webkit-scrollbar {
+            height: 6px;
+            background: transparent;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.875rem;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 16px 20px;
+            background: var(--table-header-bg);
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            border-bottom: 3px solid var(--primary);
+            position: relative;
+        }
+
+        .data-table th:first-child {
+            border-top-left-radius: 12px;
+        }
+
+        .data-table th:last-child {
+            border-top-right-radius: 12px;
+        }
+
+        .data-table td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--table-border);
+            color: var(--text-primary);
+            transition: background var(--transition-fast);
+            font-size: 0.9rem;
+        }
+
+        .data-table tr:hover td {
+            background: var(--table-row-hover);
+        }
+
+        .view-action-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .view-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+            filter: brightness(1.05);
+        }
+
+        /* Details Grid */
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            padding: 2rem;
+        }
+
+        @media (max-width: 640px) {
+            .details-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+                padding: 1rem;
+            }
+        }
+
+        .detail-card {
+            background: linear-gradient(135deg, var(--card-bg), rgba(255,255,255,0.05));
+            border-radius: 1.2rem;
+            padding: 1rem 1.2rem;
+            transition: all var(--transition-fast);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+
+        .detail-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+
+        .detail-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--secondary);
+            font-weight: 700;
+        }
+
+        .detail-value {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-top: 6px;
+            color: var(--text-primary);
+            word-break: break-word;
+        }
+
+        /* Action Row */
+        .action-row {
+            padding: 1rem 2rem 2rem;
+            display: flex;
+            gap: 14px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        /* Profile Image */
+        .profile-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            padding: 2rem 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .profile-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 1.2rem;
+            object-fit: cover;
+            border: 4px solid var(--primary);
+            box-shadow: var(--shadow-lg);
+            background: var(--table-header-bg);
+        }
+
+        .profile-info h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .profile-info p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            visibility: hidden;
+            opacity: 0;
+            transition: all var(--transition-normal);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .modal-box {
+            background: var(--card-bg);
+            width: 92%;
+            max-width: 900px;
+            max-height: 85vh;
+            border-radius: 2rem;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+            animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes modalPop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            color: white;
+        }
+
+        .modal-header h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: white;
+            transition: transform var(--transition-fast);
+            line-height: 1;
+        }
+
+        .close-modal:hover {
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+            max-height: calc(85vh - 70px);
+        }
+
+        /* Form Styles */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .field label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--secondary);
+        }
+
+        .field input, 
+        .field select, 
+        .field textarea {
+            padding: 12px 16px;
+            border-radius: 16px;
+            border: 2px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            transition: all var(--transition-fast);
+            font-family: inherit;
+        }
+
+        .field input:focus, 
+        .field select:focus, 
+        .field textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .field input:disabled {
+            background: var(--text-light);
+            cursor: not-allowed;
+        }
+
+        .fullwidth {
+            grid-column: 1 / -1;
+        }
+
+        /* Image Upload Section */
+        .image-section {
+            border: 2px dashed var(--border-color);
+            padding: 20px;
+            border-radius: 1.2rem;
+            text-align: center;
+            margin: 20px 0;
+            background: var(--table-header-bg);
+            transition: all var(--transition-fast);
+        }
+
+        .image-section:hover {
+            border-color: var(--primary);
+        }
+
+        .image-section label {
+            cursor: pointer;
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1rem;
+            display: block;
+        }
+
+        .image-section label i {
+            font-size: 1.5rem;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        #preview-container {
+            max-width: 400px;
+            margin: 15px auto;
+            display: none;
+        }
+
+        #image-to-crop {
+            max-width: 100%;
+            display: block;
+        }
+
+        .crop-controls {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-tool {
+            background: var(--table-header-bg);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            color: var(--text-primary);
+        }
+
+        .btn-tool:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        #image-status {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        #cropped-preview {
+            margin-top: 10px;
+            max-width: 100px;
+            border-radius: 8px;
+            border: 2px solid var(--primary);
+        }
+
+        /* Current Image Display in Form */
+        .current-image-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px;
+            background: var(--table-header-bg);
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .current-image-container img {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 2px solid var(--border-color);
+        }
+
+        .current-image-container .info {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .current-image-container .info strong {
+            color: var(--text-primary);
+        }
+
+        /* Spinner */
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid var(--border-color);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Status Message */
+        .status-message {
+            padding: 12px 20px;
+            border-radius: 16px;
+            margin-top: 20px;
+            display: none;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .status-error {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.4);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 999;
+            text-decoration: none;
+            border: none;
+            font-size: 2rem;
+        }
+
+        .fab:hover {
+            transform: scale(1.1) rotate(90deg);
+            background: var(--primary-dark);
+            box-shadow: 0 15px 30px rgba(79, 70, 229, 0.5);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body { padding: 12px; }
+            
+            .card-header {
+                padding: 0.8rem 1rem;
+                flex-direction: row;
+                align-items: center;
+                gap: 8px;
+                flex-wrap: nowrap;
+            }
+            
+            .card-header h2 {
+                font-size: 1rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                flex: 1;
+                min-width: 0;
+            }
+            
+            .card-header .btn {
+                flex-shrink: 0;
+                font-size: 0.7rem;
+                padding: 4px 12px;
+            }
+            
+            .desktop-buttons {
+                display: none;
+            }
+            
+            .mobile-buttons {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+                margin-top: 12px;
+                width: 100%;
+            }
+            
+            .mobile-buttons .btn {
+                width: 100%;
+                justify-content: center;
+                padding: 12px 16px;
+                font-size: 0.85rem;
+                border-radius: 60px;
+            }
+            
+            .search-section {
+                padding: 1rem 1.2rem;
+            }
+            
+            .search-wrapper {
+                width: 100%;
+            }
+            
+            .search-wrapper input {
+                padding: 14px 20px;
+                font-size: 0.95rem;
+                border-radius: 60px;
+            }
+            
+            .data-table th,
+            .data-table td {
+                padding: 12px 12px;
+                font-size: 0.7rem;
+            }
+            
+            .btn {
+                padding: 8px 18px;
+                font-size: 0.8rem;
+            }
+            
+            .modal-box {
+                width: 95%;
+                border-radius: 1.5rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .profile-wrapper {
+                padding: 1rem;
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .details-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .current-image-container {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            #backToPage1Btn {
+                font-size: 0.7rem;
+                padding: 4px 12px;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-buttons {
+                display: none !important;
+            }
+        }
+
+        .mobile-buttons {
+            display: none;
+            gap: 12px;
+            margin-top: 12px;
+            width: 100%;
+        }
+
+        .mobile-buttons .btn {
+            border: none;
+            padding: 12px 16px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .mobile-buttons .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .mobile-buttons .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .mobile-buttons .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .mobile-buttons .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .mobile-buttons .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .mobile-buttons .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            filter: brightness(1.05);
+        }
+
+        .mobile-buttons .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .mobile-buttons .btn .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid var(--border-color);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--table-header-bg);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+
+        .table-wrapper::-webkit-scrollbar,
+        .modal-box::-webkit-scrollbar {
+            width: 0px;
+            height: 0px;
+            background: transparent;
+            display: none;
+        }
+        
+        .table-wrapper,
+        .modal-box {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .loading-skeleton {
+            background: linear-gradient(90deg, var(--border-color) 25%, var(--table-header-bg) 50%, var(--border-color) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .alert-popup {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            background: var(--card-bg);
+            border-left: 5px solid var(--primary);
+            padding: 16px 24px;
+            box-shadow: var(--shadow-xl);
+            border-radius: 0 16px 16px 0;
+            font-weight: 600;
+            font-size: 0.95rem;
+            z-index: 1000;
+            display: none;
+            animation: slideIn 0.3s ease-out;
+            color: var(--text-primary);
+            max-width: 400px;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(120%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .alert-popup.success {
+            border-left-color: var(--success);
+        }
+
+        .alert-popup.error {
+            border-left-color: var(--danger);
+        }
+
+        /* Status Badge */
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .status-badge.active {
+            background: var(--success);
+            color: white;
+        }
+
+        .status-badge.deactive {
+            background: var(--danger);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+
+    <!-- ===================== PAGE 1 - LIST VIEW ===================== -->
+    <div id="page1" class="page active-page">
+        <div class="soft-card">
+            <div class="card-header">
+                <h2>👨‍🏫 Teacher Registry Management</h2>
+                
+                <div class="desktop-buttons">
+                    <button id="refreshBtn" class="btn btn-outline">
+                        <span>⟳</span> Refresh
+                    </button>
+                    <button id="addNewBtn" class="btn btn-primary">
+                        <span>+</span> Add Teacher
+                    </button>
+                </div>
+            </div>
+            
+            <div class="search-section">
+                <div class="search-wrapper">
+                    <input type="text" id="searchInput" 
+                           placeholder="🔍 Search by Teacher Name or Mobile Number...">
+                </div>
+                
+                <div class="mobile-buttons">
+                    <button id="mobileRefreshBtn" class="btn btn-outline">
+                        <span>⟳</span> Refresh
+                    </button>
+                    <button id="mobileAddBtn" class="btn btn-primary">
+                        <span>+</span> Add Teacher
+                    </button>
+                </div>
+            </div>
+            
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Sr. No</th>
+                            <th>Teacher Name</th>
+                            <th>Mobile Number</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr>
+                            <td colspan="5" style="text-align:center;">
+                                <div class="spinner"></div> Loading teacher records...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== PAGE 2 - DETAIL VIEW ===================== -->
+    <div id="page2" class="page">
+        <div class="soft-card">
+            <div class="card-header">
+                <h2>👨‍🏫 Teacher Profile</h2>
+                <button id="backToPage1Btn" class="btn btn-outline">← Back</button>
+            </div>
+            
+            <div class="profile-wrapper">
+                <img id="profileImage" src="" class="profile-img" alt="Teacher Photo">
+                <div class="profile-info">
+                    <h3 id="profileName">Teacher Name</h3>
+                    <p>Teacher ID: <span id="profileSrNo"></span></p>
+                    <p>Status: <span id="profileStatus"></span></p>
+                </div>
+            </div>
+            
+            <div id="detailsContainer" class="details-grid">
+                <div class="loading-skeleton" style="height: 200px;"></div>
+            </div>
+            
+            <div class="action-row">
+                <button id="editFromDetailBtn" class="btn btn-primary">✏️ Edit</button>
+                <button id="deleteFromDetailBtn" class="btn btn-danger">🗑 Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== GLOBAL MODAL ===================== -->
+    <div id="globalModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3 id="modalTitle">Notice</h3>
+                <button class="close-modal" id="closeGlobalModal">×</button>
+            </div>
+            <div class="modal-body">
+                <p id="modalMsg" style="font-size: 1rem; line-height: 1.5;"></p>
+                <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
+                    <button id="confirmModalBtn" class="btn btn-primary">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== FORM MODAL ===================== -->
+    <div id="formModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="formModalTitle">Add New Teacher</h3>
+                <button class="close-modal" id="closeFormModalBtn">×</button>
+            </div>
+            <div class="modal-body" id="formModalBody"></div>
+        </div>
+    </div>
+
+    <!-- ===================== ALERT POPUP ===================== -->
+    <div id="alertBox" class="alert-popup">Message...</div>
+
+</div>
+
+<script>
+        // ================================================================
+        // ADMIN AUTHENTICATION CHECK
+        // ================================================================
+        function checkAdminAuth() {
+            const userType = sessionStorage.getItem('ujjwal_user_type');
+            const user = sessionStorage.getItem('ujjwal_user');
+            
+            // If not logged in as admin, redirect to myaccount.html
+            if (!user || userType !== 'admin') {
+                // Redirect to myaccount.html for admin login
+                window.location.href = '../../Study Material/My Account/myaccount.html';
+                return false;
+            }
+            return true;
+        }
+
+     /* ======================== DARK MODE SYNC ======================== */
+function syncThemeWithParent() {
+    const localTheme = localStorage.getItem('user-theme-preference');
+    if (localTheme) {
+        document.body.setAttribute('data-theme', localTheme);
+        document.documentElement.setAttribute('data-theme', localTheme);
+    } else {
+        try {
+            if (window.parent && window.parent.document.body) {
+                const parentTheme = window.parent.document.body.getAttribute('data-theme');
+                if (parentTheme) {
+                    document.body.setAttribute('data-theme', parentTheme);
+                    document.documentElement.setAttribute('data-theme', parentTheme);
+                }
+            }
+        } catch(e) { }
+    }
+}
+
+window.addEventListener('DOMContentLoaded', syncThemeWithParent);
+window.addEventListener('storage', syncThemeWithParent);
+setInterval(syncThemeWithParent, 1000);
+
+window.addEventListener('message', function(event) {
+    if (event.data && event.data.type === 'themeChange') {
+        const newTheme = event.data.theme;
+        if (newTheme) {
+            document.body.setAttribute('data-theme', newTheme);
+            document.documentElement.setAttribute('data-theme', newTheme);
+        }
+    }
+});
+
+/* ======================== CONFIGURATION ======================== */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyg5EwL2WVufTR0Ks1mH9ZEHWwyuIBXshTvjANGhIq8zD7yZEmgOfimxdpB8pTjkqwq/exec";
+const SPREADSHEET_ID = "1_0oBxaAlvYw86pwIzNJw4-hSlmdxiCI0U17B2Zxr3YI";
+const SHEET_NAME = "Teacher Details";
+const DRIVE_FOLDER_ID = "1M0AZkLkR9t2NmkM4kOS8mka5KkobUlwD";
+const IMAGE_COLUMN_NAME = "Image";
+
+const CACHE_KEY = "teacher_cache";
+const CACHE_TTL = 15 * 60 * 1000;
+
+/* ======================== GLOBAL STATE ======================== */
+let allTeachers = [];
+let currentViewTeacher = null;
+let selectedRowIndex = 2;
+let selectedSrNo = null;
+let searchDebounceTimer = null;
+let saveInProgress = false;
+let cropper = null;
+let croppedImageData = null;
+
+/* ======================== DOM REFS ======================== */
+const dom = {};
+
+function cacheDomElements() {
+    dom.page1 = document.getElementById('page1');
+    dom.page2 = document.getElementById('page2');
+    dom.tableBody = document.getElementById('tableBody');
+    dom.searchInput = document.getElementById('searchInput');
+    dom.refreshBtn = document.getElementById('refreshBtn');
+    dom.addNewBtn = document.getElementById('addNewBtn');
+    dom.backBtn = document.getElementById('backToPage1Btn');
+    dom.editBtn = document.getElementById('editFromDetailBtn');
+    dom.deleteBtn = document.getElementById('deleteFromDetailBtn');
+    dom.detailsContainer = document.getElementById('detailsContainer');
+    dom.profileImage = document.getElementById('profileImage');
+    dom.profileName = document.getElementById('profileName');
+    dom.profileSrNo = document.getElementById('profileSrNo');
+    dom.profileStatus = document.getElementById('profileStatus');
+    dom.globalModal = document.getElementById('globalModal');
+    dom.formModal = document.getElementById('formModal');
+    dom.modalTitle = document.getElementById('modalTitle');
+    dom.modalMsg = document.getElementById('modalMsg');
+    dom.formModalTitle = document.getElementById('formModalTitle');
+    dom.formModalBody = document.getElementById('formModalBody');
+    dom.alertBox = document.getElementById('alertBox');
+}
+
+/* ======================== MOBILE BUTTON HANDLERS ======================== */
+const mobileRefreshBtn = document.getElementById('mobileRefreshBtn');
+const mobileAddBtn = document.getElementById('mobileAddBtn');
+
+if (mobileRefreshBtn) {
+    mobileRefreshBtn.addEventListener('click', function() {
+        if (dom.refreshBtn) {
+            dom.refreshBtn.click();
+        } else {
+            refreshData();
+        }
+    });
+}
+
+if (mobileAddBtn) {
+    mobileAddBtn.addEventListener('click', function() {
+        if (dom.addNewBtn) {
+            dom.addNewBtn.click();
+        } else {
+            openAddModal();
+        }
+    });
+}
+
+/* ======================== IMAGE UTILITY FUNCTIONS ======================== */
+function extractFileId(driveUrl) {
+    if (!driveUrl) return null;
+    const match = driveUrl.match(/[-\w]{25,}/);
+    return match ? match[0] : null;
+}
+
+function getThumbnailUrl(driveUrl) {
+    const fileId = extractFileId(driveUrl);
+    if (fileId) {
+        return `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`;
+    }
+    return driveUrl || 'https://via.placeholder.com/150?text=No+Photo';
+}
+
+/* ======================== CROPPER FUNCTIONS ======================== */
+function rotateLeft() { 
+    if (cropper) cropper.rotate(-90); 
+    console.log("🔄 Rotated Left");
+}
+
+function rotateRight() { 
+    if (cropper) cropper.rotate(90); 
+    console.log("🔄 Rotated Right");
+}
+
+function applyCrop() {
+    console.log("📸 Apply Crop called");
+    console.log("Cropper instance:", cropper);
+    
+    if (!cropper) {
+        const statusEl = document.getElementById('image-status');
+        if (statusEl) {
+            statusEl.textContent = "❌ No image loaded to crop. Please select an image first.";
+            statusEl.style.color = "var(--danger)";
+        }
+        showToast("❌ Please select an image first", "error");
+        return;
+    }
+    
+    try {
+        const canvas = cropper.getCroppedCanvas({ width: 400, height: 400 });
+        if (!canvas) throw new Error("Could not crop image");
+        
+        const base64Data = canvas.toDataURL('image/jpeg', 0.9);
+        const fileName = `teacher_photo_${Date.now()}.jpg`;
+        
+        // Store cropped image data globally
+        croppedImageData = {
+            base64Data: base64Data.split(',')[1],
+            fileName: fileName,
+            mimeType: 'image/jpeg'
+        };
+        
+        console.log("✅ Image cropped successfully!");
+        console.log("File name:", fileName);
+        console.log("Base64 data length:", croppedImageData.base64Data.length);
+        
+        const statusEl = document.getElementById('image-status');
+        if (statusEl) {
+            statusEl.textContent = "✅ Image cropped and ready for upload!";
+            statusEl.style.color = "var(--success)";
+        }
+        
+        // Remove old preview
+        const oldPreview = document.getElementById('cropped-preview');
+        if (oldPreview) oldPreview.remove();
+        
+        // Show cropped preview
+        const preview = document.createElement('img');
+        preview.src = base64Data;
+        preview.id = 'cropped-preview';
+        preview.style.maxWidth = '100px';
+        preview.style.marginTop = '10px';
+        preview.style.borderRadius = '8px';
+        preview.style.border = '2px solid var(--primary)';
+        
+        const container = document.getElementById('preview-container');
+        if (container) {
+            container.appendChild(preview);
+        }
+        
+        showToast("✅ Image cropped successfully!", "success");
+        
+    } catch (error) {
+        console.error("❌ Crop error:", error);
+        const statusEl = document.getElementById('image-status');
+        if (statusEl) {
+            statusEl.textContent = "❌ Failed to crop image: " + error.message;
+            statusEl.style.color = "var(--danger)";
+        }
+        showToast("❌ Failed to crop image", "error");
+    }
+}
+
+/* ======================== UTILITY FUNCTIONS ======================== */
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+}
+
+function formatDateForDisplay(dateStr) {
+    if (!dateStr) return '—';
+    try {
+        if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) return dateStr;
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+            const [year, month, day] = dateStr.split('-');
+            return `${day}/${month}/${year}`;
+        }
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return '—';
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${day}/${month}/${year}`;
+    } catch { return '—'; }
+}
+
+function formatDateForSheet(dateStr) {
+    if (!dateStr) return '';
+    try {
+        if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) return dateStr;
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+            const [year, month, day] = dateStr.split('-');
+            return `${day}/${month}/${year}`;
+        }
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return '';
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${day}/${month}/${year}`;
+    } catch { return ''; }
+}
+
+function formatDateForInput(dateStr) {
+    if (!dateStr) return '';
+    try {
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+        if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
+            const [day, month, year] = dateStr.split('/');
+            return `${year}-${month}-${day}`;
+        }
+        return '';
+    } catch { return ''; }
+}
+
+function getTodayDate() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+function showToast(msg, type = 'info') {
+    const box = dom.alertBox;
+    box.textContent = msg;
+    box.className = `alert-popup ${type}`;
+    box.style.display = 'block';
+    clearTimeout(box._timeout);
+    box._timeout = setTimeout(() => { box.style.display = 'none'; }, 4500);
+}
+
+function showModal(msg, title = "Message", isConfirm = false, onConfirm = null) {
+    dom.modalTitle.innerText = title;
+    dom.modalMsg.innerHTML = msg;
+    const confirmBtn = document.getElementById('confirmModalBtn');
+    confirmBtn.onclick = () => {
+        dom.globalModal.classList.remove('active');
+        if (isConfirm && onConfirm) onConfirm();
+    };
+    dom.globalModal.classList.add('active');
+}
+
+function showSpinner(element, show) {
+    if (!element) return;
+    if (show) {
+        element.disabled = true;
+        const originalText = element.innerHTML;
+        element.setAttribute('data-original-text', originalText);
+        element.innerHTML = '<span class="spinner"></span> Loading...';
+    } else {
+        element.disabled = false;
+        const original = element.getAttribute('data-original-text');
+        if (original) element.innerHTML = original;
+    }
+}
+
+/* ======================== DATA MANAGEMENT ======================== */
+function getCache() {
+    try {
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (cached) {
+            const { data, timestamp } = JSON.parse(cached);
+            if (Date.now() - timestamp < CACHE_TTL) return data;
+        }
+    } catch { }
+    return null;
+}
+
+function setCache(data) {
+    try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify({
+            data: data,
+            timestamp: Date.now()
+        }));
+    } catch { }
+}
+
+async function loadTeachers() {
+    const cached = getCache();
+    if (cached) {
+        allTeachers = cached;
+        renderTable();
+        return allTeachers;
+    }
+
+    try {
+        const response = await fetch(`${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${encodeURIComponent(SHEET_NAME)}&_=${Date.now()}`);
+        const result = await response.json();
+        if (result.status === "success" && Array.isArray(result.data)) {
+            allTeachers = result.data.map((item, idx) => ({ ...item, _rowIndex: idx + 2 }));
+            setCache(allTeachers);
+            renderTable();
+            return allTeachers;
+        }
+        throw new Error(result.message || "Failed to load data");
+    } catch (err) {
+        showToast("❌ Failed to load records: " + err.message, "error");
+        return [];
+    }
+}
+
+async function refreshData() {
+    showSpinner(dom.refreshBtn, true);
+    localStorage.removeItem(CACHE_KEY);
+    showToast("🔄 Syncing with Google Sheets...", "info");
+    
+    try {
+        await loadTeachers();
+        showToast("✅ Data refreshed successfully!", "success");
+    } catch (err) {
+        showToast("❌ Refresh failed: " + err.message, "error");
+    } finally {
+        showSpinner(dom.refreshBtn, false);
+    }
+}
+
+/* ======================== TABLE RENDERING ======================== */
+function renderTable(filter = "") {
+    if (!dom.tableBody) return;
+    
+    const searchLower = filter.toLowerCase();
+    let filtered = allTeachers.filter(s => {
+        const name = String(s['Teacher Name'] || '').toLowerCase();
+        const phone = String(s['Mobile No'] || '').toLowerCase();
+        return name.includes(searchLower) || phone.includes(searchLower);
+    });
+
+    if (!filtered.length) {
+        dom.tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 40px;">✨ No teacher records found</td></tr>';
+        return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    filtered.forEach((s, idx) => {
+        const row = document.createElement('tr');
+        const status = s['Status'] || 'Active';
+        const statusClass = status.toLowerCase() === 'active' ? 'active' : 'deactive';
+        row.innerHTML = `
+            <td><strong>${escapeHtml(s['Sr. No'] || idx + 1)}</strong></td>
+            <td>${escapeHtml(s['Teacher Name'] || '—')}</td>
+            <td>${escapeHtml(s['Mobile No'] || '—')}</td>
+            <td><span class="status-badge ${statusClass}">${escapeHtml(status)}</span></td>
+            <td><button class="view-action-btn" data-srno="${escapeHtml(s['Sr. No'] || '')}">👁️ View</button></td>
+        `;
+        fragment.appendChild(row);
+    });
+
+    dom.tableBody.innerHTML = '';
+    dom.tableBody.appendChild(fragment);
+
+    dom.tableBody.querySelectorAll('.view-action-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const srNoVal = btn.getAttribute('data-srno');
+            const found = allTeachers.find(s => String(s['Sr. No']) === String(srNoVal));
+            if (found) {
+                currentViewTeacher = found;
+                showDetailView(found);
+            }
+        });
+    });
+}
+
+/* ======================== DETAIL VIEW ======================== */
+function showDetailView(teacher) {
+    selectedSrNo = teacher['Sr. No'];
+    selectedRowIndex = teacher._rowIndex || 2;
+
+    dom.profileName.textContent = teacher['Teacher Name'] || 'Teacher';
+    dom.profileSrNo.textContent = teacher['Sr. No'] || 'N/A';
+    
+    const status = teacher['Status'] || 'Active';
+    dom.profileStatus.innerHTML = `<span class="status-badge ${status.toLowerCase() === 'active' ? 'active' : 'deactive'}">${escapeHtml(status)}</span>`;
+
+    const imgUrl = getThumbnailUrl(teacher['Image'] || '');
+    dom.profileImage.src = imgUrl;
+    dom.profileImage.alt = teacher['Teacher Name'] || 'Teacher';
+
+    const fields = [
+        { label: "Sr. No", value: teacher['Sr. No'] },
+        { label: "Teacher Name", value: teacher['Teacher Name'] },
+        { label: "Date of Joining", value: formatDateForDisplay(teacher['Date of Joining']) },
+        { label: "Mobile No", value: teacher['Mobile No'] },
+        { label: "Alter Mobile No", value: teacher['Alter Mobile No'] },
+        { label: "Email Id", value: teacher['Email Id'] },
+        { label: "Experience 1", value: teacher['Experience 1'] },
+        { label: "Experience 2", value: teacher['Experience 2'] },
+        { label: "Specility in Subject 1", value: teacher['Specility in Subject 1'] },
+        { label: "Specility in Subject 2", value: teacher['Specility in Subject 2'] },
+        { label: "Status", value: teacher['Status'] },
+        { label: "Deactive Date", value: formatDateForDisplay(teacher['Deactive Date']) },
+        { label: "Address", value: teacher['Address'], full: true },
+        { label: "Note", value: teacher['Note'], full: true }
+    ];
+
+    const grid = dom.detailsContainer;
+    grid.innerHTML = '';
+    fields.forEach(f => {
+        const card = document.createElement('div');
+        card.className = `detail-card${f.full ? ' fullwidth' : ''}`;
+        card.innerHTML = `
+            <div class="detail-label">${f.label}</div>
+            <div class="detail-value">${escapeHtml(String(f.value || '—'))}</div>
+        `;
+        grid.appendChild(card);
+    });
+
+    dom.page1.classList.remove('active-page');
+    dom.page2.classList.add('active-page');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ======================== NAVIGATION ======================== */
+function goToListView() {
+    dom.page2.classList.remove('active-page');
+    dom.page1.classList.add('active-page');
+    loadTeachers();
+}
+
+/* ======================== CRUD OPERATIONS ======================== */
+function findRowIndexBySrNo(srNo) {
+    const idx = allTeachers.findIndex(s => String(s['Sr. No']) === String(srNo));
+    return idx !== -1 ? allTeachers[idx]._rowIndex : null;
+}
+
+async function deleteTeacher() {
+    if (!currentViewTeacher) return;
+    const srNo = currentViewTeacher['Sr. No'];
+    const rowIdx = findRowIndexBySrNo(srNo);
+    if (!rowIdx) {
+        showModal("Row not found", "Error");
+        return;
+    }
+
+    showModal(
+        `⚠️ Are you sure you want to delete teacher <strong>${dom.profileName.textContent}</strong> (Sr. No: ${srNo})?<br><br>This action cannot be undone.`,
+        "Confirm Delete",
+        true,
+        async () => {
+            showSpinner(dom.deleteBtn, true);
+            try {
+                const params = new URLSearchParams();
+                params.append("action", "delete");
+                params.append("spreadsheetId", SPREADSHEET_ID);
+                params.append("sheetName", SHEET_NAME);
+                params.append("rowIndex", rowIdx);
+
+                const response = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: params.toString()
+                });
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    showToast("✅ Teacher deleted successfully!", "success");
+                    localStorage.removeItem(CACHE_KEY);
+                    goToListView();
+                } else {
+                    showModal("❌ Delete failed: " + result.message, "Error");
+                }
+            } catch (err) {
+                showModal("❌ Error: " + err.message, "Error");
+            } finally {
+                showSpinner(dom.deleteBtn, false);
+            }
+        }
+    );
+}
+
+/* ======================== FORM BUILDER ======================== */
+function buildFormHtml(teacher = null, isEdit = false) {
+    const def = {
+        "Teacher Name": "",
+        "Date of Joining": "",
+        "Mobile No": "",
+        "Alter Mobile No": "",
+        "Email Id": "",
+        "Experience 1": "",
+        "Experience 2": "",
+        "Specility in Subject 1": "",
+        "Specility in Subject 2": "",
+        "Status": "Active",
+        "Deactive Date": "",
+        "Address": "",
+        "Note": "",
+        "Image": ""
+    };
+
+    if (teacher) {
+        Object.keys(def).forEach(k => {
+            if (teacher[k] !== undefined) def[k] = teacher[k];
+        });
+    }
+
+    const dateValue = formatDateForInput(def["Date of Joining"]);
+    const deactiveDateValue = formatDateForInput(def["Deactive Date"]);
+    const currentImage = def["Image"] || '';
+
+    let imageSectionHtml = `
+        <div class="image-section" id="imageUploadSection">
+            <i class="fas fa-camera upload-icon"></i>
+            <label class="file-input-wrapper">
+                📷 Click to Upload Teacher Image
+                <input type="file" id="imageInput" accept="image/*">
+            </label>
+            <div id="preview-container">
+                <img id="image-to-crop">
+                <div class="crop-controls">
+                    <button type="button" class="btn-tool" onclick="rotateLeft()">↺ Rotate Left</button>
+                    <button type="button" class="btn-tool" onclick="rotateRight()">↻ Rotate Right</button>
+                    <button type="button" class="btn-tool" onclick="applyCrop()">✓ Apply Crop</button>
+                </div>
+            </div>
+            <div id="image-status"></div>
+        </div>
+    `;
+
+    if (isEdit && currentImage) {
+        imageSectionHtml = `
+            <div class="current-image-container">
+                <img src="${getThumbnailUrl(currentImage)}" alt="Current Teacher Image">
+                <div class="info">
+                    <strong>Current Image</strong><br>
+                    <span style="font-size: 0.75rem; color: var(--text-light);">Upload a new image to replace it</span>
+                </div>
+            </div>
+            ${imageSectionHtml}
+            <input type="hidden" id="fExistingImage" value="${escapeHtml(currentImage)}">
+        `;
+    }
+
+    return `
+        <form id="teacherForm">
+            <div class="form-grid">
+                <div class="field"><label>Teacher Name *</label><input type="text" id="fTeacherName" value="${escapeHtml(def['Teacher Name'])}" required></div>
+                <div class="field"><label>Date of Joining *</label><input type="date" id="fDateOfJoining" value="${dateValue}" max="${getTodayDate()}" required></div>
+                
+                <div class="field"><label>Mobile No *</label><input type="tel" id="fMobileNo" pattern="[6-9][0-9]{9}" maxlength="10" value="${escapeHtml(def['Mobile No'])}" required></div>
+                <div class="field"><label>Alter Mobile No</label><input type="tel" id="fAlterMobileNo" pattern="[6-9][0-9]{9}" maxlength="10" value="${escapeHtml(def['Alter Mobile No'])}"></div>
+                <div class="field"><label>Email Id</label><input type="email" id="fEmailId" value="${escapeHtml(def['Email Id'])}"></div>
+                
+                <div class="field"><label>Experience 1</label><input type="text" id="fExperience1" value="${escapeHtml(def['Experience 1'])}"></div>
+                <div class="field"><label>Experience 2</label><input type="text" id="fExperience2" value="${escapeHtml(def['Experience 2'])}"></div>
+                
+                <div class="field"><label>Specility in Subject 1 *</label><input type="text" id="fSpecilitySubject1" value="${escapeHtml(def['Specility in Subject 1'])}" required></div>
+                <div class="field"><label>Specility in Subject 2</label><input type="text" id="fSpecilitySubject2" value="${escapeHtml(def['Specility in Subject 2'])}"></div>
+                
+                <div class="field"><label>Status *</label>
+                    <select id="fStatus" required>
+                        <option value="Active" ${def['Status'] === 'Active' ? 'selected' : ''}>Active</option>
+                        <option value="Deactive" ${def['Status'] === 'Deactive' ? 'selected' : ''}>Deactive</option>
+                    </select>
+                </div>
+                <div class="field"><label>Deactive Date</label><input type="date" id="fDeactiveDate" value="${deactiveDateValue}" max="${getTodayDate()}"></div>
+                
+                <div class="field fullwidth"><label>Address *</label><textarea id="fAddress" rows="3" required>${escapeHtml(def['Address'])}</textarea></div>
+                <div class="field fullwidth"><label>Note</label><textarea id="fNote" rows="2">${escapeHtml(def['Note'])}</textarea></div>
+            </div>
+
+            ${imageSectionHtml}
+
+            <div id="formStatus" class="status-message"></div>
+
+            <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 1.5rem;">
+                <button type="button" id="cancelFormBtn" class="btn btn-outline">Cancel</button>
+                <button type="submit" id="saveFormBtn" class="btn btn-primary">${isEdit ? "💾 Update Teacher" : "💾 Save Teacher"}</button>
+            </div>
+        </form>
+    `;
+}
+
+/* ======================== FORM EVENTS ======================== */
+function attachFormEvents(isEdit, rowIdx) {
+    const form = document.getElementById('teacherForm');
+    if (!form) {
+        console.error("❌ Form not found!");
+        return;
+    }
+
+    console.log("📝 Attaching form events - isEdit:", isEdit);
+
+    // Status toggle for deactive date
+    const statusSelect = document.getElementById('fStatus');
+    const deactiveDateField = document.getElementById('fDeactiveDate');
+    
+    if (statusSelect && deactiveDateField) {
+        function toggleDeactiveDate() {
+            if (statusSelect.value === 'Deactive') {
+                deactiveDateField.required = true;
+                deactiveDateField.style.borderColor = 'var(--danger)';
+            } else {
+                deactiveDateField.required = false;
+                deactiveDateField.value = '';
+                deactiveDateField.style.borderColor = 'var(--border-color)';
+            }
+        }
+        statusSelect.addEventListener('change', toggleDeactiveDate);
+        toggleDeactiveDate();
+    }
+
+    // Image upload handler
+    const imageInput = document.getElementById('imageInput');
+    const imageToCrop = document.getElementById('image-to-crop');
+    const previewContainer = document.getElementById('preview-container');
+    const imageStatus = document.getElementById('image-status');
+
+    console.log("📸 Image elements found:", {
+        imageInput: !!imageInput,
+        imageToCrop: !!imageToCrop,
+        previewContainer: !!previewContainer,
+        imageStatus: !!imageStatus
+    });
+
+    if (imageInput) {
+        // Remove any existing listeners by cloning
+        const newImageInput = imageInput.cloneNode(true);
+        imageInput.parentNode.replaceChild(newImageInput, imageInput);
+        
+        newImageInput.addEventListener('change', function(e) {
+            console.log("📸 Image file selected");
+            const file = e.target.files[0];
+            if (file) {
+                console.log("File name:", file.name);
+                console.log("File size:", file.size, "bytes");
+                console.log("File type:", file.type);
+                
+                if (file.size > 5 * 1024 * 1024) {
+                    const statusEl = document.getElementById('image-status');
+                    if (statusEl) {
+                        statusEl.textContent = "❌ Image too large! Max 5MB.";
+                        statusEl.style.color = "var(--danger)";
+                    }
+                    showToast("❌ Image too large! Max 5MB.", "error");
+                    return;
+                }
+                if (!file.type.startsWith('image/')) {
+                    const statusEl = document.getElementById('image-status');
+                    if (statusEl) {
+                        statusEl.textContent = "❌ Please select a valid image.";
+                        statusEl.style.color = "var(--danger)";
+                    }
+                    showToast("❌ Please select a valid image.", "error");
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    console.log("📸 Image loaded into cropper");
+                    const imageToCropEl = document.getElementById('image-to-crop');
+                    if (imageToCropEl) {
+                        imageToCropEl.src = event.target.result;
+                    }
+                    const previewContainerEl = document.getElementById('preview-container');
+                    if (previewContainerEl) {
+                        previewContainerEl.style.display = 'block';
+                    }
+                    
+                    // Destroy existing cropper
+                    if (cropper) {
+                        cropper.destroy();
+                        cropper = null;
+                    }
+                    
+                    // Initialize new cropper
+                    if (imageToCropEl) {
+                        cropper = new Cropper(imageToCropEl, {
+                            aspectRatio: 1,
+                            viewMode: 1,
+                            autoCropArea: 1,
+                            responsive: true
+                        });
+                        console.log("✅ Cropper initialized");
+                    }
+                    
+                    const statusEl = document.getElementById('image-status');
+                    if (statusEl) {
+                        statusEl.textContent = "✅ Image loaded. Click 'Apply Crop' to crop.";
+                        statusEl.style.color = "var(--success)";
+                    }
+                    
+                    // Reset cropped image data
+                    croppedImageData = null;
+                    console.log("🔄 Reset croppedImageData");
+                    
+                    // Remove existing cropped preview
+                    const oldPreview = document.getElementById('cropped-preview');
+                    if (oldPreview) oldPreview.remove();
+                    
+                    showToast("✅ Image loaded successfully!", "success");
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    // Cancel button
+    const cancelBtn = document.getElementById('cancelFormBtn');
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => {
+            console.log("❌ Form cancelled");
+            dom.formModal.classList.remove('active');
+            if (cropper) { 
+                cropper.destroy(); 
+                cropper = null; 
+            }
+            croppedImageData = null;
+        });
+    }
+
+    // Form submit
+    form.onsubmit = (e) => {
+        console.log("📝 Form submitted - isEdit:", isEdit);
+        console.log("CroppedImageData:", croppedImageData ? "✅ Has data" : "❌ No data");
+        if (croppedImageData) {
+            console.log("Base64 length:", croppedImageData.base64Data.length);
+            console.log("File name:", croppedImageData.fileName);
+        }
+        handleFormSubmit(e, isEdit, rowIdx);
+    };
+}
+
+/* ======================== FORM SUBMIT ======================== */
+async function handleFormSubmit(e, isEdit, rowIdx) {
+    e.preventDefault();
+    if (saveInProgress) {
+        console.log("⏳ Save already in progress");
+        return;
+    }
+    saveInProgress = true;
+
+    console.log("📤 Starting form submission - isEdit:", isEdit);
+    console.log("📸 croppedImageData at submit:", croppedImageData ? "✅ Present" : "❌ Missing");
+    if (croppedImageData) {
+        console.log("   - fileName:", croppedImageData.fileName);
+        console.log("   - base64 length:", croppedImageData.base64Data.length);
+        console.log("   - mimeType:", croppedImageData.mimeType);
+    }
+
+    const saveBtn = document.getElementById('saveFormBtn');
+    showSpinner(saveBtn, true);
+    document.getElementById('formStatus').style.display = 'none';
+
+    try {
+        // Collect form data
+        const formData = {
+            "Teacher Name": document.getElementById('fTeacherName')?.value || "",
+            "Date of Joining": document.getElementById('fDateOfJoining')?.value || "",
+            "Mobile No": document.getElementById('fMobileNo')?.value || "",
+            "Alter Mobile No": document.getElementById('fAlterMobileNo')?.value || "",
+            "Email Id": document.getElementById('fEmailId')?.value || "",
+            "Experience 1": document.getElementById('fExperience1')?.value || "",
+            "Experience 2": document.getElementById('fExperience2')?.value || "",
+            "Specility in Subject 1": document.getElementById('fSpecilitySubject1')?.value || "",
+            "Specility in Subject 2": document.getElementById('fSpecilitySubject2')?.value || "",
+            "Status": document.getElementById('fStatus')?.value || "Active",
+            "Deactive Date": document.getElementById('fDeactiveDate')?.value || "",
+            "Address": document.getElementById('fAddress')?.value || "",
+            "Note": document.getElementById('fNote')?.value || ""
+        };
+
+        console.log("📋 Form data:", formData);
+
+        // Validate required fields
+        const required = ['Teacher Name', 'Date of Joining', 'Mobile No', 'Specility in Subject 1', 'Address'];
+        for (const field of required) {
+            if (!formData[field] || formData[field].trim() === '') {
+                showToast(`❌ ${field} is required`, "error");
+                saveInProgress = false;
+                showSpinner(saveBtn, false);
+                return;
+            }
+        }
+
+        // Validate mobile number
+        const phoneRegex = /^[6-9][0-9]{9}$/;
+        if (!phoneRegex.test(formData['Mobile No'])) {
+            showToast("❌ Mobile number must be 10 digits starting with 6-9", "error");
+            saveInProgress = false;
+            showSpinner(saveBtn, false);
+            return;
+        }
+
+        const params = new URLSearchParams();
+        params.append("action", isEdit ? "update" : "insert");
+        params.append("spreadsheetId", SPREADSHEET_ID);
+        params.append("sheetName", SHEET_NAME);
+        if (isEdit && rowIdx) params.append("rowIndex", rowIdx);
+        if (DRIVE_FOLDER_ID) params.append("driveFolderId", DRIVE_FOLDER_ID);
+
+        // Add Sr. No for new records
+        if (!isEdit) {
+            const nextSrNo = allTeachers.length + 1;
+            params.append("Sr. No", nextSrNo);
+            console.log("📊 Next Sr. No:", nextSrNo);
+        }
+
+        // Add all form fields
+        for (const [key, value] of Object.entries(formData)) {
+            if (key === "Date of Joining" || key === "Deactive Date") {
+                const formattedDate = formatDateForSheet(value);
+                params.append(key, formattedDate);
+            } else {
+                params.append(key, value);
+            }
+        }
+
+        // Handle image upload
+        if (croppedImageData && croppedImageData.base64Data) {
+            // NEW IMAGE UPLOADED - Use the cropped image
+            params.append("fileCount", "1");
+            params.append("fileData1", croppedImageData.base64Data);
+            params.append("fileName1", croppedImageData.fileName);
+            params.append("fileType1", croppedImageData.mimeType);
+            params.append("fileColumn1", IMAGE_COLUMN_NAME);
+            console.log("✅ New image uploaded for column:", IMAGE_COLUMN_NAME);
+            console.log("   - File name:", croppedImageData.fileName);
+            console.log("   - Image size:", Math.round(croppedImageData.base64Data.length * 0.75 / 1024), "KB");
+        } else if (isEdit) {
+            // EDIT MODE - No new image uploaded, keep existing
+            const existingImage = document.getElementById('fExistingImage')?.value || '';
+            if (existingImage) {
+                params.append("Image", existingImage);
+                console.log("📸 Keeping existing image:", existingImage);
+            } else {
+                console.log("⚠️ No existing image found");
+            }
+        } else {
+            // ADD MODE - No image uploaded
+            console.log("⚠️ No image uploaded for new record");
+            // Add a placeholder if needed
+            // params.append("Image", "https://via.placeholder.com/150?text=No+Photo");
+        }
+
+        // Debug log - show all params (hide base64)
+        console.log("📤 Submitting with params:");
+        for (let [key, value] of params.entries()) {
+            if (key.includes('fileData')) {
+                console.log(`   ${key}: [BASE64 DATA - ${value.length} chars]`);
+            } else {
+                console.log(`   ${key}: ${value}`);
+            }
+        }
+
+        const response = await fetch(SCRIPT_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: params.toString()
+        });
+
+        const result = await response.json();
+        console.log("📥 Server response:", result);
+
+        if (result.status === "success") {
+            showToast(`✅ Teacher ${isEdit ? 'updated' : 'saved'} successfully!`, "success");
+            localStorage.removeItem(CACHE_KEY);
+            dom.formModal.classList.remove('active');
+            if (cropper) { 
+                cropper.destroy(); 
+                cropper = null; 
+            }
+            // Reset croppedImageData after successful submission
+            croppedImageData = null;
+            await loadTeachers();
+            goToListView();
+        } else {
+            showToast("❌ Error: " + result.message, "error");
+        }
+    } catch (err) {
+        console.error("❌ Submission error:", err);
+        showToast("❌ Error: " + err.message, "error");
+    } finally {
+        saveInProgress = false;
+        showSpinner(saveBtn, false);
+    }
+}
+
+/* ======================== MODAL OPEN FUNCTIONS ======================== */
+async function openAddModal() {
+    console.log("➕ Opening Add Modal");
+    dom.formModalBody.innerHTML = '<div style="text-align:center;padding:40px;"><div class="spinner"></div><p style="margin-top:12px;">Loading form...</p></div>';
+    dom.formModal.classList.add('active');
+    dom.formModalTitle.textContent = "➕ Add New Teacher";
+    
+    // Reset cropper data for new form
+    croppedImageData = null;
+    if (cropper) {
+        cropper.destroy();
+        cropper = null;
+    }
+    
+    dom.formModalBody.innerHTML = buildFormHtml(null, false);
+    console.log("📝 Form HTML generated for Add mode");
+    
+    // Delay to ensure DOM is ready
+    setTimeout(() => {
+        console.log("⏰ Attaching form events for Add mode");
+        attachFormEvents(false, null);
+    }, 100);
+}
+
+async function openEditModal() {
+    if (!currentViewTeacher) {
+        console.error("❌ No teacher selected for edit");
+        return;
+    }
+    const rowIdx = findRowIndexBySrNo(currentViewTeacher['Sr. No']);
+    if (!rowIdx) { 
+        showModal("Row error", "Error"); 
+        return; 
+    }
+
+    console.log("✏️ Opening Edit Modal for:", currentViewTeacher['Teacher Name']);
+    dom.formModalBody.innerHTML = '<div style="text-align:center;padding:40px;"><div class="spinner"></div><p style="margin-top:12px;">Loading edit form...</p></div>';
+    dom.formModal.classList.add('active');
+    dom.formModalTitle.textContent = "✏️ Edit Teacher";
+    
+    // Reset cropper data for edit form
+    croppedImageData = null;
+    if (cropper) {
+        cropper.destroy();
+        cropper = null;
+    }
+    
+    dom.formModalBody.innerHTML = buildFormHtml(currentViewTeacher, true);
+    console.log("📝 Form HTML generated for Edit mode");
+    
+    // Delay to ensure DOM is ready
+    setTimeout(() => {
+        console.log("⏰ Attaching form events for Edit mode");
+        attachFormEvents(true, rowIdx);
+    }, 100);
+}
+
+/* ======================== INITIALIZATION ======================== */
+function init() {
+	      // 1. Check admin authentication FIRST
+           const isAuthorized = checkAdminAuth();
+           if (!isAuthorized) return; // Redirect happens inside checkAdminAuth
+		   
+    cacheDomElements();
+
+    dom.tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;"><div class="spinner"></div> Loading teacher records...</td></tr>';
+    loadTeachers();
+
+    dom.searchInput?.addEventListener('input', (e) => {
+        clearTimeout(searchDebounceTimer);
+        searchDebounceTimer = setTimeout(() => renderTable(e.target.value), 300);
+    });
+
+    dom.refreshBtn?.addEventListener('click', refreshData);
+    dom.addNewBtn?.addEventListener('click', openAddModal);
+    dom.backBtn?.addEventListener('click', goToListView);
+    dom.editBtn?.addEventListener('click', openEditModal);
+    dom.deleteBtn?.addEventListener('click', deleteTeacher);
+
+    document.getElementById('closeGlobalModal')?.addEventListener('click', () => dom.globalModal.classList.remove('active'));
+    document.getElementById('closeFormModalBtn')?.addEventListener('click', () => {
+        dom.formModal.classList.remove('active');
+        if (cropper) { 
+            cropper.destroy(); 
+            cropper = null; 
+        }
+        croppedImageData = null;
+    });
+
+    window.onclick = (e) => {
+        if (e.target.classList?.contains('modal-overlay')) {
+            e.target.classList.remove('active');
+            if (cropper) { 
+                cropper.destroy(); 
+                cropper = null; 
+            }
+            croppedImageData = null;
+        }
+    };
+
+    // Background refresh
+    setTimeout(() => {
+        localStorage.removeItem(CACHE_KEY);
+        loadTeachers();
+    }, 5000);
+}
+
+// Expose functions globally
+window.navigateToPage = function(pageId) {
+    // Simple navigation for the back button
+    if (pageId === 1) {
+        goToListView();
+    }
+};
+
+// Start the app
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

@@ -1,0 +1,2646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>💰 Fees Management System | Smart Dashboard</title>
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ======================== CSS VARIABLES FOR THEMING ======================== */
+        :root {
+            /* Light Mode Colors */
+            --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-secondary: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-light: #94a3b8;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            
+            /* Brand Colors */
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --primary-light: #60a5fa;
+            --secondary: #f59e0b;
+            --secondary-dark: #d97706;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #fbbf24;
+            --info: #06b6d4;
+            
+            /* Gradients */
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-warning: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            
+            /* Table Colors */
+            --table-header-bg: #f8fafc;
+            --table-row-hover: #f1f5f9;
+            --table-border: #e2e8f0;
+            
+            /* Animation */
+            --transition-fast: 150ms ease;
+            --transition-normal: 300ms ease;
+            --transition-slow: 500ms ease;
+        }
+
+        /* Dark Mode Variables */
+        [data-theme="dark"] {
+            --bg-primary: linear-gradient(135deg, #1e1e2e 0%, #2d1b4e 100%);
+            --bg-secondary: #1e1e2e;
+            --card-bg: rgba(30, 30, 46, 0.98);
+            --text-primary: #e2e8f0;
+			--text-primary2: black;
+            --text-secondary: #94a3b8;
+            --text-light: #64748b;
+            --border-color: #334155;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4);
+            
+            --table-header-bg: #1e293b;
+            --table-row-hover: #334155;
+            --table-border: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            background: var(--bg-primary);
+            min-height: 100vh;
+            padding: 20px 16px;
+            color: var(--text-primary);
+            transition: background var(--transition-normal), color var(--transition-normal);
+            position: relative;
+        }
+
+        /* App Container */
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Page animations */
+        .page {
+            display: none;
+            animation: fadeSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .page.active-page {
+            display: block;
+        }
+        
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(20px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Cards */
+        .soft-card {
+            background: var(--card-bg);
+            border-radius: 2rem;
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 24px;
+        }
+
+        .soft-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        /* Headers */
+        .card-header {
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: nowrap;
+            gap: 14px;
+        }
+
+        [data-theme="dark"] .card-header {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+        }
+
+        .card-header h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.02em;
+			flex: 1; /* Added */
+            min-width: 0; /* Added */
+            white-space: nowrap; /* Added */
+            overflow: hidden; /* Added */
+            text-overflow: ellipsis; /* Added */
+        }
+
+        .card-header .subtitle {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            margin-top: 2px;
+        }
+
+        /* Search Section */
+        .search-section {
+            padding: 1.5rem 2rem;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* Buttons */
+        .btn {
+            border: none;
+            padding: 10px 24px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            filter: brightness(1.05);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-sm {
+            padding: 6px 16px;
+            font-size: 0.75rem;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Search Input */
+        .search-wrapper {
+            width: 100%;
+        }
+
+        .search-wrapper input {
+            width: 100%;
+            padding: 14px 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 60px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all var(--transition-fast);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .search-wrapper input::placeholder {
+            color: var(--text-light);
+        }
+
+        .search-wrapper input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            transform: translateY(-1px);
+        }
+
+        /* ======================== MOBILE BUTTONS ======================== */
+        .mobile-buttons {
+            display: none;
+            gap: 12px;
+            margin-top: 12px;
+            width: 100%;
+        }
+
+        .mobile-buttons .btn {
+            width: 100%;
+            justify-content: center;
+            padding: 12px 16px;
+            font-size: 0.85rem;
+            border-radius: 60px;
+        }
+
+        .mobile-buttons .btn .spinner {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        .mobile-buttons .btn-outline .spinner {
+            border: 3px solid var(--border-color);
+            border-top: 3px solid var(--primary);
+        }
+
+        .mobile-buttons .btn.loading {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .mobile-buttons .btn.loading .spinner {
+            display: inline-block;
+        }
+
+        .mobile-buttons .btn.loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Table Styles */
+        .table-wrapper {
+            overflow-x: auto;
+            overflow-y: visible;
+            scrollbar-width: thin;
+            padding: 0;
+        }
+
+        .table-wrapper::-webkit-scrollbar {
+            height: 6px;
+            background: transparent;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.875rem;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 16px 20px;
+            background: var(--table-header-bg);
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            border-bottom: 3px solid var(--primary);
+            position: relative;
+        }
+
+        .data-table th:first-child {
+            border-top-left-radius: 12px;
+        }
+
+        .data-table th:last-child {
+            border-top-right-radius: 12px;
+        }
+
+        .data-table td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--table-border);
+            color: var(--text-primary);
+            transition: background var(--transition-fast);
+            font-size: 0.9rem;
+        }
+
+        .data-table tr:hover td {
+            background: var(--table-row-hover);
+        }
+
+        .view-action-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .view-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+            filter: brightness(1.05);
+        }
+
+        /* Total Badge */
+        .total-badge {
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            color: white;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 40px;
+            display: inline-block;
+            font-size: 0.8rem;
+            box-shadow: var(--shadow-sm);
+            min-width: 85px;
+            text-align: center;
+        }
+
+        /* Details Grid */
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            padding: 2rem;
+        }
+
+        @media (max-width: 640px) {
+            .details-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+                padding: 1rem;
+            }
+        }
+
+        .detail-card {
+            background: linear-gradient(135deg, var(--card-bg), rgba(255,255,255,0.05));
+            border-radius: 1.2rem;
+            padding: 1rem 1.2rem;
+            transition: all var(--transition-fast);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+
+        .detail-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+
+        .detail-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--secondary);
+            font-weight: 700;
+        }
+
+        .detail-value {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-top: 6px;
+            color: var(--text-primary);
+            word-break: break-word;
+        }
+
+        /* Action Row */
+        .action-row {
+            padding: 1rem 2rem 2rem;
+            display: flex;
+            gap: 14px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        /* Profile Section */
+        .profile-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            padding: 2rem 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .profile-info h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .profile-info p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            visibility: hidden;
+            opacity: 0;
+            transition: all var(--transition-normal);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .modal-box {
+            background: var(--card-bg);
+            width: 92%;
+            max-width: 900px;
+            max-height: 85vh;
+            border-radius: 2rem;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+            animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes modalPop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            color: white;
+        }
+
+        .modal-header h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: white;
+            transition: transform var(--transition-fast);
+            line-height: 1;
+        }
+
+        .close-modal:hover {
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+            max-height: calc(85vh - 70px);
+        }
+
+        /* Form Styles */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .field label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--secondary);
+        }
+
+        .field input, 
+        .field select, 
+        .field textarea {
+            padding: 12px 16px;
+            border-radius: 16px;
+            border: 2px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            transition: all var(--transition-fast);
+            font-family: inherit;
+            width: 100%;
+        }
+
+        .field input:focus, 
+        .field select:focus, 
+        .field textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .field input:disabled {
+            background: var(--text-light);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .fullwidth {
+            grid-column: 1 / -1;
+        }
+
+        /* Financial KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            padding: 1.5rem 2rem;
+            background: var(--table-header-bg);
+            border-radius: 1.2rem;
+            margin: 1rem 2rem;
+        }
+
+        .kpi-card {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1rem 1.2rem;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .kpi-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+        }
+
+        .kpi-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-top: 4px;
+            color: var(--text-primary);
+        }
+
+        .kpi-value.success { color: var(--success); }
+        .kpi-value.danger { color: var(--danger); }
+        .kpi-value.primary { color: var(--primary); }
+
+        /* Spinner */
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid var(--border-color);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        /* Status Message */
+        .status-message {
+            padding: 12px 20px;
+            border-radius: 16px;
+            margin-top: 20px;
+            display: none;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .status-error {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Toast / Alert Popup */
+        .alert-popup {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            background: var(--card-bg);
+            border-left: 5px solid var(--primary);
+            padding: 16px 24px;
+            box-shadow: var(--shadow-xl);
+            border-radius: 0 16px 16px 0;
+            font-weight: 600;
+            font-size: 0.95rem;
+            z-index: 1000;
+            display: none;
+            animation: slideIn 0.3s ease-out;
+            color: var(--text-primary);
+            max-width: 400px;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(120%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .alert-popup.success { border-left-color: var(--success); }
+        .alert-popup.error { border-left-color: var(--danger); }
+        .alert-popup.info { border-left-color: var(--info); }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body { padding: 12px; }
+            
+            .card-header {
+                padding: 1rem 1.2rem;
+                flex-direction: row;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .card-header h2 {
+                font-size: 1rem;
+                width: 100%;
+            }
+            
+            .card-header .subtitle {
+                font-size: 0.75rem;
+            }
+            
+            .desktop-buttons {
+                display: none !important;
+            }
+            
+            .mobile-buttons {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+                margin-top: 12px;
+                width: 100%;
+            }
+            
+            .search-section {
+                padding: 1rem 1.2rem;
+            }
+            
+            .data-table th,
+            .data-table td {
+                padding: 12px 12px;
+                font-size: 0.7rem;
+            }
+            
+            .btn {
+                padding: 8px 18px;
+                font-size: 0.8rem;
+            }
+            
+            .modal-box {
+                width: 95%;
+                border-radius: 1.5rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .kpi-grid {
+                grid-template-columns: 1fr 1fr;
+                padding: 1rem;
+                margin: 0.5rem 1rem;
+            }
+            
+            .profile-wrapper {
+                padding: 1rem;
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .details-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-buttons {
+                display: none !important;
+            }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--table-header-bg);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+
+        .table-wrapper::-webkit-scrollbar,
+        .modal-box::-webkit-scrollbar {
+            width: 0px;
+            height: 0px;
+            background: transparent;
+            display: none;
+        }
+        
+        .table-wrapper,
+        .modal-box {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        /* Loading Skeleton */
+        .loading-skeleton {
+            background: linear-gradient(90deg, var(--border-color) 25%, var(--table-header-bg) 50%, var(--border-color) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Installment Cards in Detail View */
+        .installment-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 1.2rem;
+            padding: 1rem;
+            transition: all var(--transition-fast);
+        }
+
+        .installment-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+
+        .installment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .installment-header .ins-number {
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .installment-header .ins-method {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 12px;
+            border-radius: 20px;
+            background: var(--primary);
+            color: white;
+        }
+
+        .installment-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .installment-details .ins-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .installment-details .ins-item .ins-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            font-weight: 700;
+        }
+
+        .installment-details .ins-item .ins-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .installment-amount {
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+        }
+
+        .installment-amount .amount-value {
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        /* Student Selector in Add Modal */
+        .student-selector-btn {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            border: 2px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .student-selector-btn:hover {
+            border-color: var(--primary);
+            background: var(--table-header-bg);
+        }
+
+        .student-selector-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* ======================== ENHANCED STUDENT LIST ITEMS ======================== */
+.student-list-item {
+    width: 100%;
+    padding: 10px 16px;
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-align: left;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.student-list-item:hover:not(.disabled) {
+    background: var(--table-row-hover);
+}
+
+.student-list-item .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.7rem;
+    flex-shrink: 0;
+}
+
+.student-list-item .student-name {
+    flex: 1;
+    font-weight: 500;
+}
+
+.student-list-item .status-icon {
+    font-size: 0.9rem;
+    color: var(--success);
+    flex-shrink: 0;
+}
+
+.student-list-item.disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    background: var(--table-header-bg);
+}
+
+.student-list-item.disabled .student-name {
+    color: var(--text-secondary);
+}
+
+.student-list-item.disabled:hover {
+    background: var(--table-header-bg);
+}
+
+.student-list-item .existing-badge {
+    font-size: 0.6rem;
+    background: var(--warning);
+    color: var(--text-primary2);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+/* Student Selector Button - Disabled State */
+.student-selector-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    background: var(--table-header-bg);
+}
+
+.student-selector-btn:disabled:hover {
+    background: var(--table-header-bg);
+    border-color: var(--border-color);
+}
+
+.student-selector-btn .lock-icon {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+}
+
+        /* Success/Error indicators */
+        .status-indicator {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .status-indicator.success {
+            background: var(--success);
+            color: white;
+        }
+
+        .status-indicator.error {
+            background: var(--danger);
+            color: white;
+        }
+
+        .status-indicator.warning {
+            background: var(--warning);
+            color: var(--text-primary);
+        }
+		
+		/* ======================== INSTALLMENT DELETE MODAL ======================== */
+#installmentDeleteModal .modal-header {
+    background: linear-gradient(135deg, var(--danger), #dc2626);
+}
+
+#installmentDeleteModal .modal-body p {
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
+#installmentDeleteModal .modal-body strong {
+    color: var(--danger);
+}
+
+#installmentDeleteModal .btn-danger {
+    background: linear-gradient(135deg, var(--danger), #dc2626);
+    color: white;
+}
+
+#installmentDeleteModal .btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    filter: brightness(1.05);
+}
+
+#installmentDeleteModal .btn-danger:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+
+    <!-- ===================== PAGE 1 - LIST VIEW ===================== -->
+    <div id="page1" class="page active-page">
+        <div class="soft-card">
+            <div class="card-header">
+                <div>
+                    <h2>💰 Fees Management Portal - 12th Science</h2>
+                    <!-- <div class="subtitle">Record and manage dynamic student installment streams</div> -->
+                </div>
+                <!-- Desktop Buttons -->
+                <div class="desktop-buttons">
+                    <button id="refreshBtn" class="btn btn-outline">
+                        <span>⟳</span> Refresh
+                    </button>
+                    <button id="addNewBtn" class="btn btn-primary">
+                        <span>+</span> Add Fees
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Search Section with Mobile Buttons -->
+            <div class="search-section">
+                <div class="search-wrapper">
+                    <input type="text" id="searchInput" placeholder="🔍 Search by Student Name...">
+                </div>
+                
+                <!-- Mobile Buttons - Full Width Row -->
+                <div class="mobile-buttons">
+                    <button id="mobileRefreshBtn" class="btn btn-outline">
+                        <span class="spinner"></span>
+                        <span class="btn-text">⟳ Refresh</span>
+                    </button>
+                    <button id="mobileAddBtn" class="btn btn-primary">
+                        <span class="btn-text">+ Add Fees</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Sr. No</th>
+                            <th>Academic Year</th>
+                            <th>Student Name</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr>
+                            <td colspan="4" style="text-align:center;">
+                                <div class="spinner"></div> Loading fees records...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div style="padding: 1rem 2rem; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <span style="color: var(--text-secondary); font-size: 0.875rem;">
+                    Showing <strong id="recordCount">0</strong> records
+                </span>
+                <span class="total-badge" id="totalRecordsBadge">Total: 0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== PAGE 2 - DETAIL VIEW ===================== -->
+    <div id="page2" class="page">
+        <div class="soft-card">
+            <div class="card-header">
+                <div>
+                    <h2>👤 Fees Details Summary</h2>
+                    <!-- <div class="subtitle">Deep dive inspection context validation across active installments tracking matrix</div> -->
+                </div>
+                <button id="backToPage1Btn" class="btn btn-outline">← Back</button>
+            </div>
+            
+            <div class="profile-wrapper">
+                <div class="profile-info">
+                    <h3 id="profileName">Student Name</h3>
+                    <p>Sr. No: <span id="profileSrNo"></span> | Academic Year: <span id="profileAcademicYear"></span></p>
+                </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-label">Total Obligated Fees</div>
+                    <div class="kpi-value primary">₹<span id="p2_totalFees">0.00</span></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Total Liquidated Paid</div>
+                    <div class="kpi-value success">₹<span id="p2_paidFees">0.00</span></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Outstanding Balance Due</div>
+                    <div class="kpi-value danger">₹<span id="p2_balanceFees">0.00</span></div>
+                </div>
+            </div>
+            
+            <div style="padding: 0 2rem 1rem;">
+                <h4 style="font-size: 0.8rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1rem;">
+                    <i class="fas fa-layer-group" style="margin-right: 8px;"></i> Student Installment Details
+                </h4>
+                <div id="p2_installmentsContainer" class="details-grid">
+                    <!-- Dynamically populated -->
+                </div>
+            </div>
+            
+            <div class="action-row">
+                <button id="editFromDetailBtn" class="btn btn-primary">✏️ Edit</button>
+                <button id="deleteFromDetailBtn" class="btn btn-danger">🗑 Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== PAGE 3 - UPDATE/EDIT VIEW ===================== -->
+    <div id="page3" class="page">
+        <div class="soft-card">
+            <div class="card-header">
+                <div>
+                    <h2 id="page3Title">✏️ Update Fees Record</h2>
+                    <div class="subtitle" id="page3Subtitle">Modify the Student Fees details and update the record</div>
+                </div>
+                <button id="backToPage2Btn" class="btn btn-outline">← Back</button>
+            </div>
+            
+            <div class="modal-body">
+                <form id="feesUpdateForm" class="space-y-6">
+                    <!-- Top Meta -->
+                    <div class="form-grid">
+                        <div class="field">
+                            <label>Sr. No <span style="color: var(--danger);">*</span></label>
+                            <input type="text" id="p3_srNo" readonly>
+                        </div>
+                        <div class="field">
+                            <label>Academic Year</label>
+                            <input type="text" id="p3_academicYear" readonly>
+                        </div>
+                        <div class="field">
+    <label>Student Name <span style="color: var(--danger);">*</span></label>
+    <button type="button" id="p3_selectStudentBtn" class="student-selector-btn" onclick="openStudentSelector()">
+        <span id="p3_studentNameDisplay">Select a student...</span>
+        <span id="p3_studentLockIcon" style="display: none;">
+            <i class="fas fa-lock lock-icon"></i>
+        </span>
+        <i class="fas fa-chevron-down" style="color: var(--text-secondary);"></i>
+    </button>
+    <input type="hidden" id="p3_studentName" value="">
+</div>
+                    </div>
+
+                    <!-- Financial KPI -->
+                    <div class="kpi-grid" style="margin: 0;">
+                        <div class="kpi-card">
+                            <div class="kpi-label">Total Fixed Fees <span style="color: var(--danger);">*</span></div>
+                            <input type="number" id="p3_totalFees" min="0" oninput="calculatePage3Financials()" 
+                                   style="font-size: 1.5rem; font-weight: 800; border: none; background: transparent; width: 100%; text-align: center; color: var(--text-primary);">
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-label">Paid Cumulative Fees</div>
+                            <div class="kpi-value success">₹<span id="p3_paidFees">0.00</span></div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-label">Remaining Balance</div>
+                            <div class="kpi-value danger">₹<span id="p3_balanceFees">0.00</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Installment Dropdown -->
+                    <div class="field" style="max-width: 300px;">
+                        <label>Process Milestone Payment</label>
+                        <select id="p3_installmentDropdown" onchange="openPage3InstallmentModal(this.value)" 
+                                style="padding: 12px 16px; border-radius: 16px; border: 2px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary); font-size: 0.9rem;">
+                            <option value="" disabled selected>Select Installment...</option>
+                            <option value="1" id="p3_opt_ins_1">Installment 1</option>
+                            <option value="2" id="p3_opt_ins_2">Installment 2</option>
+                            <option value="3" id="p3_opt_ins_3">Installment 3</option>
+                            <option value="4" id="p3_opt_ins_4">Installment 4</option>
+                            <option value="5" id="p3_opt_ins_5">Installment 5</option>
+                        </select>
+                    </div>
+
+                    <!-- Summary Table -->
+                    <div id="p3_summarySection" class="hidden">
+                        <div style="background: var(--table-header-bg); padding: 0.75rem 1rem; border-radius: 1rem 1rem 0 0; border: 1px solid var(--border-color); border-bottom: none;">
+                            <h4 style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: var(--text-secondary);">
+                                <i class="fas fa-list-ol" style="margin-right: 8px;"></i> Active Installment Summary
+                            </h4>
+                        </div>
+                        <div class="table-wrapper" style="border: 1px solid var(--border-color); border-radius: 0 0 1rem 1rem;">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Installment</th>
+                                        <th>Date</th>
+                                        <th>Receipt No</th>
+                                        <th>Mode</th>
+                                        <th>Ref String</th>
+                                        <th>Amount</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="p3_summaryTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div style="display: flex; gap: 12px; justify-content: flex-end; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                        <button type="button" onclick="navigateToPage(1)" class="btn btn-outline">Cancel</button>
+                        <button type="button" id="commitUpdatesBtn" onclick="commitModifiedLedgerToCloud()" class="btn btn-primary">
+                            <i class="fas fa-cloud-upload-alt"></i> <span id="commitBtnText">Update</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== GLOBAL MODAL ===================== -->
+    <div id="globalModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3 id="modalTitle">Notice</h3>
+                <button class="close-modal" id="closeGlobalModal">×</button>
+            </div>
+            <div class="modal-body">
+                <p id="modalMsg" style="font-size: 1rem; line-height: 1.5;"></p>
+                <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
+                    <button id="confirmModalBtn" class="btn btn-primary">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== STUDENT SELECTOR MODAL ===================== -->
+    <div id="studentSelectorModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3>Select Student</h3>
+                <button class="close-modal" id="closeStudentSelectorBtn">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="search-wrapper" style="margin-bottom: 1rem;">
+                    <input type="text" id="studentSearchInput" placeholder="🔍 Search by student name..." oninput="filterStudentList(this.value)">
+                </div>
+                <div id="studentListContainer" style="max-height: 400px; overflow-y: auto;">
+                    <div style="text-align: center; padding: 20px; color: var(--text-secondary);">
+                        <div class="spinner"></div> Loading students...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== INSTALLMENT MODAL ===================== -->
+    <div id="installmentModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3 id="insModalHeader">Configure Installment Context</h3>
+                <button class="close-modal" id="closeInsModalBtn">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="insForm" onsubmit="event.preventDefault();">
+                    <input type="hidden" id="currentInsId">
+                    <div class="form-grid">
+                        <div class="field">
+                            <label>Transaction Date <span style="color: var(--danger);">*</span></label>
+                            <input type="date" id="insDate" required>
+                        </div>
+                        <div class="field">
+                            <label>Receipt ID Number <span style="color: var(--danger);">*</span></label>
+                            <input type="number" id="insReceipt" required>
+                        </div>
+                        <div class="field">
+                            <label>Payment Method Routing <span style="color: var(--danger);">*</span></label>
+                            <select id="insMethod" required onchange="togglePaymentFields(this.value)">
+                                <option value="Cash">Cash</option>
+                                <option value="UPI">UPI</option>
+                                <option value="Bank Transfer">Bank Transfer</option>
+                            </select>
+                        </div>
+                        <div class="field" id="dynamicTransBox"></div>
+                        <div class="field">
+                            <label>Next Due Interval Date</label>
+                            <input type="date" id="insNextDate">
+                        </div>
+                        <div class="field">
+                            <label>Allocation Amount (INR) <span style="color: var(--danger);">*</span></label>
+                            <input type="number" id="insAmount" min="1" required>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                        <button type="button" onclick="closeInstallmentModal()" class="btn btn-outline">Cancel</button>
+                        <button type="button" onclick="saveInstallmentState()" class="btn btn-primary">Save Draft</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== DELETE CONFIRM MODAL ===================== -->
+    <div id="deleteConfirmModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 450px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, var(--danger), #dc2626);">
+                <h3>⚠️ Irreversible Destructive Operation</h3>
+                <button class="close-modal" id="closeDeleteModalBtn">×</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 1rem; line-height: 1.5; margin-bottom: 1rem;">
+                    Are you completely sure you want to Delete <strong id="deleteTargetStudentName"></strong> from the ledger?
+                    <br><br>This action deletes all tracked records from Data and cannot be restored.
+                </p>
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button onclick="closeDeleteConfirmation()" class="btn btn-outline">Cancel</button>
+                    <button id="executePurgeBtn" onclick="executeCloudRowDeletion()" class="btn btn-danger">Confirm Purge</button>
+                </div>
+            </div>
+        </div>
+    </div>
+	
+	<!-- ===================== INSTALLMENT DELETE CONFIRM MODAL ===================== -->
+<div id="installmentDeleteModal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 450px;">
+        <div class="modal-header" style="background: linear-gradient(135deg, var(--danger), #dc2626);">
+            <h3>⚠️ Delete Installment</h3>
+            <button class="close-modal" onclick="closeInstallmentDeleteModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <p style="font-size: 1rem; line-height: 1.5; margin-bottom: 1rem;">
+                Are you sure you want to delete <strong id="installmentDeleteTarget">Installment</strong> from this fees record?
+                <br><br>This action cannot be undone.
+            </p>
+            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                <button onclick="closeInstallmentDeleteModal()" class="btn btn-outline">Cancel</button>
+                <button id="executeInstallmentPurgeBtn" onclick="executeInstallmentDeletion()" class="btn btn-danger">Confirm Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- ===================== ALERT POPUP ===================== -->
+    <div id="alertBox" class="alert-popup">Message...</div>
+
+</div>
+
+<script>
+      // ================================================================
+        // ADMIN AUTHENTICATION CHECK
+        // ================================================================
+        function checkAdminAuth() {
+            const userType = sessionStorage.getItem('ujjwal_user_type');
+            const user = sessionStorage.getItem('ujjwal_user');
+            
+            // If not logged in as admin, redirect to myaccount.html
+            if (!user || userType !== 'admin') {
+                // Redirect to myaccount.html for admin login
+                window.location.href = '../../Study Material/My Account/myaccount.html';
+                return false;
+            }
+            return true;
+        }
+		
+    /* ======================== DARK MODE SYNC ======================== */
+    function syncThemeWithParent() {
+        const localTheme = localStorage.getItem('user-theme-preference');
+        if (localTheme) {
+            document.body.setAttribute('data-theme', localTheme);
+            document.documentElement.setAttribute('data-theme', localTheme);
+        } else {
+            try {
+                if (window.parent && window.parent.document.body) {
+                    const parentTheme = window.parent.document.body.getAttribute('data-theme');
+                    if (parentTheme) {
+                        document.body.setAttribute('data-theme', parentTheme);
+                        document.documentElement.setAttribute('data-theme', parentTheme);
+                    }
+                }
+            } catch(e) { }
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', syncThemeWithParent);
+    window.addEventListener('storage', syncThemeWithParent);
+    setInterval(syncThemeWithParent, 1000);
+    
+    window.addEventListener('message', function(event) {
+        if (event.data && event.data.type === 'themeChange') {
+            const newTheme = event.data.theme;
+            if (newTheme) {
+                document.body.setAttribute('data-theme', newTheme);
+                document.documentElement.setAttribute('data-theme', newTheme);
+            }
+        }
+    });
+
+    /* ======================== CONFIGURATION ======================== */
+    const API_ENDPOINT = "https://script.google.com/macros/s/AKfycbyg5EwL2WVufTR0Ks1mH9ZEHWwyuIBXshTvjANGhIq8zD7yZEmgOfimxdpB8pTjkqwq/exec";
+    const ROSTER_SS_ID = "1n21WMpSxap6CgfXBt3guK4DUKpFfDG69fiMm3_4r2hc"; //Admission Spreadsheet Id
+    const TARGET_SS_ID = "1HPrSavoBomptbe_lbePSNlK6LDLhVGgkO8Arvwwbb8k"; // Fees Spreadsheet Id
+    const GLOBAL_SHEET_NAME = "12_Sci";
+
+    /* ======================== GLOBAL STATE ======================== */
+    let masterCloudDataset = [];
+    let masterRosterList = [];
+    let activeSelectedRowIndex = -1;
+    let activeRowDataInstance = null;
+    let page3LocalizedInstallmentsMemory = {};
+    let searchDebounceTimer = null;
+    let isAddMode = false;
+
+    /* ======================== DOM REFS ======================== */
+    const dom = {};
+
+    function cacheDomElements() {
+        dom.page1 = document.getElementById('page1');
+        dom.page2 = document.getElementById('page2');
+        dom.page3 = document.getElementById('page3');
+        dom.tableBody = document.getElementById('tableBody');
+        dom.searchInput = document.getElementById('searchInput');
+        dom.refreshBtn = document.getElementById('refreshBtn');
+        dom.addNewBtn = document.getElementById('addNewBtn');
+        dom.mobileRefreshBtn = document.getElementById('mobileRefreshBtn');
+        dom.mobileAddBtn = document.getElementById('mobileAddBtn');
+        dom.backBtn = document.getElementById('backToPage1Btn');
+        dom.backToPage2Btn = document.getElementById('backToPage2Btn');
+        dom.editBtn = document.getElementById('editFromDetailBtn');
+        dom.deleteBtn = document.getElementById('deleteFromDetailBtn');
+        dom.globalModal = document.getElementById('globalModal');
+        dom.studentSelectorModal = document.getElementById('studentSelectorModal');
+        dom.installmentModal = document.getElementById('installmentModal');
+        dom.deleteConfirmModal = document.getElementById('deleteConfirmModal');
+        dom.modalTitle = document.getElementById('modalTitle');
+        dom.modalMsg = document.getElementById('modalMsg');
+        dom.alertBox = document.getElementById('alertBox');
+        dom.recordCount = document.getElementById('recordCount');
+        dom.totalRecordsBadge = document.getElementById('totalRecordsBadge');
+        dom.page3Title = document.getElementById('page3Title');
+        dom.page3Subtitle = document.getElementById('page3Subtitle');
+        dom.commitBtnText = document.getElementById('commitBtnText');
+    }
+
+    /* ======================== UTILITY FUNCTIONS ======================== */
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+    }
+
+    function getIsoDateString(dateObj) {
+        return dateObj.toISOString().split('T')[0];
+    }
+
+    function formatDisplayDate(rawIsoDate) {
+        if (!rawIsoDate) return '';
+        const split = rawIsoDate.split('-');
+        if (split.length !== 3) return rawIsoDate;
+        return `${split[2]}/${split[1]}/${split[0]}`;
+    }
+
+    function parseToIsoDate(displayDateStr) {
+        if (!displayDateStr) return '';
+        const bits = displayDateStr.split('/');
+        if (bits.length !== 3) return '';
+        return `${bits[2]}-${bits[1]}-${bits[0]}`;
+    }
+
+    function getAcademicYear() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = today.getMonth() + 1;
+        return month >= 4 ? `${year}-${year + 1}` : `${year - 1}-${year}`;
+    }
+
+    function showToast(msg, type = 'info') {
+        const box = dom.alertBox;
+        box.textContent = msg;
+        box.className = `alert-popup ${type}`;
+        box.style.display = 'block';
+        clearTimeout(box._timeout);
+        box._timeout = setTimeout(() => { box.style.display = 'none'; }, 4500);
+    }
+
+    function showModal(msg, title = "Message", isConfirm = false, onConfirm = null) {
+        dom.modalTitle.innerText = title;
+        dom.modalMsg.innerHTML = msg;
+        const confirmBtn = document.getElementById('confirmModalBtn');
+        confirmBtn.onclick = () => {
+            dom.globalModal.classList.remove('active');
+            if (isConfirm && onConfirm) onConfirm();
+        };
+        dom.globalModal.classList.add('active');
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('active');
+    }
+
+    function showSpinner(element, show) {
+        if (!element) return;
+        if (show) {
+            element.disabled = true;
+            const originalText = element.innerHTML;
+            element.setAttribute('data-original-text', originalText);
+            element.innerHTML = '<span class="spinner"></span> Loading...';
+        } else {
+            element.disabled = false;
+            const original = element.getAttribute('data-original-text');
+            if (original) element.innerHTML = original;
+        }
+    }
+
+    function showMobileSpinner(buttonId, show) {
+        const btn = document.getElementById(buttonId);
+        if (!btn) return;
+        if (show) {
+            btn.classList.add('loading');
+            btn.disabled = true;
+        } else {
+            btn.classList.remove('loading');
+            btn.disabled = false;
+        }
+    }
+
+    /* ======================== NAVIGATION ======================== */
+    function navigateToPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+    document.getElementById(`page${pageId}`).classList.add('active-page');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    // FIXED: When going back to Page 1, clear view data
+    if (pageId === 1) {
+        activeRowDataInstance = null;
+        activeSelectedRowIndex = -1;
+    }
+}
+
+    /* ======================== DATA MANAGEMENT ======================== */
+    async function fetchCloudDataPool() {
+        const tbody = dom.tableBody;
+        try {
+            const queryUrl = `${API_ENDPOINT}?spreadsheetId=${TARGET_SS_ID}&sheetName=${encodeURIComponent(GLOBAL_SHEET_NAME)}`;
+            const res = await fetch(queryUrl);
+            const json = await res.json();
+            
+            if (json.status === "success") {
+                masterCloudDataset = json.data || [];
+                renderPage1RosterTable(masterCloudDataset);
+            } else {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 40px; color: var(--danger);">❌ Failed synchronization: ${json.message}</td></tr>`;
+            }
+        } catch (err) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 40px; color: var(--danger);">❌ Network Connection Timeout. Check API execution links.</td></tr>`;
+        }
+    }
+
+    async function fetchRosterList() {
+        try {
+            const rosterUrl = `${API_ENDPOINT}?spreadsheetId=${ROSTER_SS_ID}&sheetName=${encodeURIComponent(GLOBAL_SHEET_NAME)}`;
+            const res = await fetch(rosterUrl);
+            const json = await res.json();
+            if (json.status === "success") {
+                masterRosterList = json.data.map(item => 
+                    item["Full Name"] || item["FullName"] || item["fullname"] || ""
+                ).filter(Boolean);
+                renderStudentList(masterRosterList);
+            }
+        } catch (err) {
+            console.error("Failed to load roster:", err);
+        }
+    }
+
+    function renderPage1RosterTable(data) {
+        const tbody = dom.tableBody;
+        if (data.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 40px; color: var(--text-secondary);">✨ No fee records found in current ledger spreadsheet.</td></tr>`;
+            dom.recordCount.textContent = '0';
+            dom.totalRecordsBadge.textContent = 'Total: 0';
+            return;
+        }
+
+        tbody.innerHTML = data.map((row, index) => {
+            const computeSheetRowIndex = index + 2;
+            const srNo = row["Sr. No"] || row["SrNo"] || row["srno"] || (index + 1);
+            const academicYear = row["Academic Year"] || row["AcademicYear"] || row["academicyear"] || "N/A";
+            const fullName = row["Full Name"] || row["FullName"] || row["fullname"] || "Unknown";
+
+            return `
+                <tr>
+                    <td><strong>${escapeHtml(srNo)}</strong></td>
+                    <td>${escapeHtml(academicYear)}</td>
+                    <td style="font-weight: 600;">${escapeHtml(fullName)}</td>
+                    <td>
+                        <button class="view-action-btn" data-row="${computeSheetRowIndex}">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+
+        dom.recordCount.textContent = data.length;
+        dom.totalRecordsBadge.textContent = `Total: ${data.length}`;
+
+        tbody.querySelectorAll('.view-action-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const rowIndex = parseInt(btn.getAttribute('data-row'));
+                loadPage2DetailsView(rowIndex);
+            });
+        });
+    }
+
+    function filterRosterTable(value) {
+        const keyword = value.toLowerCase().trim();
+        const filtered = masterCloudDataset.filter(row => {
+            const name = (row["Full Name"] || row["FullName"] || "").toLowerCase();
+            return name.includes(keyword);
+        });
+        renderPage1RosterTable(filtered);
+    }
+
+    /* ======================== STUDENT SELECTOR ======================== */
+    function renderStudentList(list) {
+    const container = document.getElementById('studentListContainer');
+    if (!list || list.length === 0) {
+        container.innerHTML = `<div style="text-align: center; padding: 20px; color: var(--text-secondary);">No students found in roster.</div>`;
+        return;
+    }
+    
+    // Get list of students who already have fees records
+    const existingStudents = new Set();
+    masterCloudDataset.forEach(row => {
+        const name = (row["Full Name"] || row["FullName"] || row["fullname"] || "").toLowerCase().trim();
+        if (name) existingStudents.add(name);
+    });
+    
+    container.innerHTML = list.map(name => {
+        const nameLower = name.toLowerCase().trim();
+        const isExisting = existingStudents.has(nameLower);
+        const disabledClass = isExisting ? 'disabled' : '';
+        const statusIcon = isExisting ? '<i class="fas fa-check-circle status-icon"></i>' : '';
+        const badge = isExisting ? '<span class="existing-badge">Already Added</span>' : '';
+        
+        return `
+            <button type="button" class="student-list-item ${disabledClass}" 
+                    onclick="${isExisting ? '' : `selectStudent('${escapeHtml(name)}')`}"
+                    ${isExisting ? 'disabled' : ''}>
+                <div class="avatar">${escapeHtml(name.charAt(0).toUpperCase())}</div>
+                <span class="student-name">${escapeHtml(name)}</span>
+                ${badge}
+                ${statusIcon}
+            </button>
+        `;
+    }).join('');
+}
+
+    function filterStudentList(value) {
+        const keyword = value.toLowerCase().trim();
+        const filtered = masterRosterList.filter(name => name.toLowerCase().includes(keyword));
+        renderStudentList(filtered);
+    }
+
+    function openStudentSelector() {
+    // Only allow opening in Add mode (when button is not disabled)
+    const studentBtn = document.getElementById('p3_selectStudentBtn');
+    if (studentBtn.disabled) {
+        showToast("❌ Student name cannot be changed in Edit mode.", "info");
+        return;
+    }
+    
+    document.getElementById('studentSelectorModal').classList.add('active');
+    document.getElementById('studentSearchInput').value = '';
+    if (masterRosterList.length === 0) {
+        fetchRosterList();
+    } else {
+        renderStudentList(masterRosterList);
+    }
+}
+
+    function closeStudentSelector() {
+        document.getElementById('studentSelectorModal').classList.remove('active');
+    }
+
+    /* ======================== FIXED: DUPLICATE CHECK FUNCTION ======================== */
+   function checkStudentDuplicate(studentName) {
+    if (!studentName || studentName.trim() === '') return false;
+    
+    const normalizedName = studentName.trim().toLowerCase();
+    
+    // Check in master cloud dataset
+    const duplicateFound = masterCloudDataset.some(row => {
+        const fullName = (row["Full Name"] || row["FullName"] || row["fullname"] || "").toLowerCase();
+        return fullName === normalizedName;
+    });
+    
+    return duplicateFound;
+}
+
+// Helper function to get all existing student names
+function getExistingStudentNames() {
+    const existing = new Set();
+    masterCloudDataset.forEach(row => {
+        const name = (row["Full Name"] || row["FullName"] || row["fullname"] || "").toLowerCase().trim();
+        if (name) existing.add(name);
+    });
+    return existing;
+}
+
+    function selectStudent(name) {
+    // Check for duplicate before selecting (only in Add mode)
+    if (isAddMode) {
+        const duplicateExists = checkStudentDuplicate(name);
+        if (duplicateExists) {
+            showToast(`❌ Student "${name}" already has a fees record. Please edit existing record.`, "error");
+            return;
+        }
+    }
+    
+    document.getElementById('p3_studentNameDisplay').textContent = name;
+    document.getElementById('p3_studentName').value = name;
+    closeStudentSelector();
+    document.getElementById('p3_installmentDropdown').disabled = false;
+}
+
+    /* ======================== PAGE 2 - DETAIL VIEW ======================== */
+    function loadPage2DetailsView(sheetRowIndex) {
+        activeSelectedRowIndex = sheetRowIndex;
+        activeRowDataInstance = masterCloudDataset[sheetRowIndex - 2];
+
+        if (!activeRowDataInstance) {
+            showToast("❌ Record not found", "error");
+            return;
+        }
+
+        const fullName = activeRowDataInstance["Full Name"] || activeRowDataInstance["FullName"] || "Unknown";
+        const srNo = activeRowDataInstance["Sr. No"] || activeRowDataInstance["SrNo"] || "";
+        const academicYear = activeRowDataInstance["Academic Year"] || activeRowDataInstance["AcademicYear"] || "";
+
+        document.getElementById('profileName').textContent = fullName;
+        document.getElementById('profileSrNo').textContent = srNo;
+        document.getElementById('profileAcademicYear').textContent = academicYear;
+
+        document.getElementById('p2_totalFees').textContent = parseFloat(activeRowDataInstance["Total Fees"] || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 });
+        document.getElementById('p2_paidFees').textContent = parseFloat(activeRowDataInstance["Paid Fees"] || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 });
+        document.getElementById('p2_balanceFees').textContent = parseFloat(activeRowDataInstance["Balance Fees"] || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 });
+
+        const container = document.getElementById('p2_installmentsContainer');
+        container.innerHTML = '';
+        let visibleCount = 0;
+
+        for (let i = 1; i <= 5; i++) {
+            const modeValue = activeRowDataInstance[`Transaction ${i}`] || activeRowDataInstance[`Installment ${i}`] || "";
+            const amountValue = activeRowDataInstance[`Amount ${i}`];
+
+            if (!modeValue || !amountValue || amountValue == 0) continue;
+
+            visibleCount++;
+            const dateValue = activeRowDataInstance[`Date ${i}`] || "N/A";
+            const receiptNo = activeRowDataInstance[`Receipt No ${i}`] || "N/A";
+            const bankRef = activeRowDataInstance[`Bank Trans ${i}`] || "";
+            const upiRef = activeRowDataInstance[`UPI Trans ${i}`] || "";
+            const nextDue = activeRowDataInstance[`Next Ins Date ${i}`] || "None Recorded";
+
+            let refString = "<span style='color: var(--text-secondary);'>None</span>";
+            if (bankRef) refString = `<span style="background: var(--table-header-bg); padding: 2px 8px; border-radius: 4px; font-family: monospace;">${escapeHtml(bankRef)}</span>`;
+            if (upiRef) refString = `<span style="background: var(--table-header-bg); padding: 2px 8px; border-radius: 4px; font-family: monospace;">${escapeHtml(upiRef)}</span>`;
+
+            const card = document.createElement('div');
+            card.className = 'installment-card';
+            card.innerHTML = `
+                <div class="installment-header">
+                    <span class="ins-number">Installment ${i}</span>
+                    <span class="ins-method">${escapeHtml(modeValue)}</span>
+                </div>
+                <div class="installment-details">
+                    <div class="ins-item">
+                        <span class="ins-label">Transaction Date</span>
+                        <span class="ins-value">${escapeHtml(formatDisplayDate(dateValue))}</span>
+                    </div>
+                    <div class="ins-item">
+                        <span class="ins-label">Receipt ID</span>
+                        <span class="ins-value">${escapeHtml(receiptNo)}</span>
+                    </div>
+                    <div class="ins-item" style="grid-column: 1 / -1;">
+                        <span class="ins-label">Next Scheduled Interval</span>
+                        <span class="ins-value">${escapeHtml(formatDisplayDate(nextDue))}</span>
+                    </div>
+                    <div class="ins-item" style="grid-column: 1 / -1;">
+                        <span class="ins-label">Reference</span>
+                        <span class="ins-value">${refString}</span>
+                    </div>
+                </div>
+                <div class="installment-amount">
+                    <span>Value Allocation</span>
+                    <span class="amount-value">₹${parseFloat(amountValue).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                </div>
+            `;
+            container.appendChild(card);
+        }
+
+        if (visibleCount === 0) {
+            container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-secondary);">No installment steps have materialized for this record profile.</div>`;
+        }
+
+        navigateToPage(2);
+    }
+
+    /* ======================== PAGE 3 - ADD/UPDATE ======================== */
+function loadPage3Setup(isAdd = false) {
+    isAddMode = isAdd;
+    page3LocalizedInstallmentsMemory = {};
+    
+    // Get reference to student selector button
+    const studentBtn = document.getElementById('p3_selectStudentBtn');
+    const studentDisplay = document.getElementById('p3_studentNameDisplay');
+    
+    if (isAdd) {
+        // Clear any previously viewed data
+        activeRowDataInstance = null;
+        activeSelectedRowIndex = -1;
+        
+        dom.page3Title.textContent = '➕ Add New Fees Record';
+        dom.page3Subtitle.textContent = 'Create a new student fees record';
+        dom.commitBtnText.textContent = 'Save';
+        document.getElementById('p3_srNo').value = masterCloudDataset.length + 1;
+        document.getElementById('p3_academicYear').value = getAcademicYear();
+        
+        // Enable student selection (Add mode)
+        studentBtn.disabled = false;
+        studentBtn.style.opacity = '1';
+        studentBtn.style.cursor = 'pointer';
+        studentDisplay.textContent = 'Select a student...';
+        document.getElementById('p3_studentName').value = '';
+        document.getElementById('p3_installmentDropdown').disabled = true;
+        
+        // Clear the installment summary
+        document.getElementById('p3_summarySection').classList.add('hidden');
+        document.getElementById('p3_summaryTableBody').innerHTML = '';
+        
+        // Reset all installment options
+        for (let i = 1; i <= 5; i++) {
+            document.getElementById(`p3_opt_ins_${i}`).disabled = false;
+        }
+        
+        // Reset financials
+        document.getElementById('p3_paidFees').textContent = '0.00';
+        document.getElementById('p3_balanceFees').textContent = '0.00';
+        document.getElementById('p3_totalFees').value = '';
+        
+    } else {
+        dom.page3Title.textContent = '✏️ Update Fees Record';
+        dom.page3Subtitle.textContent = 'Modify the Student Fees details and update the record';
+        dom.commitBtnText.textContent = 'Update';
+        
+        // Check if we have data to edit
+        if (!activeRowDataInstance) {
+            showToast("❌ No record selected for editing.", "error");
+            navigateToPage(1);
+            return;
+        }
+        
+        document.getElementById('p3_srNo').value = activeRowDataInstance["Sr. No"] || activeRowDataInstance["SrNo"] || "";
+        document.getElementById('p3_academicYear').value = activeRowDataInstance["Academic Year"] || activeRowDataInstance["AcademicYear"] || "";
+        const fullName = activeRowDataInstance["Full Name"] || activeRowDataInstance["FullName"] || "";
+        
+        // DISABLE student selection in Edit mode
+        studentBtn.disabled = true;
+        studentBtn.style.opacity = '0.7';
+        studentBtn.style.cursor = 'not-allowed';
+        studentDisplay.textContent = fullName;
+        document.getElementById('p3_studentName').value = fullName;
+        document.getElementById('p3_totalFees').value = activeRowDataInstance["Total Fees"] || 0;
+        document.getElementById('p3_installmentDropdown').disabled = false;
+
+        // Load existing installments
+        for (let i = 1; i <= 5; i++) {
+            const mode = activeRowDataInstance[`Transaction ${i}`] || "";
+            const amount = parseFloat(activeRowDataInstance[`Amount ${i}`]) || 0;
+
+            if (mode && amount > 0) {
+                page3LocalizedInstallmentsMemory[i] = {
+                    id: i.toString(),
+                    date: parseToIsoDate(activeRowDataInstance[`Date ${i}`]),
+                    receipt: activeRowDataInstance[`Receipt No ${i}`] || "",
+                    method: mode,
+                    upi: activeRowDataInstance[`UPI Trans ${i}`] || "",
+                    bank: activeRowDataInstance[`Bank Trans ${i}`] || "",
+                    nextDate: parseToIsoDate(activeRowDataInstance[`Next Ins Date ${i}`]),
+                    amount: amount
+                };
+            }
+        }
+    }
+
+    refreshPage3SummaryLedger();
+    calculatePage3Financials();
+    navigateToPage(3);
+}
+
+    function calculatePage3Financials() {
+        const total = parseFloat(document.getElementById('p3_totalFees').value) || 0;
+        const paid = Object.values(page3LocalizedInstallmentsMemory).reduce((acc, obj) => acc + obj.amount, 0);
+        document.getElementById('p3_paidFees').textContent = paid.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+        document.getElementById('p3_balanceFees').textContent = (total - paid).toLocaleString('en-IN', { minimumFractionDigits: 2 });
+    }
+
+   function refreshPage3SummaryLedger() {
+    const tbody = document.getElementById('p3_summaryTableBody');
+    const section = document.getElementById('p3_summarySection');
+    const entries = Object.values(page3LocalizedInstallmentsMemory);
+
+    if (entries.length === 0) {
+        section.classList.add('hidden');
+        for (let i = 1; i <= 5; i++) {
+            document.getElementById(`p3_opt_ins_${i}`).disabled = false;
+        }
+        return;
+    }
+
+    section.classList.remove('hidden');
+    tbody.innerHTML = entries.map(item => {
+        let refString = "<span style='color: var(--text-secondary);'>None</span>";
+        if (item.method === "UPI") refString = `<span style="background: var(--table-header-bg); padding: 2px 8px; border-radius: 4px; font-family: monospace;">${escapeHtml(item.upi)}</span>`;
+        if (item.method === "Bank Transfer") refString = `<span style="background: var(--table-header-bg); padding: 2px 8px; border-radius: 4px; font-family: monospace;">${escapeHtml(item.bank)}</span>`;
+
+        return `
+            <tr>
+                <td><strong>Installment ${item.id}</strong></td>
+                <td>${escapeHtml(formatDisplayDate(item.date))}</td>
+                <td>${escapeHtml(item.receipt)}</td>
+                <td><span style="background: var(--primary); color: white; padding: 2px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700;">${escapeHtml(item.method)}</span></td>
+                <td>${refString}</td>
+                <td style="text-align: right; font-weight: 700;">₹${item.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                <td>
+                    <div style="display: flex; gap: 4px;">
+                        <button onclick="event.preventDefault(); event.stopPropagation(); openPage3InstallmentModal('${item.id}')" 
+                                class="btn btn-sm btn-outline" style="padding: 4px 8px; cursor: pointer;">
+                            ✏️
+                        </button>
+                        <button onclick="event.preventDefault(); event.stopPropagation(); showInstallmentDeleteConfirm('${item.id}')" 
+                                class="btn btn-sm btn-danger" style="padding: 4px 8px; cursor: pointer;">
+                            🗑
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+
+    for (let i = 1; i <= 5; i++) {
+        document.getElementById(`p3_opt_ins_${i}`).disabled = !!page3LocalizedInstallmentsMemory[i];
+    }
+}
+
+         /* ======================== INSTALLMENT DELETE CONFIRMATION MODAL ======================== */
+
+// Variable to store the installment ID to be deleted
+let installmentToDelete = null;
+
+/**
+ * Show the installment delete confirmation modal
+ */
+function showInstallmentDeleteConfirm(installmentId) {
+    if (!installmentId) {
+        showToast("❌ Invalid installment ID", "error");
+        return;
+    }
+    
+    // Prevent default behavior
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    
+    // Store the installment ID for later use
+    installmentToDelete = installmentId;
+    
+    // Get the installment data for display
+    const installmentData = page3LocalizedInstallmentsMemory[installmentId];
+    const displayName = installmentData ? `Installment ${installmentData.id}` : `Installment ${installmentId}`;
+    
+    // Update the modal with the installment details
+    document.getElementById('installmentDeleteTarget').textContent = displayName;
+    
+    // Show the modal
+    const modal = document.getElementById('installmentDeleteModal');
+    if (modal) {
+        modal.classList.add('active');
+        modal.style.display = 'flex';
+        modal.style.visibility = 'visible';
+        modal.style.opacity = '1';
+    }
+}
+
+/**
+ * Close the installment delete confirmation modal
+ */
+function closeInstallmentDeleteModal() {
+    const modal = document.getElementById('installmentDeleteModal');
+    if (modal) {
+        modal.classList.remove('active');
+        modal.style.display = 'none';
+        modal.style.visibility = 'hidden';
+        modal.style.opacity = '0';
+    }
+    installmentToDelete = null;
+}
+
+/**
+ * Execute the installment deletion after confirmation
+ */
+function executeInstallmentDeletion() {
+    // Prevent default behavior
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    
+    const btn = document.getElementById('executeInstallmentPurgeBtn');
+    
+    // Show loading state
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Deleting...';
+    }
+    
+    try {
+        if (!installmentToDelete) {
+            showToast("❌ No installment selected for deletion", "error");
+            closeInstallmentDeleteModal();
+            return;
+        }
+        
+        // Get the installment data for logging
+        const installmentData = page3LocalizedInstallmentsMemory[installmentToDelete];
+        
+        // Delete the installment from memory
+        delete page3LocalizedInstallmentsMemory[installmentToDelete];
+        
+        // Close the modal
+        closeInstallmentDeleteModal();
+        
+        // Refresh the summary table and financials
+        refreshPage3SummaryLedger();
+        calculatePage3Financials();
+        
+        // Show success message
+        showToast(`✅ Installment ${installmentToDelete} deleted successfully!`, "success");
+        
+        // Clear the stored ID
+        installmentToDelete = null;
+        
+    } catch (error) {
+        console.error("Error deleting installment:", error);
+        showToast("❌ Error deleting installment: " + error.message, "error");
+    } finally {
+        // Reset button state
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = 'Confirm Delete';
+        }
+    }
+}
+
+/**
+ * Alternative: Close installment delete modal on overlay click
+ */
+document.addEventListener('DOMContentLoaded', function() {
+    // Close installment delete modal on overlay click
+    const deleteModal = document.getElementById('installmentDeleteModal');
+    if (deleteModal) {
+        deleteModal.addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeInstallmentDeleteModal();
+            }
+        });
+    }
+});
+
+    /* ======================== FIXED: INSTALLMENT MODAL FUNCTIONS ======================== */
+    function openPage3InstallmentModal(insId) {
+    // Prevent default behavior and stop propagation
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    
+    if (!insId) {
+        showToast("❌ Invalid installment ID", "error");
+        return;
+    }
+    
+    // Get the modal element
+    const modal = document.getElementById('installmentModal');
+    if (!modal) {
+        showToast("❌ Modal not found", "error");
+        return;
+    }
+    
+    try {
+        // Set the current installment ID
+        document.getElementById('currentInsId').value = insId;
+        document.getElementById('insModalHeader').textContent = `Configure Allocation Framework: Installment ${insId}`;
+        
+        // Set date constraints
+        const now = new Date();
+        document.getElementById('insDate').max = getIsoDateString(now);
+        const tomorrow = new Date(now);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        document.getElementById('insNextDate').min = getIsoDateString(tomorrow);
+        
+        // Reset form first to avoid stale data
+        const form = document.getElementById('insForm');
+        if (form) form.reset();
+        togglePaymentFields("Cash");
+        
+        // Check if we have data for this installment
+        if (page3LocalizedInstallmentsMemory && page3LocalizedInstallmentsMemory[insId]) {
+            const mem = page3LocalizedInstallmentsMemory[insId];
+            
+            // Safely set values with null checks
+            const dateInput = document.getElementById('insDate');
+            const receiptInput = document.getElementById('insReceipt');
+            const methodSelect = document.getElementById('insMethod');
+            const nextDateInput = document.getElementById('insNextDate');
+            const amountInput = document.getElementById('insAmount');
+            
+            if (dateInput) dateInput.value = mem.date || '';
+            if (receiptInput) receiptInput.value = mem.receipt || '';
+            if (methodSelect) {
+                methodSelect.value = mem.method || 'Cash';
+                togglePaymentFields(mem.method || 'Cash');
+            }
+            
+            // Handle UPI and Bank Transfer fields
+            if (mem.method === "UPI") {
+                const upiInput = document.getElementById('insUpiTrans');
+                if (upiInput) upiInput.value = mem.upi || '';
+            }
+            if (mem.method === "Bank Transfer") {
+                const bankInput = document.getElementById('insBankTrans');
+                if (bankInput) bankInput.value = mem.bank || '';
+            }
+            
+            if (nextDateInput) nextDateInput.value = mem.nextDate || '';
+            if (amountInput) amountInput.value = mem.amount || '';
+        }
+        
+        // Show the modal
+        modal.classList.add('active');
+        modal.style.display = 'flex';
+        modal.style.visibility = 'visible';
+        modal.style.opacity = '1';
+        
+    } catch (error) {
+        console.error("Error opening installment modal:", error);
+        showToast("❌ Error opening installment form: " + error.message, "error");
+    }
+}
+
+    function closeInstallmentModal() {
+    try {
+        const modal = document.getElementById('installmentModal');
+        if (modal) {
+            modal.classList.remove('active');
+            modal.style.display = 'none';
+            modal.style.visibility = 'hidden';
+            modal.style.opacity = '0';
+        }
+        
+        // Reset dropdown
+        const dropdown = document.getElementById('p3_installmentDropdown');
+        if (dropdown) dropdown.value = "";
+        
+        // Reset form
+        const form = document.getElementById('insForm');
+        if (form) form.reset();
+        
+    } catch (error) {
+        console.error("Error closing installment modal:", error);
+    }
+}
+
+    function togglePaymentFields(value) {
+    try {
+        const box = document.getElementById('dynamicTransBox');
+        if (!box) return;
+        
+        if (value === "UPI") {
+            box.style.display = 'block';
+            box.innerHTML = `
+                <label style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--secondary);">UPI Reference ID String <span style="color: var(--danger);">*</span></label>
+                <input type="text" id="insUpiTrans" required style="padding: 12px 16px; border-radius: 16px; border: 2px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary); font-size: 0.9rem; width: 100%;">
+            `;
+        } else if (value === "Bank Transfer") {
+            box.style.display = 'block';
+            box.innerHTML = `
+                <label style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--secondary);">Bank Wire Remittance ID <span style="color: var(--danger);">*</span></label>
+                <input type="text" id="insBankTrans" required style="padding: 12px 16px; border-radius: 16px; border: 2px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary); font-size: 0.9rem; width: 100%;">
+            `;
+        } else {
+            box.style.display = 'none';
+            box.innerHTML = '';
+        }
+    } catch (error) {
+        console.error("Error toggling payment fields:", error);
+    }
+}
+
+       function saveInstallmentState() {
+    try {
+        const insId = document.getElementById('currentInsId').value;
+        if (!insId) {
+            showToast("❌ No installment selected", "error");
+            return;
+        }
+        
+        const formRef = document.getElementById('insForm');
+        if (!formRef) {
+            showToast("❌ Form not found", "error");
+            return;
+        }
+
+        if (!formRef.checkValidity()) {
+            formRef.reportValidity();
+            return;
+        }
+
+        const methodVal = document.getElementById('insMethod').value;
+        const amountVal = parseFloat(document.getElementById('insAmount').value) || 0;
+        
+        if (amountVal <= 0) {
+            showToast("❌ Amount must be greater than 0", "error");
+            return;
+        }
+        
+        // Build the installment object
+        const installmentData = {
+            id: insId,
+            date: document.getElementById('insDate').value || '',
+            receipt: document.getElementById('insReceipt').value || '',
+            method: methodVal,
+            upi: (methodVal === "UPI") ? (document.getElementById('insUpiTrans')?.value || '') : '',
+            bank: (methodVal === "Bank Transfer") ? (document.getElementById('insBankTrans')?.value || '') : '',
+            nextDate: document.getElementById('insNextDate').value || '',
+            amount: amountVal
+        };
+        
+        // Save to memory
+        page3LocalizedInstallmentsMemory[insId] = installmentData;
+        
+        // Close modal and refresh
+        closeInstallmentModal();
+        refreshPage3SummaryLedger();
+        calculatePage3Financials();
+        showToast("✅ Installment saved successfully!", "success");
+        
+    } catch (error) {
+        console.error("Error saving installment:", error);
+        showToast("❌ Error saving installment: " + error.message, "error");
+    }
+}
+
+    function deletePage3InstallmentMemoryContext(id) {
+    // Prevent default behavior
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    
+    if (!id) {
+        showToast("❌ Invalid installment ID", "error");
+        return;
+    }
+    
+    if (confirm(`Remove localized modifications target installment ${id}?`)) {
+        try {
+            delete page3LocalizedInstallmentsMemory[id];
+            refreshPage3SummaryLedger();
+            calculatePage3Financials();
+            showToast("🗑️ Installment removed successfully", "success");
+        } catch (error) {
+            console.error("Error deleting installment:", error);
+            showToast("❌ Error deleting installment: " + error.message, "error");
+        }
+    }
+}
+
+    /* ======================== COMMIT (SAVE/UPDATE) ======================== */
+    async function commitModifiedLedgerToCloud() {
+        const btn = document.getElementById('commitUpdatesBtn');
+        const totalFeesVal = parseFloat(document.getElementById('p3_totalFees').value) || 0;
+        const studentName = document.getElementById('p3_studentName').value;
+
+        if (!studentName || studentName.trim() === '') {
+            showToast("❌ Please select a student first.", "error");
+            return;
+        }
+
+        if (totalFeesVal <= 0) {
+            showToast("❌ Please assign a valid Total Fees amount.", "error");
+            return;
+        }
+
+        if (Object.keys(page3LocalizedInstallmentsMemory).length === 0) {
+            showToast("❌ Please add at least one installment.", "error");
+            return;
+        }
+
+        // FIXED: Double-check duplicate for add mode
+        if (isAddMode) {
+            const duplicateExists = checkStudentDuplicate(studentName);
+            if (duplicateExists) {
+                showToast(`❌ Student "${studentName}" already has a fees record. Please edit existing record.`, "error");
+                return;
+            }
+        }
+
+        showSpinner(btn, true);
+
+        const action = isAddMode ? "insert" : "update";
+        const payload = {
+            action: action,
+            spreadsheetId: TARGET_SS_ID,
+            sheetName: GLOBAL_SHEET_NAME,
+            "Sr. No": document.getElementById('p3_srNo').value,
+            "Academic Year": document.getElementById('p3_academicYear').value,
+            "Full Name": studentName,
+            "Paid Fees": document.getElementById('p3_paidFees').textContent.replace(/,/g, ''),
+            "Balance Fees": document.getElementById('p3_balanceFees').textContent.replace(/,/g, ''),
+            "Total Fees": totalFeesVal
+        };
+
+        if (!isAddMode) {
+            payload.rowIndex = activeSelectedRowIndex;
+        }
+
+        for (let i = 1; i <= 5; i++) {
+            if (page3LocalizedInstallmentsMemory[i]) {
+                const ins = page3LocalizedInstallmentsMemory[i];
+                payload[`Installment ${i}`] = `Installment ${i}`;
+                payload[`Date ${i}`] = ins.date || '';
+                payload[`Receipt No ${i}`] = ins.receipt || '';
+                payload[`Transaction ${i}`] = ins.method || '';
+                payload[`Bank Trans ${i}`] = ins.bank || '';
+                payload[`UPI Trans ${i}`] = ins.upi || '';
+                payload[`Next Ins Date ${i}`] = ins.nextDate || '';
+                payload[`Amount ${i}`] = ins.amount || 0;
+            } else {
+                payload[`Installment ${i}`] = "";
+                payload[`Date ${i}`] = "";
+                payload[`Receipt No ${i}`] = "";
+                payload[`Transaction ${i}`] = "";
+                payload[`Bank Trans ${i}`] = "";
+                payload[`UPI Trans ${i}`] = "";
+                payload[`Next Ins Date ${i}`] = "";
+                payload[`Amount ${i}`] = "";
+            }
+        }
+
+        try {
+            const bodyParams = new URLSearchParams();
+            Object.keys(payload).forEach(key => bodyParams.append(key, payload[key]));
+
+            await fetch(API_ENDPOINT, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: bodyParams
+            });
+
+            showToast(`✅ Student Fees ${isAddMode ? 'added' : 'updated'} successfully!`, "success");
+            navigateToPage(1);
+            fetchCloudDataPool();
+        } catch (err) {
+            showToast("❌ Processing error: " + err.message, "error");
+        } finally {
+            showSpinner(btn, false);
+        }
+    }
+
+    /* ======================== DELETE OPERATION ======================== */
+    function triggerDeleteConfirmation() {
+        const modal = document.getElementById('deleteConfirmModal');
+        document.getElementById('deleteTargetStudentName').textContent = activeRowDataInstance["Full Name"] || "this profile";
+        modal.classList.add('active');
+    }
+
+    function closeDeleteConfirmation() {
+        document.getElementById('deleteConfirmModal').classList.remove('active');
+    }
+
+    async function executeCloudRowDeletion() {
+        const btn = document.getElementById('executePurgeBtn');
+        showSpinner(btn, true);
+
+        try {
+            const deleteUrlParams = new URLSearchParams();
+            deleteUrlParams.append("action", "delete");
+            deleteUrlParams.append("spreadsheetId", TARGET_SS_ID);
+            deleteUrlParams.append("sheetName", GLOBAL_SHEET_NAME);
+            deleteUrlParams.append("rowIndex", activeSelectedRowIndex);
+
+            await fetch(API_ENDPOINT, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: deleteUrlParams
+            });
+
+            closeDeleteConfirmation();
+            showToast("✅ Record purged successfully!", "success");
+            navigateToPage(1);
+            fetchCloudDataPool();
+        } catch (err) {
+            showToast("❌ Purge operation failed: " + err.message, "error");
+        } finally {
+            showSpinner(btn, false);
+        }
+    }
+
+    /* ======================== REFRESH FUNCTION ======================== */
+    async function refreshData() {
+        showSpinner(dom.refreshBtn, true);
+        showMobileSpinner('mobileRefreshBtn', true);
+        
+        try {
+            await fetchCloudDataPool();
+            showToast("✅ Data refreshed successfully!", "success");
+        } catch (err) {
+            showToast("❌ Refresh failed: " + err.message, "error");
+        } finally {
+            showSpinner(dom.refreshBtn, false);
+            showMobileSpinner('mobileRefreshBtn', false);
+        }
+    }
+
+    /* ======================== INITIALIZATION ======================== */
+    function init() {
+	      // 1. Check admin authentication FIRST
+           const isAuthorized = checkAdminAuth();
+           if (!isAuthorized) return; // Redirect happens inside checkAdminAuth
+	
+        cacheDomElements();
+
+        // Load data
+        dom.tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;"><div class="spinner"></div> Loading fees records...</td></tr>';
+        fetchCloudDataPool();
+        fetchRosterList();
+		
+		window.onclick = function(event) {
+    if (event.target.classList && event.target.classList.contains('modal-overlay')) {
+        const modalId = event.target.id;
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.remove('active');
+            modal.style.display = 'none';
+            modal.style.visibility = 'hidden';
+            modal.style.opacity = '0';
+            
+            // If it's the installment modal, reset form
+            if (modalId === 'installmentModal') {
+                const form = document.getElementById('insForm');
+                if (form) form.reset();
+                const dropdown = document.getElementById('p3_installmentDropdown');
+                if (dropdown) dropdown.value = "";
+            }
+        }
+    }
+};
+
+        // ======================== EVENT LISTENERS ========================
+dom.searchInput?.addEventListener('input', (e) => {
+    clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = setTimeout(() => filterRosterTable(e.target.value), 300);
+});
+
+dom.refreshBtn?.addEventListener('click', refreshData);
+dom.mobileRefreshBtn?.addEventListener('click', refreshData);
+
+// FIXED: Add buttons - clear view data before opening Add form
+dom.addNewBtn?.addEventListener('click', function(e) {
+    e.preventDefault();
+    activeRowDataInstance = null;
+    activeSelectedRowIndex = -1;
+    loadPage3Setup(true);
+});
+
+dom.mobileAddBtn?.addEventListener('click', function(e) {
+    e.preventDefault();
+    activeRowDataInstance = null;
+    activeSelectedRowIndex = -1;
+    loadPage3Setup(true);
+});
+
+dom.backBtn?.addEventListener('click', () => navigateToPage(1));
+dom.backToPage2Btn?.addEventListener('click', () => {
+    if (isAddMode) {
+        navigateToPage(1);
+    } else {
+        navigateToPage(2);
+    }
+});
+dom.editBtn?.addEventListener('click', () => loadPage3Setup(false));
+dom.deleteBtn?.addEventListener('click', triggerDeleteConfirmation);
+
+        document.getElementById('closeGlobalModal')?.addEventListener('click', () => dom.globalModal.classList.remove('active'));
+        document.getElementById('closeStudentSelectorBtn')?.addEventListener('click', closeStudentSelector);
+        document.getElementById('closeInsModalBtn')?.addEventListener('click', closeInstallmentModal);
+        document.getElementById('closeDeleteModalBtn')?.addEventListener('click', closeDeleteConfirmation);
+
+        // Close modals on overlay click
+        window.onclick = (e) => {
+            if (e.target.classList?.contains('modal-overlay')) {
+                e.target.classList.remove('active');
+            }
+        };
+
+        // Auto-refresh background
+        setTimeout(() => fetchCloudDataPool(), 5000);
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
