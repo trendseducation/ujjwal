@@ -438,8 +438,10 @@
 /* Common cards - visible in guest and student mode, hidden in admin */
 .menu-grid.visible.guest-mode #aboutUsLink,
 .menu-grid.visible.guest-mode #settingsLink,
+.menu-grid.visible.guest-mode #home,
 .menu-grid.visible.student-mode #aboutUsLink,
-.menu-grid.visible.student-mode #settingsLink {
+.menu-grid.visible.student-mode #settingsLink,
+.menu-grid.visible.student-mode #studenthome {
     display: block !important;
 }
 
@@ -1377,6 +1379,7 @@
                  ============================================================ -->
             <div class="menu-grid" id="menuGrid">
                 <!-- Student-only cards -->
+				<a href="../../index.html" class="card" id="studenthome"><i class="fa fa-home" aria-hidden="true"></i><span>Home</span></a>
                 <a href="bookmark.html" class="card student-only"><i class="fas fa-bookmark"></i><span>Book Marks</span></a>
                 <a href="review.html" class="card student-only"><i class="fas fa-star"></i><span>Your Review</span></a>
                 <a href="comment.html" class="card student-only"><i class="fas fa-comment"></i><span>Your Comment</span></a>
@@ -1384,10 +1387,12 @@
                 <a href="#" class="card student-only" id="changePasswordLink"><i class="fas fa-key"></i><span>Change Password</span></a>
                 
                 <!-- Common cards - always visible when logged in -->
+				<a href="../../index.html" class="card" id="home"><i class="fa fa-home" aria-hidden="true"></i><span>Home</span></a>
                 <a href="#" class="card" id="aboutUsLink"><i class="fas fa-info-circle"></i><span>About Us</span></a>
                 <a href="#" class="card" id="settingsLink"><i class="fas fa-cog"></i><span>Settings</span></a>
                 
                 <!-- Admin-only cards -->
+				<a href="../../index.html" class="card admin-card"><i class="fa fa-home" aria-hidden="true"></i><span>Home</span></a>
                 <a href="../../Forms/Dashboard.html" class="card admin-card" id="adminManagementCard">
                     <i class="fas fa-building"></i><span>Management</span>
                 </a>
