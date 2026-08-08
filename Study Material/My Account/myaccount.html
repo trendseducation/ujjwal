@@ -73,6 +73,12 @@
         ::-webkit-scrollbar { width: 0; height: 0; display: none; }
         * { scrollbar-width: none; -ms-overflow-style: none; }
 
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
         .app-wrapper {
             max-width: 1440px;
             margin: 0 auto;
@@ -402,101 +408,74 @@
         }
 
         /* ============================================================
-           FIXED MENU GRID VISIBILITY
+           MENU GRID - FIXED VISIBILITY
            ============================================================ */
         .menu-grid {
-    display: none;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 1.2rem;
-    margin-top: 0.5rem;
-}
+            display: none;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.2rem;
+            margin-top: 0.5rem;
+        }
 
-.menu-grid.visible {
-    display: grid;
-}
+        .menu-grid.visible {
+            display: grid;
+        }
 
-/* Hide all cards by default when grid is visible */
-.menu-grid.visible .card {
-    display: none !important;
-}
+        .menu-grid .card {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            border: var(--card-border);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text-main);
+            display: block;
+            position: relative;
+        }
 
-/* Show logout when logged in */
-.menu-grid.visible.logged-in #logoutCard {
-    display: block !important;
-}
+        .menu-grid .card[style*="display: none"] {
+            display: none !important;
+            visibility: hidden !important;
+            width: 0 !important;
+            height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            border: none !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            order: 0 !important;
+        }
 
-/* Student cards - only visible in student mode */
-.menu-grid.visible.student-mode .student-only {
-    display: block !important;
-}
+        .menu-grid .card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-hover);
+        }
+        .menu-grid .card i {
+            font-size: 2.2rem;
+            color: var(--accent);
+            margin-bottom: 0.6rem;
+            display: block;
+        }
+        .menu-grid .card span {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
 
-/* Admin cards - only visible in admin mode */
-.menu-grid.visible.admin-mode .admin-card {
-    display: block !important;
-}
-
-/* Common cards - visible in guest and student mode, hidden in admin */
-.menu-grid.visible.guest-mode #aboutUsLink,
-.menu-grid.visible.guest-mode #settingsLink,
-.menu-grid.visible.guest-mode #home,
-.menu-grid.visible.student-mode #aboutUsLink,
-.menu-grid.visible.student-mode #settingsLink,
-.menu-grid.visible.student-mode #studenthome {
-    display: block !important;
-}
-
-/* Hide common cards in admin mode */
-.menu-grid.visible.admin-mode #aboutUsLink,
-.menu-grid.visible.admin-mode #settingsLink {
-    display: none !important;
-}
-
-/* Guest mode - show only common cards */
-.menu-grid.visible.guest-mode .student-only,
-.menu-grid.visible.guest-mode .admin-card,
-.menu-grid.visible.guest-mode #logoutCard {
-    display: none !important;
-}
-
-/* Individual card styles */
-.menu-grid .card {
-    background: var(--bg-card);
-    border-radius: 24px;
-    padding: 1.5rem 1rem;
-    text-align: center;
-    border: var(--card-border);
-    box-shadow: var(--shadow-sm);
-    transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-    cursor: pointer;
-    text-decoration: none;
-    color: var(--text-main);
-}
-.menu-grid .card:hover {
-    transform: translateY(-6px);
-    box-shadow: var(--shadow-hover);
-}
-.menu-grid .card i {
-    font-size: 2.2rem;
-    color: var(--accent);
-    margin-bottom: 0.6rem;
-    display: block;
-}
-.menu-grid .card span {
-    font-weight: 600;
-    font-size: 0.95rem;
-}
-
-.menu-grid .card.admin-card {
-    border: 2px solid var(--admin-gold);
-    background: var(--admin-badge-bg);
-}
-.menu-grid .card.admin-card i {
-    color: var(--admin-gold);
-}
-.menu-grid .card.admin-card:hover {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.15);
-}
+        .menu-grid .card.admin-card {
+            border: 2px solid var(--admin-gold);
+            background: var(--admin-badge-bg);
+        }
+        .menu-grid .card.admin-card i {
+            color: var(--admin-gold);
+        }
+        .menu-grid .card.admin-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.15);
+        }
 
         .about-section {
             background: var(--bg-card);
@@ -959,7 +938,7 @@
 
             .auth-buttons {
                 display: grid;
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(2, 2fr);
                 gap: 0.6rem;
                 width: 100%;
             }
@@ -1375,36 +1354,89 @@
             </div>
 
             <!-- ============================================================
-                 FIXED MENU GRID - Proper visibility classes
+                 MENU GRID - FIXED VISIBILITY RULES
                  ============================================================ -->
             <div class="menu-grid" id="menuGrid">
-                <!-- Student-only cards -->
-				<a href="../../index.html" class="card" id="studenthome"><i class="fa fa-home" aria-hidden="true"></i><span>Home</span></a>
-                <a href="bookmark.html" class="card student-only"><i class="fas fa-bookmark"></i><span>Book Marks</span></a>
-                <a href="review.html" class="card student-only"><i class="fas fa-star"></i><span>Your Review</span></a>
-                <a href="comment.html" class="card student-only"><i class="fas fa-comment"></i><span>Your Comment</span></a>
-                <a href="donate.html" class="card student-only"><i class="fas fa-hand-holding-heart"></i><span>Donate Us</span></a>
-                <a href="#" class="card student-only" id="changePasswordLink"><i class="fas fa-key"></i><span>Change Password</span></a>
-                
-                <!-- Common cards - always visible when logged in -->
-				<a href="../../index.html" class="card" id="home"><i class="fa fa-home" aria-hidden="true"></i><span>Home</span></a>
-                <a href="#" class="card" id="aboutUsLink"><i class="fas fa-info-circle"></i><span>About Us</span></a>
-                <a href="#" class="card" id="settingsLink"><i class="fas fa-cog"></i><span>Settings</span></a>
-                
-                <!-- Admin-only cards -->
-				<a href="../../index.html" class="card admin-card"><i class="fa fa-home" aria-hidden="true"></i><span>Home</span></a>
-                <a href="../../Forms/Dashboard.html" class="card admin-card" id="adminManagementCard">
-                    <i class="fas fa-building"></i><span>Management</span>
-                </a>
-                <a href="#" class="card admin-card" id="adminChangePasswordLink">
-                    <i class="fas fa-key" style="color: var(--admin-gold);"></i><span>Admin Change Password</span>
-                </a>
-                <a href="#" class="card admin-card" id="adminSettingsLink">
-                    <i class="fas fa-cog" style="color: var(--admin-gold);"></i><span>Admin Settings</span>
+                <!-- 1. Home - Always visible -->
+                <a href="../../index.html" class="card" id="home" style="order: 1;">
+                    <i class="fa fa-home" aria-hidden="true"></i>
+                    <span>Home</span>
                 </a>
                 
-                <!-- Logout card -->
-                <a href="#" class="card" id="logoutCard" style="border-color: var(--danger);">
+                <!-- 2. Your Details - Only when email found in student sheets -->
+                <a href="#" class="card student-only" id="yourDetailsCard" style="display: none; order: 2;">
+                    <i class="fas fa-user-graduate"></i>
+                    <span>Your Details</span>
+                </a>
+                
+                <!-- 3. Book Marks - Student only -->
+                <a href="bookmark.html" class="card student-only" style="order: 3;">
+                    <i class="fas fa-bookmark"></i>
+                    <span>Book Marks</span>
+                </a>
+                
+                <!-- 4. Your Review - Student only -->
+                <a href="review.html" class="card student-only" style="order: 4;">
+                    <i class="fas fa-star"></i>
+                    <span>Your Review</span>
+                </a>
+                
+                <!-- 5. Your Requirement - Student only -->
+                <a href="requirement.html" class="card student-only" style="order: 5;">
+                    <i class="fas fa fa-question-circle" aria-hidden="true"></i>
+                    <span>Your Requirement</span>
+                </a>
+                
+                <!-- 6. Donate Us - Student only -->
+                <a href="donate.html" class="card student-only" style="order: 6;">
+                    <i class="fas fa-hand-holding-heart"></i>
+                    <span>Donate Us</span>
+                </a>
+                
+                <!-- 7. Change Password - Student only -->
+                <a href="#" class="card student-only" id="changePasswordLink" style="order: 7;">
+                    <i class="fas fa-key"></i>
+                    <span>Change Password</span>
+                </a>
+                
+                <!-- 8. About Us - Guest and Student only (Hidden for Admin) -->
+                <a href="#" class="card common-card" id="aboutUsLink" style="order: 8;">
+                    <i class="fas fa-info-circle"></i>
+                    <span>About Us</span>
+                </a>
+                
+                <!-- 9. Settings - Guest and Student only (Hidden for Admin) -->
+                <a href="#" class="card common-card" id="settingsLink" style="order: 9;">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+                
+                <!-- 10. Admin Login - Admin only -->
+                <a href="#" class="card admin-card" id="adminLoginCard" style="order: 10; display: none;">
+                    <i class="fas fa-user-shield" style="color: var(--admin-gold);"></i>
+                    <span>Admin Login</span>
+                </a>
+                
+                <!-- 11. Admin Change Password - Admin only -->
+                <a href="#" class="card admin-card" id="adminChangePasswordLink" style="order: 11; display: none;">
+                    <i class="fas fa-key" style="color: var(--admin-gold);"></i>
+                    <span>Admin Change Password</span>
+                </a>
+                
+                <!-- 12. Admin Setting - Admin only -->
+                <a href="#" class="card admin-card" id="adminSettingsLink" style="order: 12; display: none;">
+                    <i class="fas fa-cog" style="color: var(--admin-gold);"></i>
+                    <span>Admin Settings</span>
+                </a>
+                
+                <!-- 13. Management - Admin only -->
+                <a href="../../Forms/Dashboard.html" class="card admin-card" id="adminManagementCard" style="order: 13; display: none;">
+                    <i class="fas fa-building" style="color: var(--admin-gold);"></i>
+                    <span>Management</span>
+                </a>
+                
+                <!-- 14. Logout - Student and Admin only -->
+                <a href="#" class="card" id="logoutCard" style="order: 14; display: none; border-color: var(--danger);">
                     <i class="fas fa-sign-out-alt" style="color: var(--danger);"></i>
                     <span style="color: var(--danger);">Logout</span>
                 </a>
@@ -1515,7 +1547,7 @@
                         <input type="text" id="educationDetails" placeholder="Studies in section">
                     </div>
                     <div class="form-group">
-                        <label>College Name</label>
+                        <label>College Name / School Name</label>
                         <input type="text" id="collegeName" placeholder="Your college / school">
                     </div>
                     <div class="form-group">
@@ -1745,1617 +1777,2486 @@
 
     <script>
         // ============================================================
-        // THEME SYNC
-        // ============================================================
-        function getStoredTheme() {
-            return localStorage.getItem('user-theme-preference') || 'light';
-        }
+// THEME SYNC
+// ============================================================
+function getStoredTheme() {
+    return localStorage.getItem('user-theme-preference') || 'light';
+}
 
-        function applyTheme(theme) {
-            document.body.setAttribute('data-theme', theme);
-            document.documentElement.setAttribute('data-theme', theme);
-            localStorage.setItem('user-theme-preference', theme);
-            
-            const studentToggle = document.getElementById('settingsThemeToggle');
-            const adminToggle = document.getElementById('adminSettingsThemeToggle');
-            
-            if (studentToggle) studentToggle.checked = (theme === 'dark');
-            if (adminToggle) adminToggle.checked = (theme === 'dark');
-            
-            try {
-                if (window.parent && window.parent !== window) {
-                    window.parent.postMessage({
-                        type: 'themeChange',
-                        theme: theme
-                    }, '*');
+function applyTheme(theme) {
+    document.body.setAttribute('data-theme', theme);
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('user-theme-preference', theme);
+    
+    const studentToggle = document.getElementById('settingsThemeToggle');
+    const adminToggle = document.getElementById('adminSettingsThemeToggle');
+    
+    if (studentToggle) studentToggle.checked = (theme === 'dark');
+    if (adminToggle) adminToggle.checked = (theme === 'dark');
+    
+    try {
+        if (window.parent && window.parent !== window) {
+            window.parent.postMessage({
+                type: 'themeChange',
+                theme: theme
+            }, '*');
+        }
+    } catch(e) {}
+}
+
+function syncThemeWithParent() {
+    const localTheme = localStorage.getItem('user-theme-preference');
+    if (localTheme) {
+        applyTheme(localTheme);
+    } else {
+        try {
+            if (window.parent && window.parent.document.body) {
+                const parentTheme = window.parent.document.body.getAttribute('data-theme');
+                if (parentTheme) {
+                    applyTheme(parentTheme);
                 }
-            } catch(e) {}
-        }
-
-        function syncThemeWithParent() {
-            const localTheme = localStorage.getItem('user-theme-preference');
-            if (localTheme) {
-                applyTheme(localTheme);
-            } else {
-                try {
-                    if (window.parent && window.parent.document.body) {
-                        const parentTheme = window.parent.document.body.getAttribute('data-theme');
-                        if (parentTheme) {
-                            applyTheme(parentTheme);
-                        }
-                    }
-                } catch(e) { }
             }
-        }
+        } catch(e) { }
+    }
+}
 
+syncThemeWithParent();
+
+window.addEventListener('storage', function(e) {
+    if (e.key === 'user-theme-preference') {
         syncThemeWithParent();
+    }
+});
 
-        window.addEventListener('storage', function(e) {
-            if (e.key === 'user-theme-preference') {
-                syncThemeWithParent();
+window.addEventListener('message', function(event) {
+    if (event.data && event.data.type === 'themeChange') {
+        const newTheme = event.data.theme;
+        if (newTheme) {
+            applyTheme(newTheme);
+        }
+    }
+});
+
+// ============================================================
+// CONFIGURATION
+// ============================================================
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzoDds81u8M5N8micA_hoIBgCS7aCFm0NUmwW6XLH4m_fRJ8R9pGqjgFGMeBxBd2dSL/exec";
+const STUDENT_SHEET = "Student_Login";
+const ADMIN_SHEET = "Admin_Login";
+const SPREADSHEET_ID = "1iK6_Ge2OAlA6a0ISR19MTBQcwoHth0fKVzMGgQFeIjY";
+const DRIVE_FOLDER_ID = "1M0AZkLkR9t2NmkM4kOS8mka5KkobUlwD";
+const IMAGE_COLUMN_NAME = "Image";
+
+const STUDENT_SHEETS = [
+    '5th_Std',
+    '6th_Std', 
+    '7th_Std',
+    '8th_Std',
+    '9th_Std',
+    '10th_Std',
+    '11_Com',
+    '12_Com',
+    '11_Sci',
+    '12_Sci'
+];
+const STUDENT_DATA_SPREADSHEET_ID = '1n21WMpSxap6CgfXBt3guK4DUKpFfDG69fiMm3_4r2hc';
+
+// Cache configuration
+const CACHE_KEYS = {
+    STUDENT_DATA: 'ujjwal_student_data_cache',
+    ADMIN_DATA: 'ujjwal_admin_data_cache',
+    STUDENT_SHEETS_DATA: 'ujjwal_student_sheets_cache',
+    USER_SESSION: 'ujjwal_user_session',
+    USER_DATA: 'ujjwal_user_data_cache'
+};
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+// ============================================================
+// GLOBAL STATE
+// ============================================================
+let currentUser = null;
+let currentUserData = null;
+let currentUserType = null;
+let mathAnswer = 0;
+let forgotPasswordData = null;
+let isCheckingStudentSheets = false;
+let backgroundUpdateInProgress = false;
+let updateQueue = [];
+let isProcessingQueue = false;
+let signupEmailCheckTimeout = null;
+
+let croppers = {
+    signup: null,
+    admin: null
+};
+
+let croppedImageData = {
+    signup: null,
+    admin: null
+};
+
+// ============================================================
+// DOM REFS
+// ============================================================
+const dom = {};
+
+function cacheDomElements() {
+    dom.sidebar = document.getElementById('mobileSidebar');
+    dom.overlay = document.getElementById('sidebarOverlay');
+    dom.hamburger = document.getElementById('hamburgerOpen');
+    dom.closeBtn = document.getElementById('sidebarClose');
+    dom.authButtons = document.getElementById('authButtons');
+    dom.menuGrid = document.getElementById('menuGrid');
+    dom.alertBox = document.getElementById('alertBox');
+    dom.profileSection = document.getElementById('profileSection');
+    dom.profileAvatar = document.getElementById('profileAvatar');
+    dom.profileName = document.getElementById('profileName');
+    dom.profileEmail = document.getElementById('profileEmail');
+    
+    dom.adminManagementCard = document.getElementById('adminManagementCard');
+    dom.adminChangePasswordLink = document.getElementById('adminChangePasswordLink');
+    dom.adminSettingsLink = document.getElementById('adminSettingsLink');
+    dom.adminLoginCard = document.getElementById('adminLoginCard');
+    dom.editProfileBtn = document.getElementById('editProfileBtn');
+    dom.editAdminProfileSubmitBtn = document.getElementById('editAdminProfileSubmitBtn');
+    dom.applyAdminCropBtn = document.getElementById('applyAdminCropBtn');
+    dom.yourDetailsCard = document.getElementById('yourDetailsCard');
+    dom.logoutCard = document.getElementById('logoutCard');
+    dom.aboutUsLink = document.getElementById('aboutUsLink');
+    dom.settingsLink = document.getElementById('settingsLink');
+    
+    dom.signupEmail = document.getElementById('signupEmail');
+    dom.signupEmailStatus = document.getElementById('signupEmailStatus');
+    dom.signupSubmitBtn = document.getElementById('signupSubmitBtn');
+}
+
+// ============================================================
+// CACHE UTILITY FUNCTIONS
+// ============================================================
+function getCachedData(cacheKey) {
+    try {
+        const cached = localStorage.getItem(cacheKey);
+        if (!cached) return null;
+        
+        const { data, timestamp } = JSON.parse(cached);
+        if (Date.now() - timestamp < CACHE_TTL) {
+            return data;
+        }
+        return null;
+    } catch (e) {
+        console.warn('Cache read error:', e);
+        return null;
+    }
+}
+
+function setCachedData(cacheKey, data) {
+    try {
+        localStorage.setItem(cacheKey, JSON.stringify({
+            data: data,
+            timestamp: Date.now()
+        }));
+    } catch (e) {
+        console.warn('Cache write error:', e);
+    }
+}
+
+function clearCache(cacheKey) {
+    if (cacheKey) {
+        localStorage.removeItem(cacheKey);
+    } else {
+        Object.values(CACHE_KEYS).forEach(key => {
+            localStorage.removeItem(key);
+        });
+    }
+}
+
+// ============================================================
+// BACKGROUND DATA UPDATE SYSTEM
+// ============================================================
+class BackgroundDataUpdater {
+    constructor() {
+        this.updateQueue = [];
+        this.isProcessing = false;
+        this.updateListeners = [];
+        this.lastUpdateTimes = {};
+    }
+
+    queueUpdate(taskId, updateFn, priority = 'normal') {
+        this.updateQueue.push({
+            id: taskId,
+            fn: updateFn,
+            priority: priority,
+            timestamp: Date.now()
+        });
+        
+        this.updateQueue.sort((a, b) => {
+            const priorityOrder = { high: 0, normal: 1, low: 2 };
+            return priorityOrder[a.priority] - priorityOrder[b.priority];
+        });
+        
+        this.processQueue();
+    }
+
+    async processQueue() {
+        if (this.isProcessing || this.updateQueue.length === 0) return;
+        
+        this.isProcessing = true;
+        
+        while (this.updateQueue.length > 0) {
+            const task = this.updateQueue.shift();
+            try {
+                await task.fn();
+                this.notifyListeners(task.id, 'success');
+            } catch (error) {
+                console.error(`Background update failed for task ${task.id}:`, error);
+                this.notifyListeners(task.id, 'error', error.message);
+            }
+        }
+        
+        this.isProcessing = false;
+    }
+
+    addListener(listener) {
+        this.updateListeners.push(listener);
+    }
+
+    notifyListeners(taskId, status, message = '') {
+        this.updateListeners.forEach(listener => {
+            try {
+                listener(taskId, status, message);
+            } catch (e) {
+                console.warn('Listener error:', e);
             }
         });
+    }
 
-        window.addEventListener('message', function(event) {
-            if (event.data && event.data.type === 'themeChange') {
-                const newTheme = event.data.theme;
-                if (newTheme) {
-                    applyTheme(newTheme);
+    getLastUpdateTime(taskId) {
+        return this.lastUpdateTimes[taskId] || null;
+    }
+
+    setLastUpdateTime(taskId) {
+        this.lastUpdateTimes[taskId] = Date.now();
+    }
+}
+
+const backgroundUpdater = new BackgroundDataUpdater();
+
+// ============================================================
+// FAST DATA FETCH WITH CACHE
+// ============================================================
+async function fetchDataFast(url, cacheKey, forceRefresh = false) {
+    if (!forceRefresh) {
+        const cachedData = getCachedData(cacheKey);
+        if (cachedData) {
+            if (!backgroundUpdateInProgress) {
+                backgroundUpdateInProgress = true;
+                backgroundUpdater.queueUpdate(
+                    `refresh_${cacheKey}`,
+                    async () => {
+                        try {
+                            const freshData = await fetchDataDirect(url);
+                            if (freshData) {
+                                setCachedData(cacheKey, freshData);
+                                console.log(`Background refresh completed for ${cacheKey}`);
+                            }
+                        } catch (err) {
+                            console.warn(`Background refresh failed for ${cacheKey}:`, err);
+                        } finally {
+                            backgroundUpdateInProgress = false;
+                        }
+                    },
+                    'low'
+                );
+            }
+            return cachedData;
+        }
+    }
+    
+    try {
+        const data = await fetchDataDirect(url);
+        if (data) {
+            setCachedData(cacheKey, data);
+        }
+        return data;
+    } catch (err) {
+        console.error('Fetch error:', err);
+        return null;
+    }
+}
+
+async function fetchDataDirect(url) {
+    try {
+        const response = await fetch(url);
+        const result = await response.json();
+        if (result.status === 'success' && Array.isArray(result.data)) {
+            return result.data;
+        }
+        return null;
+    } catch (err) {
+        console.error('Direct fetch error:', err);
+        throw err;
+    }
+}
+
+// ============================================================
+// SIGNUP EMAIL VALIDATION
+// ============================================================
+async function checkEmailExistsInStudentLogin(email) {
+    try {
+        // Check cache first
+        const cacheKey = CACHE_KEYS.STUDENT_DATA;
+        let users = getCachedData(cacheKey);
+        
+        if (!users) {
+            // Fetch fresh data if not in cache
+            const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${STUDENT_SHEET}&action=getData&_=${Date.now()}`;
+            const resp = await fetch(url);
+            const data = await resp.json();
+            if (data.status === 'success' && data.data) {
+                users = data.data;
+                setCachedData(cacheKey, users);
+            } else {
+                return false;
+            }
+        }
+        
+        // Check if email exists
+        if (users) {
+            const exists = users.some(row => {
+                const rowEmail = row['Email Id'] ? row['Email Id'].toString().trim().toLowerCase() : '';
+                return rowEmail === email.toLowerCase().trim();
+            });
+            return exists;
+        }
+        return false;
+    } catch (err) {
+        console.error('Error checking email:', err);
+        return false;
+    }
+}
+
+// ============================================================
+// SIGNUP EMAIL VALIDATION UI
+// ============================================================
+function setupSignupEmailValidation() {
+    if (!dom.signupEmail) return;
+    
+    // Create status element if it doesn't exist
+    if (!dom.signupEmailStatus) {
+        const statusEl = document.createElement('div');
+        statusEl.id = 'signupEmailStatus';
+        statusEl.className = 'signup-email-status';
+        statusEl.style.cssText = `
+            font-size: 0.75rem;
+            margin-top: 4px;
+            padding: 4px 8px;
+            border-radius: 8px;
+            display: none;
+            font-weight: 500;
+        `;
+        dom.signupEmail.parentNode.appendChild(statusEl);
+        dom.signupEmailStatus = statusEl;
+    }
+    
+    // Real-time validation on input
+    dom.signupEmail.addEventListener('input', function() {
+        clearTimeout(signupEmailCheckTimeout);
+        const email = this.value.trim();
+        
+        // Reset status
+        dom.signupEmailStatus.style.display = 'none';
+        dom.signupEmailStatus.textContent = '';
+        dom.signupSubmitBtn.disabled = false;
+        
+        // Validate email format first
+        if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            // Show checking status
+            dom.signupEmailStatus.style.display = 'block';
+            dom.signupEmailStatus.textContent = '⏳ Checking email...';
+            dom.signupEmailStatus.style.color = 'var(--text-muted)';
+            dom.signupEmailStatus.style.background = 'var(--accent-soft)';
+            dom.signupEmailStatus.style.border = '1px solid var(--border-light)';
+            dom.signupSubmitBtn.disabled = true;
+            
+            // Debounce the check
+            signupEmailCheckTimeout = setTimeout(async () => {
+                try {
+                    const exists = await checkEmailExistsInStudentLogin(email);
+                    
+                    if (exists) {
+                        // Email exists - show error and prevent signup
+                        dom.signupEmailStatus.style.display = 'block';
+                        dom.signupEmailStatus.textContent = '❌ Please login! You already registered';
+                        dom.signupEmailStatus.style.color = 'var(--danger)';
+                        dom.signupEmailStatus.style.background = 'rgba(239, 68, 68, 0.1)';
+                        dom.signupEmailStatus.style.border = '1px solid var(--danger)';
+                        dom.signupSubmitBtn.disabled = true;
+                        dom.signupEmail.style.borderColor = 'var(--danger)';
+                        
+                        // Show toast notification
+                        showToast('⚠️ Please login! You already registered', 'warning');
+                    } else {
+                        // Email available
+                        dom.signupEmailStatus.style.display = 'block';
+                        dom.signupEmailStatus.textContent = '✅ Email available';
+                        dom.signupEmailStatus.style.color = 'var(--success)';
+                        dom.signupEmailStatus.style.background = 'rgba(16, 185, 129, 0.1)';
+                        dom.signupEmailStatus.style.border = '1px solid var(--success)';
+                        dom.signupSubmitBtn.disabled = false;
+                        dom.signupEmail.style.borderColor = 'var(--success)';
+                    }
+                } catch (err) {
+                    console.error('Email validation error:', err);
+                    dom.signupEmailStatus.style.display = 'none';
+                    dom.signupSubmitBtn.disabled = false;
+                }
+            }, 500);
+        } else if (email && email.length > 0) {
+            // Invalid email format
+            dom.signupEmailStatus.style.display = 'block';
+            dom.signupEmailStatus.textContent = '⚠️ Please enter a valid email address';
+            dom.signupEmailStatus.style.color = 'var(--warning)';
+            dom.signupEmailStatus.style.background = 'rgba(245, 158, 11, 0.1)';
+            dom.signupEmailStatus.style.border = '1px solid var(--warning)';
+            dom.signupSubmitBtn.disabled = true;
+            dom.signupEmail.style.borderColor = 'var(--warning)';
+        } else {
+            // Empty or cleared
+            dom.signupEmailStatus.style.display = 'none';
+            dom.signupSubmitBtn.disabled = false;
+            dom.signupEmail.style.borderColor = 'var(--input-border)';
+        }
+    });
+    
+    // Also validate on blur (when user leaves the field)
+    dom.signupEmail.addEventListener('blur', function() {
+        const email = this.value.trim();
+        if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            // Trigger validation if not already validated
+            if (dom.signupEmailStatus.textContent === '⏳ Checking email...') {
+                // Wait for the check to complete
+            }
+        }
+    });
+}
+
+// ============================================================
+// FAST USER DATA FETCH WITH BACKGROUND UPDATE
+// ============================================================
+async function fetchUserDataFast(email, forceRefresh = false) {
+    const cacheKey = `${CACHE_KEYS.USER_DATA}_${email}`;
+    
+    if (!forceRefresh) {
+        const cached = getCachedData(cacheKey);
+        if (cached) {
+            backgroundUpdater.queueUpdate(
+                `refresh_user_${email}`,
+                async () => {
+                    try {
+                        const freshData = await fetchUserDataDirect(email);
+                        if (freshData) {
+                            setCachedData(cacheKey, freshData);
+                            if (currentUser === email) {
+                                currentUserData = freshData;
+                                updateProfileDisplay(freshData, currentUserType);
+                            }
+                        }
+                    } catch (err) {
+                        console.warn('User data background refresh failed:', err);
+                    }
+                },
+                'normal'
+            );
+            return cached;
+        }
+    }
+    
+    const data = await fetchUserDataDirect(email);
+    if (data) {
+        setCachedData(cacheKey, data);
+    }
+    return data;
+}
+
+async function fetchUserDataDirect(email) {
+    try {
+        const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${STUDENT_SHEET}&action=getData&_=${Date.now()}`;
+        const resp = await fetch(url);
+        const data = await resp.json();
+        if (data.status === 'success' && data.data) {
+            return data.data.find(row => {
+                const rowEmail = row['Email Id'] ? row['Email Id'].toString().trim() : '';
+                return rowEmail === email;
+            });
+        }
+        return null;
+    } catch (err) {
+        console.error('Error fetching user data:', err);
+        throw err;
+    }
+}
+
+// ============================================================
+// FAST ADMIN DATA FETCH WITH BACKGROUND UPDATE
+// ============================================================
+async function fetchAdminDataFast(username, forceRefresh = false) {
+    const cacheKey = `${CACHE_KEYS.ADMIN_DATA}_${username}`;
+    
+    if (!forceRefresh) {
+        const cached = getCachedData(cacheKey);
+        if (cached) {
+            backgroundUpdater.queueUpdate(
+                `refresh_admin_${username}`,
+                async () => {
+                    try {
+                        const freshData = await fetchAdminDataDirect(username);
+                        if (freshData) {
+                            setCachedData(cacheKey, freshData);
+                            if (currentUser === username && currentUserType === 'admin') {
+                                currentUserData = freshData;
+                                updateProfileDisplay(freshData, 'admin');
+                            }
+                        }
+                    } catch (err) {
+                        console.warn('Admin data background refresh failed:', err);
+                    }
+                },
+                'normal'
+            );
+            return cached;
+        }
+    }
+    
+    const data = await fetchAdminDataDirect(username);
+    if (data) {
+        setCachedData(cacheKey, data);
+    }
+    return data;
+}
+
+async function fetchAdminDataDirect(username) {
+    try {
+        const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${ADMIN_SHEET}&action=getData&_=${Date.now()}`;
+        const resp = await fetch(url);
+        const data = await resp.json();
+        if (data.status === 'success' && data.data) {
+            return data.data.find(row => {
+                const rowUser = row['User Name'] ? row['User Name'].toString().trim() : '';
+                return rowUser === username;
+            });
+        }
+        return null;
+    } catch (err) {
+        console.error('Error fetching admin data:', err);
+        throw err;
+    }
+}
+
+// ============================================================
+// UPDATE PROFILE DISPLAY
+// ============================================================
+function updateProfileDisplay(userData, userType) {
+    if (!userData) return;
+    
+    if (userType === 'admin') {
+        const fullName = userData['User Name'] || 'Admin';
+        dom.profileName.innerHTML = `${fullName} <span class="admin-badge"><i class="fas fa-user-shield"></i> Admin</span>`;
+        
+        const imageLink = userData['Image'] || '';
+        if (imageLink) {
+            const thumbnail = getDriveThumbnail(imageLink);
+            dom.profileAvatar.src = thumbnail;
+        }
+    } else {
+        const fullName = `${userData['First Name'] || ''} ${userData['Last Name'] || ''}`.trim() || 'User';
+        dom.profileName.textContent = fullName;
+        
+        const imageLink = userData['Image'] || '';
+        if (imageLink) {
+            const thumbnail = getDriveThumbnail(imageLink);
+            dom.profileAvatar.src = thumbnail;
+        }
+    }
+}
+
+// ============================================================
+// FAST LOGIN WITH BACKGROUND UPDATE
+// ============================================================
+async function handleLoginFast(email, password) {
+    try {
+        const cacheKey = CACHE_KEYS.STUDENT_DATA;
+        let users = getCachedData(cacheKey);
+        
+        if (!users) {
+            const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${STUDENT_SHEET}&action=getData&_=${Date.now()}`;
+            const resp = await fetch(url);
+            const data = await resp.json();
+            if (data.status === 'success' && data.data) {
+                users = data.data;
+                setCachedData(cacheKey, users);
+                
+                backgroundUpdater.queueUpdate(
+                    'refresh_student_login',
+                    async () => {
+                        try {
+                            const freshData = await fetchStudentLoginData();
+                            if (freshData) {
+                                setCachedData(cacheKey, freshData);
+                            }
+                        } catch (err) {
+                            console.warn('Student login background refresh failed:', err);
+                        }
+                    },
+                    'low'
+                );
+            }
+        }
+        
+        if (users) {
+            const found = users.find(row => {
+                const rowEmail = row['Email Id'] ? row['Email Id'].toString().trim() : '';
+                const rowPass = row['Password'] ? row['Password'].toString().trim() : '';
+                return rowEmail === email && rowPass === password;
+            });
+            
+            if (found) {
+                return found;
+            }
+        }
+        return null;
+    } catch (err) {
+        console.error('Login error:', err);
+        throw new Error('Login error: ' + err.message);
+    }
+}
+
+async function fetchStudentLoginData() {
+    try {
+        const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${STUDENT_SHEET}&action=getData&_=${Date.now()}`;
+        const resp = await fetch(url);
+        const data = await resp.json();
+        if (data.status === 'success' && data.data) {
+            return data.data;
+        }
+        return null;
+    } catch (err) {
+        console.error('Error fetching student login data:', err);
+        throw err;
+    }
+}
+
+// ============================================================
+// FAST ADMIN LOGIN WITH BACKGROUND UPDATE
+// ============================================================
+async function handleAdminLoginFast(username, password) {
+    try {
+        const cacheKey = CACHE_KEYS.ADMIN_DATA;
+        let admins = getCachedData(cacheKey);
+        
+        if (!admins) {
+            const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${ADMIN_SHEET}&action=getData&_=${Date.now()}`;
+            const resp = await fetch(url);
+            const data = await resp.json();
+            if (data.status === 'success' && data.data) {
+                admins = data.data;
+                setCachedData(cacheKey, admins);
+                
+                backgroundUpdater.queueUpdate(
+                    'refresh_admin_login',
+                    async () => {
+                        try {
+                            const freshData = await fetchAdminLoginData();
+                            if (freshData) {
+                                setCachedData(cacheKey, freshData);
+                            }
+                        } catch (err) {
+                            console.warn('Admin login background refresh failed:', err);
+                        }
+                    },
+                    'low'
+                );
+            }
+        }
+        
+        if (admins) {
+            const found = admins.find(row => {
+                const rowUser = row['User Name'] ? row['User Name'].toString().trim() : '';
+                const rowPass = row['Password'] ? row['Password'].toString().trim() : '';
+                return rowUser === username && rowPass === password;
+            });
+            return found || null;
+        }
+        return null;
+    } catch (err) {
+        console.error('Admin login error:', err);
+        throw new Error('Admin login error: ' + err.message);
+    }
+}
+
+async function fetchAdminLoginData() {
+    try {
+        const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${ADMIN_SHEET}&action=getData&_=${Date.now()}`;
+        const resp = await fetch(url);
+        const data = await resp.json();
+        if (data.status === 'success' && data.data) {
+            return data.data;
+        }
+        return null;
+    } catch (err) {
+        console.error('Error fetching admin login data:', err);
+        throw err;
+    }
+}
+
+// ============================================================
+// FORGOT PASSWORD WITH CACHE
+// ============================================================
+async function findUserByEmailAndMobileFast(email, mobile) {
+    try {
+        const cacheKey = CACHE_KEYS.STUDENT_DATA;
+        let users = getCachedData(cacheKey);
+        
+        if (!users) {
+            const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${STUDENT_SHEET}&action=getData&_=${Date.now()}`;
+            const resp = await fetch(url);
+            const data = await resp.json();
+            if (data.status === 'success' && data.data) {
+                users = data.data;
+                setCachedData(cacheKey, users);
+            }
+        }
+        
+        if (users) {
+            const found = users.find(row => {
+                const rowEmail = row['Email Id'] ? row['Email Id'].toString().trim() : '';
+                const rowMobile = row['Mobile Number'] ? row['Mobile Number'].toString().trim() : '';
+                return rowEmail === email && rowMobile === mobile;
+            });
+            return found || null;
+        }
+        return null;
+    } catch (err) {
+        console.error('Error finding user:', err);
+        throw new Error('Error connecting to server: ' + err.message);
+    }
+}
+
+// ============================================================
+// UPDATE OPERATIONS WITH BACKGROUND SYNC
+// ============================================================
+async function updateDataWithBackgroundSync(operation, data) {
+    const taskId = `update_${operation}_${Date.now()}`;
+    
+    return new Promise((resolve, reject) => {
+        backgroundUpdater.queueUpdate(
+            taskId,
+            async () => {
+                try {
+                    const result = await performUpdateOperation(operation, data);
+                    clearRelevantCaches(operation);
+                    backgroundUpdater.setLastUpdateTime(taskId);
+                    resolve(result);
+                } catch (err) {
+                    reject(err);
+                }
+            },
+            'high'
+        );
+    });
+}
+
+async function performUpdateOperation(operation, data) {
+    switch(operation) {
+        case 'changePassword':
+            return await handleChangePassword(data.email, data.newPassword, data.rowIndex);
+        case 'adminChangePassword':
+            return await handleAdminChangePassword(data.username, data.newPassword, data.rowIndex);
+        case 'updateProfile':
+            return await handleEditAdminProfile(data.username, data.newUsername, data.rowIndex, data.imageData);
+        case 'updateUserData':
+            return await updateUserData(data.email, data.updates, data.rowIndex);
+        default:
+            throw new Error(`Unknown operation: ${operation}`);
+    }
+}
+
+function clearRelevantCaches(operation) {
+    switch(operation) {
+        case 'changePassword':
+        case 'updateUserData':
+            clearCache(CACHE_KEYS.STUDENT_DATA);
+            clearCache(`${CACHE_KEYS.USER_DATA}_${currentUser}`);
+            break;
+        case 'adminChangePassword':
+        case 'updateProfile':
+            clearCache(CACHE_KEYS.ADMIN_DATA);
+            clearCache(`${CACHE_KEYS.ADMIN_DATA}_${currentUser}`);
+            break;
+        default:
+            clearCache();
+    }
+}
+
+// ============================================================
+// CROPPER FUNCTIONS
+// ============================================================
+function getCropElements(section) {
+    if (section === 'signup') {
+        return {
+            container: document.getElementById('signupPreviewContainer'),
+            img: document.getElementById('signupImageToCrop'),
+            status: document.getElementById('signupImageStatus'),
+            preview: document.getElementById('profilePreview'),
+            cropBtn: null
+        };
+    } else if (section === 'admin') {
+        return {
+            container: document.getElementById('editAdminPreviewContainer'),
+            img: document.getElementById('editAdminImageToCrop'),
+            status: document.getElementById('editAdminImageStatus'),
+            preview: document.getElementById('editAdminProfilePreview'),
+            cropBtn: document.getElementById('applyAdminCropBtn'),
+            thumbnailContainer: document.getElementById('editAdminCroppedThumbnailContainer'),
+            thumbnailPreview: document.getElementById('editAdminCroppedThumbnailPreview'),
+            submitBtn: document.getElementById('editAdminProfileSubmitBtn')
+        };
+    }
+    return null;
+}
+
+function rotateLeft(section) {
+    if (croppers[section]) croppers[section].rotate(-90);
+}
+
+function rotateRight(section) {
+    if (croppers[section]) croppers[section].rotate(90);
+}
+
+function applyCrop(section) {
+    const elements = getCropElements(section);
+    if (!elements || !croppers[section]) {
+        elements.status.textContent = "❌ No image loaded to crop.";
+        elements.status.style.color = "var(--danger)";
+        return;
+    }
+
+    try {
+        const canvas = croppers[section].getCroppedCanvas({ width: 400, height: 400 });
+        if (!canvas) throw new Error("Could not crop image");
+        
+        const base64Data = canvas.toDataURL('image/jpeg', 0.9);
+        croppedImageData[section] = {
+            base64Data: base64Data.split(',')[1],
+            fileName: `${section}_profile_${Date.now()}.jpg`,
+            mimeType: 'image/jpeg',
+            fullDataUrl: base64Data
+        };
+        
+        elements.status.textContent = "✅ Image cropped and ready!";
+        elements.status.style.color = "var(--success)";
+        elements.preview.src = base64Data;
+
+        if (section === 'admin') {
+            const thumbnailContainer = elements.thumbnailContainer;
+            const thumbnailPreview = elements.thumbnailPreview;
+            thumbnailPreview.src = base64Data;
+            thumbnailContainer.style.display = 'block';
+            elements.submitBtn.disabled = false;
+            elements.submitBtn.title = "";
+            if (elements.cropBtn) elements.cropBtn.disabled = true;
+        }
+        
+    } catch (error) {
+        elements.status.textContent = "❌ Failed to crop image: " + error.message;
+        elements.status.style.color = "var(--danger)";
+        if (section === 'admin') {
+            elements.submitBtn.disabled = true;
+        }
+    }
+}
+
+// ============================================================
+// UTILITY FUNCTIONS
+// ============================================================
+function capitalizeFirst(el) {
+    if (el.value.length > 0) {
+        el.value = el.value.charAt(0).toUpperCase() + el.value.slice(1);
+    }
+}
+
+function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const icon = btn.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fas fa-eye-slash';
+    } else {
+        input.type = 'password';
+        icon.className = 'fas fa-eye';
+    }
+}
+
+function extractFileId(driveUrl) {
+    if (!driveUrl) return null;
+    const match = driveUrl.match(/[-\w]{25,}/);
+    return match ? match[0] : null;
+}
+
+function getDriveThumbnail(driveUrl) {
+    const fileId = extractFileId(driveUrl);
+    if (fileId) {
+        return `https://lh3.googleusercontent.com/d/${fileId}=w200`;
+    }
+    return driveUrl;
+}
+
+function showToast(msg, type = 'info') {
+    const box = dom.alertBox;
+    if (!box) return;
+    
+    box.textContent = msg;
+    box.className = `alert-popup ${type}`;
+    box.style.display = 'block';
+    clearTimeout(box._timeout);
+    box._timeout = setTimeout(() => { box.style.display = 'none'; }, 4500);
+}
+
+function showSpinner(element, show, customHtml = null) {
+    if (!element) return;
+    if (show) {
+        element.disabled = true;
+        const originalText = element.innerHTML;
+        element.setAttribute('data-original-text', originalText);
+        element.innerHTML = customHtml || '<span class="spinner"></span> Loading...';
+    } else {
+        element.disabled = false;
+        const original = element.getAttribute('data-original-text');
+        if (original) element.innerHTML = original;
+    }
+}
+
+function copyPasswordToClipboard() {
+    const passwordEl = document.getElementById('revealedPassword');
+    const password = passwordEl.textContent;
+    if (password && password !== '********') {
+        navigator.clipboard.writeText(password).then(() => {
+            showToast('✅ Password copied to clipboard!', 'success');
+        }).catch(() => {
+            const textArea = document.createElement('textarea');
+            textArea.value = password;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            showToast('✅ Password copied!', 'success');
+        });
+    }
+}
+
+function showProfilePlaceholder() {
+    if (dom.profileAvatar) {
+        dom.profileAvatar.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"%3E%3Crect width="100" height="100" fill="%23e2e8f0"/%3E%3Ccircle cx="50" cy="40" r="25" fill="%2394a3b8"/%3E%3Ccircle cx="50" cy="80" r="30" fill="%2394a3b8"/%3E%3C/svg%3E';
+        dom.profileAvatar.style.animation = 'pulse 1.5s ease-in-out infinite';
+    }
+    if (dom.profileName) {
+        dom.profileName.textContent = 'Loading...';
+        dom.profileName.style.opacity = '0.6';
+    }
+    if (dom.profileEmail) {
+        dom.profileEmail.textContent = 'Loading...';
+        dom.profileEmail.style.opacity = '0.6';
+    }
+}
+
+function hideProfilePlaceholder() {
+    if (dom.profileAvatar) {
+        dom.profileAvatar.style.animation = 'none';
+    }
+    if (dom.profileName) {
+        dom.profileName.style.opacity = '1';
+    }
+    if (dom.profileEmail) {
+        dom.profileEmail.style.opacity = '1';
+    }
+}
+
+// ============================================================
+// MENU VISIBILITY FUNCTIONS
+// ============================================================
+function resetMenuVisibility() {
+    const allCards = dom.menuGrid.querySelectorAll('.card');
+    allCards.forEach(card => {
+        card.style.display = 'none';
+    });
+}
+
+function showGuestMenu() {
+    resetMenuVisibility();
+    document.getElementById('home').style.display = 'block';
+    dom.aboutUsLink.style.display = 'block';
+    dom.settingsLink.style.display = 'block';
+    
+    dom.yourDetailsCard.style.display = 'none';
+    document.querySelectorAll('.student-only').forEach(el => {
+        if (el.id !== 'yourDetailsCard') el.style.display = 'none';
+    });
+    dom.adminLoginCard.style.display = 'none';
+    dom.adminChangePasswordLink.style.display = 'none';
+    dom.adminSettingsLink.style.display = 'none';
+    dom.adminManagementCard.style.display = 'none';
+    dom.logoutCard.style.display = 'none';
+}
+
+function showStudentMenu(studentInfo) {
+    resetMenuVisibility();
+    document.getElementById('home').style.display = 'block';
+    
+    document.querySelectorAll('.student-only').forEach(el => {
+        if (el.id === 'yourDetailsCard') {
+            if (studentInfo && studentInfo.found) {
+                el.style.display = 'block';
+                el.innerHTML = `<i class="fas fa-user-graduate"></i><span>Your Details</span>`;
+                sessionStorage.setItem('student_sheet_name', studentInfo.sheetName);
+                sessionStorage.setItem('student_data_found', 'true');
+            } else {
+                el.style.display = 'none';
+                sessionStorage.setItem('student_data_found', 'false');
+                sessionStorage.removeItem('student_sheet_name');
+            }
+        } else {
+            el.style.display = 'block';
+        }
+    });
+    
+    dom.aboutUsLink.style.display = 'block';
+    dom.settingsLink.style.display = 'block';
+    dom.logoutCard.style.display = 'block';
+    
+    dom.adminLoginCard.style.display = 'none';
+    dom.adminChangePasswordLink.style.display = 'none';
+    dom.adminSettingsLink.style.display = 'none';
+    dom.adminManagementCard.style.display = 'none';
+}
+
+function showAdminMenu() {
+    resetMenuVisibility();
+    document.getElementById('home').style.display = 'block';
+    
+    dom.adminLoginCard.style.display = 'none';
+    dom.adminChangePasswordLink.style.display = 'block';
+    dom.adminSettingsLink.style.display = 'block';
+    dom.adminManagementCard.style.display = 'block';
+    dom.logoutCard.style.display = 'block';
+    
+    document.querySelectorAll('.student-only').forEach(el => {
+        el.style.display = 'none';
+    });
+    dom.aboutUsLink.style.display = 'none';
+    dom.settingsLink.style.display = 'none';
+}
+
+// ============================================================
+// CHECK EMAIL IN STUDENT SHEETS WITH CACHE
+// ============================================================
+async function checkEmailInStudentSheets(email) {
+    if (isCheckingStudentSheets) {
+        console.log('Already checking student sheets, waiting...');
+        return { found: false, checking: true };
+    }
+    
+    isCheckingStudentSheets = true;
+    
+    if (dom.yourDetailsCard) {
+        dom.yourDetailsCard.style.display = 'block';
+        dom.yourDetailsCard.innerHTML = `
+            <i class="fas fa-spinner fa-spin"></i>
+            <span>Checking...</span>
+        `;
+        dom.yourDetailsCard.style.cursor = 'default';
+        dom.yourDetailsCard.style.opacity = '0.7';
+        dom.yourDetailsCard.style.pointerEvents = 'none';
+    }
+    
+    try {
+        const cacheKey = `${CACHE_KEYS.STUDENT_SHEETS_DATA}_${email}`;
+        const result = await backgroundRefreshStudentSheets(email);
+        
+        if (dom.yourDetailsCard) {
+            dom.yourDetailsCard.style.cursor = 'pointer';
+            dom.yourDetailsCard.style.opacity = '1';
+            dom.yourDetailsCard.style.pointerEvents = 'auto';
+        }
+        
+        return result;
+    } catch (err) {
+        console.error('Error checking student sheets:', err);
+        if (dom.yourDetailsCard) {
+            dom.yourDetailsCard.style.cursor = 'pointer';
+            dom.yourDetailsCard.style.opacity = '1';
+            dom.yourDetailsCard.style.pointerEvents = 'auto';
+        }
+        return { found: false, error: err.message };
+    } finally {
+        isCheckingStudentSheets = false;
+    }
+}
+
+async function backgroundRefreshStudentSheets(email) {
+    const cacheKey = `${CACHE_KEYS.STUDENT_SHEETS_DATA}_${email}`;
+    
+    const cached = getCachedData(cacheKey);
+    if (cached) {
+        backgroundUpdater.queueUpdate(
+            `refresh_student_sheets_${email}`,
+            async () => {
+                try {
+                    const results = await checkAllStudentSheets(email);
+                    if (results) {
+                        setCachedData(cacheKey, results);
+                        console.log('Student sheets background refresh complete');
+                    }
+                } catch (err) {
+                    console.warn('Student sheets background refresh failed:', err);
+                }
+            },
+            'normal'
+        );
+        return cached;
+    }
+    
+    const results = await checkAllStudentSheets(email);
+    if (results) {
+        setCachedData(cacheKey, results);
+    }
+    return results;
+}
+
+async function checkAllStudentSheets(email) {
+    const sheetChecks = STUDENT_SHEETS.map(async (sheetName) => {
+        try {
+            const url = `${SCRIPT_URL}?spreadsheetId=${STUDENT_DATA_SPREADSHEET_ID}&sheetName=${sheetName}&_=${Date.now()}`;
+            const response = await fetch(url);
+            const result = await response.json();
+            
+            if (result.status === 'success' && Array.isArray(result.data)) {
+                const found = result.data.some(row => {
+                    const rowEmail = row['Email Id'] ? row['Email Id'].toString().trim().toLowerCase() : '';
+                    return rowEmail === email.toLowerCase().trim();
+                });
+                
+                if (found) {
+                    return {
+                        found: true,
+                        sheetName: sheetName,
+                        data: result.data.find(row => {
+                            const rowEmail = row['Email Id'] ? row['Email Id'].toString().trim().toLowerCase() : '';
+                            return rowEmail === email.toLowerCase().trim();
+                        })
+                    };
                 }
             }
-        });
+            return { found: false, sheetName: sheetName };
+        } catch (err) {
+            console.error(`Error checking sheet ${sheetName}:`, err);
+            return { found: false, sheetName: sheetName, error: err.message };
+        }
+    });
 
-        // ============================================================
-        // CONFIGURATION
-        // ============================================================
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzoDds81u8M5N8micA_hoIBgCS7aCFm0NUmwW6XLH4m_fRJ8R9pGqjgFGMeBxBd2dSL/exec";
-        const STUDENT_SHEET = "Student_Login";
-        const ADMIN_SHEET = "Admin_Login";
-        const SPREADSHEET_ID = "1iK6_Ge2OAlA6a0ISR19MTBQcwoHth0fKVzMGgQFeIjY";
-        const DRIVE_FOLDER_ID = "1M0AZkLkR9t2NmkM4kOS8mka5KkobUlwD";
-        const IMAGE_COLUMN_NAME = "Image";
-
-        // ============================================================
-        // GLOBAL STATE
-        // ============================================================
-        let currentUser = null;
-        let currentUserData = null;
-        let currentUserType = null;
-        let mathAnswer = 0;
-        let forgotPasswordData = null;
-
-        let croppers = {
-            signup: null,
-            admin: null
+    const results = await Promise.all(sheetChecks);
+    const foundResult = results.find(r => r.found === true);
+    
+    if (foundResult) {
+        return {
+            found: true,
+            sheetName: foundResult.sheetName,
+            studentData: foundResult.data
         };
+    }
+    
+    return { found: false };
+}
 
-        let croppedImageData = {
-            signup: null,
-            admin: null
-        };
-
-        // ============================================================
-        // DOM REFS
-        // ============================================================
-        const dom = {};
-
-        function cacheDomElements() {
-            dom.sidebar = document.getElementById('mobileSidebar');
-            dom.overlay = document.getElementById('sidebarOverlay');
-            dom.hamburger = document.getElementById('hamburgerOpen');
-            dom.closeBtn = document.getElementById('sidebarClose');
-            dom.authButtons = document.getElementById('authButtons');
-            dom.menuGrid = document.getElementById('menuGrid');
-            dom.alertBox = document.getElementById('alertBox');
-            dom.profileSection = document.getElementById('profileSection');
-            dom.profileAvatar = document.getElementById('profileAvatar');
-            dom.profileName = document.getElementById('profileName');
-            dom.profileEmail = document.getElementById('profileEmail');
-            
-            dom.adminManagementCard = document.getElementById('adminManagementCard');
-            dom.adminChangePasswordLink = document.getElementById('adminChangePasswordLink');
-            dom.adminSettingsLink = document.getElementById('adminSettingsLink');
-            dom.editProfileBtn = document.getElementById('editProfileBtn');
-            dom.editAdminProfileSubmitBtn = document.getElementById('editAdminProfileSubmitBtn');
-            dom.applyAdminCropBtn = document.getElementById('applyAdminCropBtn');
+// ============================================================
+// DRIVE AND SHEET OPERATIONS
+// ============================================================
+async function deleteFileFromDrive(fileId) {
+    try {
+        if (!fileId) return null;
+        
+        const fetchUrl = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${ADMIN_SHEET}&action=getData&_=${Date.now()}`;
+        const fetchResp = await fetch(fetchUrl);
+        const fetchData = await fetchResp.json();
+        
+        let rowIndex = null;
+        if (fetchData.status === 'success' && fetchData.data) {
+            fetchData.data.forEach((row, idx) => {
+                const imageUrl = row['Image'] || '';
+                const extractedId = extractFileId(imageUrl);
+                if (extractedId === fileId) {
+                    rowIndex = idx + 2;
+                }
+            });
         }
 
-        // ============================================================
-        // UTILITY FUNCTIONS
-        // ============================================================
-        function capitalizeFirst(el) {
-            if (el.value.length > 0) {
-                el.value = el.value.charAt(0).toUpperCase() + el.value.slice(1);
-            }
-        }
-
-        function togglePassword(inputId, btn) {
-            const input = document.getElementById(inputId);
-            if (!input) return;
-            const icon = btn.querySelector('i');
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.className = 'fas fa-eye-slash';
-            } else {
-                input.type = 'password';
-                icon.className = 'fas fa-eye';
-            }
-        }
-
-        function extractFileId(driveUrl) {
-            if (!driveUrl) return null;
-            const match = driveUrl.match(/[-\w]{25,}/);
-            return match ? match[0] : null;
-        }
-
-        function getDriveThumbnail(driveUrl) {
-            const fileId = extractFileId(driveUrl);
-            if (fileId) {
-                return `https://lh3.googleusercontent.com/d/${fileId}=w200`;
-            }
-            return driveUrl;
-        }
-
-        function showToast(msg, type = 'info') {
-            const box = dom.alertBox;
-            if (!box) return;
-            
-            box.textContent = msg;
-            box.className = `alert-popup ${type}`;
-            box.style.display = 'block';
-            clearTimeout(box._timeout);
-            box._timeout = setTimeout(() => { box.style.display = 'none'; }, 4500);
-        }
-
-        function showSpinner(element, show) {
-            if (!element) return;
-            if (show) {
-                element.disabled = true;
-                const originalText = element.innerHTML;
-                element.setAttribute('data-original-text', originalText);
-                element.innerHTML = '<span class="spinner"></span> Loading...';
-            } else {
-                element.disabled = false;
-                const original = element.getAttribute('data-original-text');
-                if (original) element.innerHTML = original;
-            }
-        }
-
-        function copyPasswordToClipboard() {
-            const passwordEl = document.getElementById('revealedPassword');
-            const password = passwordEl.textContent;
-            if (password && password !== '********') {
-                navigator.clipboard.writeText(password).then(() => {
-                    showToast('✅ Password copied to clipboard!', 'success');
-                }).catch(() => {
-                    const textArea = document.createElement('textarea');
-                    textArea.value = password;
-                    document.body.appendChild(textArea);
-                    textArea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textArea);
-                    showToast('✅ Password copied!', 'success');
-                });
-            }
-        }
-
-        // ============================================================
-        // CROPPER FUNCTIONS
-        // ============================================================
-        function getCropElements(section) {
-            if (section === 'signup') {
-                return {
-                    container: document.getElementById('signupPreviewContainer'),
-                    img: document.getElementById('signupImageToCrop'),
-                    status: document.getElementById('signupImageStatus'),
-                    preview: document.getElementById('profilePreview'),
-                    cropBtn: null
-                };
-            } else if (section === 'admin') {
-                return {
-                    container: document.getElementById('editAdminPreviewContainer'),
-                    img: document.getElementById('editAdminImageToCrop'),
-                    status: document.getElementById('editAdminImageStatus'),
-                    preview: document.getElementById('editAdminProfilePreview'),
-                    cropBtn: document.getElementById('applyAdminCropBtn'),
-                    thumbnailContainer: document.getElementById('editAdminCroppedThumbnailContainer'),
-                    thumbnailPreview: document.getElementById('editAdminCroppedThumbnailPreview'),
-                    submitBtn: document.getElementById('editAdminProfileSubmitBtn')
-                };
-            }
+        if (!rowIndex) {
+            console.warn('File not found in sheet');
             return null;
         }
 
-        function rotateLeft(section) {
-            if (croppers[section]) croppers[section].rotate(-90);
+        const params = new URLSearchParams();
+        params.append("action", "deleteimage");
+        params.append("spreadsheetId", SPREADSHEET_ID);
+        params.append("sheetName", ADMIN_SHEET);
+        params.append("rowIndex", rowIndex);
+        params.append("columnName", IMAGE_COLUMN_NAME);
+
+        const resp = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: params.toString()
+        });
+
+        const result = await resp.json();
+        return result;
+    } catch (err) {
+        console.error('Error deleting file:', err);
+        return null;
+    }
+}
+
+async function uploadImageWithReplace(base64Data, fileName, mimeType, oldFileId, rowIndex, username) {
+    try {
+        if (oldFileId) {
+            await deleteFileFromDrive(oldFileId);
         }
 
-        function rotateRight(section) {
-            if (croppers[section]) croppers[section].rotate(90);
+        const params = new URLSearchParams();
+        params.append("action", "update");
+        params.append("spreadsheetId", SPREADSHEET_ID);
+        params.append("sheetName", ADMIN_SHEET);
+        params.append("rowIndex", rowIndex);
+        params.append("User Name", username);
+        params.append("fileCount", "1");
+        params.append("fileData1", base64Data);
+        params.append("fileName1", fileName);
+        params.append("fileType1", mimeType);
+        params.append("fileColumn1", IMAGE_COLUMN_NAME);
+        params.append("driveFolderId", DRIVE_FOLDER_ID);
+
+        const resp = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: params.toString()
+        });
+
+        const result = await resp.json();
+        return result;
+    } catch (err) {
+        console.error('Error uploading image:', err);
+        throw err;
+    }
+}
+
+// ============================================================
+// SIDEBAR FUNCTIONS
+// ============================================================
+function openSidebar() {
+    dom.sidebar.classList.add('open');
+    dom.overlay.classList.add('active');
+    document.body.classList.add('sidebar-open');
+}
+
+function closeSidebar() {
+    dom.sidebar.classList.remove('open');
+    dom.overlay.classList.remove('active');
+    document.body.classList.remove('sidebar-open');
+}
+
+// ============================================================
+// MODAL FUNCTIONS
+// ============================================================
+function openModal(id) { 
+    const modal = document.getElementById(id);
+    if (modal) modal.classList.add('active'); 
+}
+
+function closeModal(id) { 
+    const modal = document.getElementById(id);
+    if (modal) modal.classList.remove('active'); 
+}
+
+// ============================================================
+// FORGOT PASSWORD FUNCTIONS
+// ============================================================
+async function handleForgotPassword(email, mobile) {
+    const statusEl = document.getElementById('forgotStatus');
+    const revealBox = document.getElementById('passwordRevealBox');
+    const passwordEl = document.getElementById('revealedPassword');
+    const submitBtn = document.getElementById('forgotPasswordBtn');
+
+    statusEl.style.display = 'none';
+    revealBox.style.display = 'none';
+    passwordEl.textContent = '********';
+
+    try {
+        showSpinner(submitBtn, true);
+        
+        const user = await findUserByEmailAndMobileFast(email, mobile);
+        
+        if (user) {
+            const password = user['Password'] || 'No password found';
+            forgotPasswordData = user;
+            
+            revealBox.style.display = 'block';
+            passwordEl.textContent = password;
+            
+            statusEl.className = 'status-message status-success';
+            statusEl.textContent = '✅ User found! Your password is shown below.';
+            statusEl.style.display = 'block';
+            
+            showToast('✅ Password recovered successfully!', 'success');
+        } else {
+            statusEl.className = 'status-message status-error';
+            statusEl.textContent = '❌ No user found with these credentials. Please check your email and mobile number.';
+            statusEl.style.display = 'block';
+            revealBox.style.display = 'none';
+            showToast('❌ User not found', 'error');
+        }
+    } catch (err) {
+        statusEl.className = 'status-message status-error';
+        statusEl.textContent = '❌ Error: ' + err.message;
+        statusEl.style.display = 'block';
+        showToast('❌ Error: ' + err.message, 'error');
+    } finally {
+        showSpinner(submitBtn, false);
+    }
+}
+
+function closeForgotPasswordAndOpenLogin() {
+    closeModal('forgotPasswordModal');
+    openModal('loginModal');
+}
+
+// ============================================================
+// USER DATA FUNCTIONS
+// ============================================================
+async function getUserData(email) {
+    return await fetchUserDataFast(email);
+}
+
+async function getAdminData(username) {
+    return await fetchAdminDataFast(username);
+}
+
+async function updateAdminData(username, updates, rowIndex) {
+    try {
+        const params = new URLSearchParams();
+        params.append("action", "update");
+        params.append("spreadsheetId", SPREADSHEET_ID);
+        params.append("sheetName", ADMIN_SHEET);
+        params.append("rowIndex", rowIndex);
+        
+        for (const [key, value] of Object.entries(updates)) {
+            params.append(key, value);
         }
 
-        function applyCrop(section) {
-            const elements = getCropElements(section);
-            if (!elements || !croppers[section]) {
-                elements.status.textContent = "❌ No image loaded to crop.";
-                elements.status.style.color = "var(--danger)";
+        const resp = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: params.toString()
+        });
+
+        const result = await resp.json();
+        
+        clearCache(CACHE_KEYS.ADMIN_DATA);
+        clearCache(`${CACHE_KEYS.ADMIN_DATA}_${username}`);
+        
+        return result;
+    } catch (err) {
+        console.error('Error updating admin data:', err);
+        throw err;
+    }
+}
+
+async function updateAdminPassword(username, newPassword, rowIndex) {
+    try {
+        const params = new URLSearchParams();
+        params.append("action", "update");
+        params.append("spreadsheetId", SPREADSHEET_ID);
+        params.append("sheetName", ADMIN_SHEET);
+        params.append("rowIndex", rowIndex);
+        params.append("Password", newPassword);
+
+        const resp = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: params.toString()
+        });
+
+        const result = await resp.json();
+        
+        clearCache(CACHE_KEYS.ADMIN_DATA);
+        clearCache(`${CACHE_KEYS.ADMIN_DATA}_${username}`);
+        
+        return result;
+    } catch (err) {
+        console.error('Error updating admin password:', err);
+        throw err;
+    }
+}
+
+async function updateUserData(email, updates, rowIndex) {
+    try {
+        const params = new URLSearchParams();
+        params.append("action", "update");
+        params.append("spreadsheetId", SPREADSHEET_ID);
+        params.append("sheetName", STUDENT_SHEET);
+        params.append("rowIndex", rowIndex);
+        
+        for (const [key, value] of Object.entries(updates)) {
+            params.append(key, value);
+        }
+
+        const resp = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: params.toString()
+        });
+
+        const result = await resp.json();
+        
+        clearCache(CACHE_KEYS.STUDENT_DATA);
+        clearCache(`${CACHE_KEYS.USER_DATA}_${email}`);
+        
+        return result;
+    } catch (err) {
+        console.error('Error updating user data:', err);
+        throw err;
+    }
+}
+
+async function handleChangePassword(email, newPassword, rowIndex) {
+    try {
+        const params = new URLSearchParams();
+        params.append("action", "update");
+        params.append("spreadsheetId", SPREADSHEET_ID);
+        params.append("sheetName", STUDENT_SHEET);
+        params.append("rowIndex", rowIndex);
+        params.append("Password", newPassword);
+
+        const resp = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: params.toString()
+        });
+
+        const result = await resp.json();
+        
+        clearCache(CACHE_KEYS.STUDENT_DATA);
+        clearCache(`${CACHE_KEYS.USER_DATA}_${email}`);
+        
+        return result;
+    } catch (err) {
+        console.error('Error changing password:', err);
+        throw err;
+    }
+}
+
+async function handleAdminChangePassword(username, newPassword, rowIndex) {
+    return await updateAdminPassword(username, newPassword, rowIndex);
+}
+
+// ============================================================
+// EDIT ADMIN PROFILE FUNCTIONS
+// ============================================================
+async function handleEditAdminProfile(username, newUsername, rowIndex, imageData = null) {
+    try {
+        if (newUsername && newUsername !== username) {
+            const updateResult = await updateAdminData(username, { 'User Name': newUsername }, rowIndex);
+            if (updateResult.status !== 'success') {
+                throw new Error('Failed to update username');
+            }
+        }
+
+        if (imageData && imageData.base64Data) {
+            try {
+                const currentData = await getAdminData(newUsername || username);
+                const oldImageUrl = currentData ? currentData['Image'] : null;
+                const oldFileId = oldImageUrl ? extractFileId(oldImageUrl) : null;
+
+                const uploadResult = await uploadImageWithReplace(
+                    imageData.base64Data,
+                    imageData.fileName,
+                    imageData.mimeType,
+                    oldFileId,
+                    rowIndex,
+                    newUsername || username
+                );
+
+                if (uploadResult && uploadResult.status !== 'success') {
+                    throw new Error('Failed to update image: ' + (uploadResult.message || 'Unknown error'));
+                }
+            } catch (err) {
+                console.error('Image update error:', err);
+                throw new Error('Image upload failed: ' + err.message);
+            }
+        }
+
+        clearCache(CACHE_KEYS.ADMIN_DATA);
+        clearCache(`${CACHE_KEYS.ADMIN_DATA}_${username}`);
+        if (newUsername && newUsername !== username) {
+            clearCache(`${CACHE_KEYS.ADMIN_DATA}_${newUsername}`);
+        }
+
+        return { 
+            status: 'success', 
+            message: 'Profile updated successfully'
+        };
+    } catch (err) {
+        console.error('Error updating admin profile:', err);
+        throw err;
+    }
+}
+
+function openEditAdminProfileModal() {
+    if (currentUserType !== 'admin') {
+        showToast('Admin login required', 'warning');
+        return;
+    }
+    
+    document.getElementById('editAdminUsername').value = currentUserData['User Name'] || '';
+    
+    const currentImage = currentUserData['Image'] || '';
+    if (currentImage) {
+        document.getElementById('editAdminProfilePreview').src = getDriveThumbnail(currentImage);
+    } else {
+        const name = currentUserData['User Name'] || 'Admin';
+        document.getElementById('editAdminProfilePreview').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=f59e0b&color=fff&size=80`;
+    }
+    
+    croppedImageData.admin = null;
+    document.getElementById('editAdminPreviewContainer').style.display = 'none';
+    document.getElementById('editAdminImageStatus').textContent = '';
+    document.getElementById('editAdminProfileStatus').style.display = 'none';
+    document.getElementById('editAdminProfileImageInput').value = '';
+    document.getElementById('editAdminCroppedThumbnailContainer').style.display = 'none';
+    document.getElementById('editAdminProfileSubmitBtn').disabled = true;
+    
+    openModal('editAdminProfileModal');
+}
+
+// ============================================================
+// YOUR DETAILS CARD CLICK HANDLER
+// ============================================================
+function setupYourDetailsHandler() {
+    if (dom.yourDetailsCard) {
+        dom.yourDetailsCard.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            if (this.style.display === 'none' || this.style.visibility === 'hidden') {
+                showToast('Your details not available', 'warning');
                 return;
             }
-
-            try {
-                const canvas = croppers[section].getCroppedCanvas({ width: 400, height: 400 });
-                if (!canvas) throw new Error("Could not crop image");
-                
-                const base64Data = canvas.toDataURL('image/jpeg', 0.9);
-                croppedImageData[section] = {
-                    base64Data: base64Data.split(',')[1],
-                    fileName: `${section}_profile_${Date.now()}.jpg`,
-                    mimeType: 'image/jpeg',
-                    fullDataUrl: base64Data
-                };
-                
-                elements.status.textContent = "✅ Image cropped and ready!";
-                elements.status.style.color = "var(--success)";
-                elements.preview.src = base64Data;
-
-                if (section === 'admin') {
-                    const thumbnailContainer = elements.thumbnailContainer;
-                    const thumbnailPreview = elements.thumbnailPreview;
-                    thumbnailPreview.src = base64Data;
-                    thumbnailContainer.style.display = 'block';
-                    elements.submitBtn.disabled = false;
-                    elements.submitBtn.title = "";
-                    if (elements.cropBtn) elements.cropBtn.disabled = true;
-                }
-                
-            } catch (error) {
-                elements.status.textContent = "❌ Failed to crop image: " + error.message;
-                elements.status.style.color = "var(--danger)";
-                if (section === 'admin') {
-                    elements.submitBtn.disabled = true;
-                }
+            
+            if (isCheckingStudentSheets) {
+                showToast('⏳ Still checking for your details...', 'info');
+                return;
             }
+            
+            const studentSheetName = sessionStorage.getItem('student_sheet_name');
+            const studentDataFound = sessionStorage.getItem('student_data_found');
+            
+            if (studentDataFound === 'true' && studentSheetName) {
+                window.location.href = `studentdetails.html?sheet=${encodeURIComponent(studentSheetName)}&email=${encodeURIComponent(currentUser)}`;
+            } else {
+                showToast('Student data not found. Please contact support.', 'warning');
+            }
+        });
+    }
+}
+
+// ============================================================
+// UPDATE UI AFTER LOGIN
+// ============================================================
+async function updateUIAfterLogin(email, userData, userType = 'student') {
+    currentUser = email;
+    currentUserData = userData;
+    currentUserType = userType;
+    
+    dom.authButtons.style.display = 'none';
+    dom.profileSection.classList.add('visible');
+    showProfilePlaceholder();
+    dom.menuGrid.classList.add('visible');
+    dom.menuGrid.classList.remove('guest-mode', 'student-mode', 'admin-mode', 'logged-in');
+    dom.menuGrid.classList.add('logged-in');
+    
+    let studentInfo = null;
+    
+    if (userType === 'student') {
+        const result = await checkEmailInStudentSheets(email);
+        if (result.found) {
+            studentInfo = result;
+            console.log(`✅ Student found in sheet: ${result.sheetName}`);
+        } else {
+            console.log('ℹ️ Student email not found in any standard sheets');
         }
+    }
+    
+    if (userType === 'admin') {
+        showAdminMenu();
+        dom.menuGrid.classList.add('admin-mode');
+        
+        const fullName = userData['User Name'] || 'Admin';
+        dom.profileName.innerHTML = `${fullName} <span class="admin-badge"><i class="fas fa-user-shield"></i> Admin</span>`;
+        dom.editProfileBtn.textContent = 'Edit Admin Profile';
+        dom.editProfileBtn.style.display = 'inline-flex';
+        document.getElementById('avatarContainer').classList.add('avatar-clickable');
+        
+        const imageLink = userData['Image'] || '';
+        if (imageLink) {
+            const thumbnail = getDriveThumbnail(imageLink);
+            dom.profileAvatar.src = thumbnail;
+        } else {
+            const name = userData['User Name'] || 'Admin';
+            dom.profileAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=f59e0b&color=fff&size=100`;
+        }
+        
+        dom.profileEmail.textContent = email;
+        hideProfilePlaceholder();
+        
+    } else {
+        showStudentMenu(studentInfo);
+        dom.menuGrid.classList.add('student-mode');
+        
+        const fullName = `${userData['First Name'] || ''} ${userData['Last Name'] || ''}`.trim() || 'User';
+        dom.profileName.textContent = fullName;
+        dom.editProfileBtn.textContent = 'Edit Profile';
+        dom.editProfileBtn.style.display = 'inline-flex';
+        document.getElementById('avatarContainer').classList.remove('avatar-clickable');
+        
+        const imageLink = userData['Image'] || '';
+        if (imageLink) {
+            const thumbnail = getDriveThumbnail(imageLink);
+            dom.profileAvatar.src = thumbnail;
+        } else {
+            dom.profileAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=2563eb&color=fff&size=100`;
+        }
+        
+        dom.profileEmail.textContent = email;
+        hideProfilePlaceholder();
+    }
+    
+    sessionStorage.setItem('ujjwal_user', email);
+    sessionStorage.setItem('ujjwal_user_data', JSON.stringify(userData));
+    sessionStorage.setItem('ujjwal_user_type', userType);
+    if (studentInfo && studentInfo.found) {
+        sessionStorage.setItem('student_sheet_name', studentInfo.sheetName);
+        sessionStorage.setItem('student_data_found', 'true');
+    } else {
+        sessionStorage.setItem('student_data_found', 'false');
+        sessionStorage.removeItem('student_sheet_name');
+    }
+}
 
-        // ============================================================
-        // DRIVE AND SHEET OPERATIONS
-        // ============================================================
-        async function deleteFileFromDrive(fileId) {
-            try {
-                if (!fileId) return null;
-                
-                const fetchUrl = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${ADMIN_SHEET}&action=getData&_=${Date.now()}`;
-                const fetchResp = await fetch(fetchUrl);
-                const fetchData = await fetchResp.json();
-                
-                let rowIndex = null;
-                if (fetchData.status === 'success' && fetchData.data) {
-                    fetchData.data.forEach((row, idx) => {
-                        const imageUrl = row['Image'] || '';
-                        const extractedId = extractFileId(imageUrl);
-                        if (extractedId === fileId) {
-                            rowIndex = idx + 2;
-                        }
-                    });
-                }
+// ============================================================
+// LOGOUT FUNCTION
+// ============================================================
+function logout() {
+    currentUser = null;
+    currentUserData = null;
+    currentUserType = null;
+    
+    dom.authButtons.style.display = 'flex';
+    dom.profileSection.classList.remove('visible');
+    
+    dom.menuGrid.classList.remove('visible', 'logged-in', 'student-mode', 'admin-mode');
+    dom.menuGrid.classList.add('visible', 'guest-mode');
+    
+    showGuestMenu();
+    
+    dom.editProfileBtn.style.display = 'none';
+    document.getElementById('avatarContainer').classList.remove('avatar-clickable');
+    
+    dom.profileAvatar.src = 'https://ui-avatars.com/api/?name=User&background=2563eb&color=fff&size=100';
+    dom.profileName.textContent = 'User Name';
+    dom.profileEmail.textContent = 'user@email.com';
+    hideProfilePlaceholder();
+    
+    sessionStorage.removeItem('ujjwal_user');
+    sessionStorage.removeItem('ujjwal_user_data');
+    sessionStorage.removeItem('ujjwal_user_type');
+    sessionStorage.removeItem('student_sheet_name');
+    sessionStorage.removeItem('student_data_found');
+    
+    showToast('Logged out successfully', 'info');
+}
 
-                if (!rowIndex) {
-                    console.warn('File not found in sheet');
-                    return null;
-                }
+// ============================================================
+// SIGNUP FUNCTION - WITH EMAIL VALIDATION
+// ============================================================
+async function handleSignup(formData) {
+    // Double-check email existence before submitting
+    const emailExists = await checkEmailExistsInStudentLogin(formData.email);
+    if (emailExists) {
+        showToast('⚠️ Please login! You already registered', 'warning');
+        if (dom.signupEmailStatus) {
+            dom.signupEmailStatus.style.display = 'block';
+            dom.signupEmailStatus.textContent = '❌ Please login! You already registered';
+            dom.signupEmailStatus.style.color = 'var(--danger)';
+            dom.signupEmailStatus.style.background = 'rgba(239, 68, 68, 0.1)';
+            dom.signupEmailStatus.style.border = '1px solid var(--danger)';
+        }
+        return false;
+    }
+    
+    const submitBtn = document.getElementById('signupSubmitBtn');
+    showSpinner(submitBtn, true);
 
-                const params = new URLSearchParams();
-                params.append("action", "deleteimage");
-                params.append("spreadsheetId", SPREADSHEET_ID);
-                params.append("sheetName", ADMIN_SHEET);
-                params.append("rowIndex", rowIndex);
-                params.append("columnName", IMAGE_COLUMN_NAME);
-
-                const resp = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: params.toString()
+    try {
+        let nextSrNo = 1;
+        try {
+            const fetchUrl = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${STUDENT_SHEET}&action=getData&_=${Date.now()}`;
+            const fetchResp = await fetch(fetchUrl);
+            const fetchData = await fetchResp.json();
+            if (fetchData.status === 'success' && fetchData.data && fetchData.data.length > 0) {
+                let maxSr = 0;
+                fetchData.data.forEach(row => {
+                    const sr = parseInt(row['Sr. No']);
+                    if (!isNaN(sr) && sr > maxSr) maxSr = sr;
                 });
-
-                const result = await resp.json();
-                return result;
-            } catch (err) {
-                console.error('Error deleting file:', err);
-                return null;
+                nextSrNo = maxSr + 1;
             }
+        } catch (err) {
+            console.log('Could not fetch existing data, starting from 1');
         }
 
-        async function uploadImageWithReplace(base64Data, fileName, mimeType, oldFileId, rowIndex, username) {
-            try {
-                if (oldFileId) {
-                    await deleteFileFromDrive(oldFileId);
-                }
+        const params = new URLSearchParams();
+        params.append("action", "insert");
+        params.append("spreadsheetId", SPREADSHEET_ID);
+        params.append("sheetName", STUDENT_SHEET);
+        params.append("Sr. No", nextSrNo);
+        params.append("First Name", formData.firstName);
+        params.append("Last Name", formData.lastName);
+        params.append("Mobile Number", formData.mobile);
+        params.append("Email Id", formData.email);
+        params.append("Education Details", formData.educationDetails);
+        params.append("College Name", formData.collegeName);
+        params.append("Password", formData.password);
 
-                const params = new URLSearchParams();
-                params.append("action", "update");
-                params.append("spreadsheetId", SPREADSHEET_ID);
-                params.append("sheetName", ADMIN_SHEET);
-                params.append("rowIndex", rowIndex);
-                params.append("User Name", username);
+        if (croppedImageData.signup && croppedImageData.signup.base64Data) {
+            try {
                 params.append("fileCount", "1");
-                params.append("fileData1", base64Data);
-                params.append("fileName1", fileName);
-                params.append("fileType1", mimeType);
+                params.append("fileData1", croppedImageData.signup.base64Data);
+                params.append("fileName1", croppedImageData.signup.fileName);
+                params.append("fileType1", croppedImageData.signup.mimeType);
                 params.append("fileColumn1", IMAGE_COLUMN_NAME);
                 params.append("driveFolderId", DRIVE_FOLDER_ID);
-
-                const resp = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: params.toString()
-                });
-
-                const result = await resp.json();
-                return result;
             } catch (err) {
-                console.error('Error uploading image:', err);
-                throw err;
+                showToast('⚠️ Image upload failed, but account will be created.', 'warning');
             }
         }
 
-        // ============================================================
-        // SIDEBAR FUNCTIONS
-        // ============================================================
-        function openSidebar() {
-            dom.sidebar.classList.add('open');
-            dom.overlay.classList.add('active');
-            document.body.classList.add('sidebar-open');
-        }
+        const resp = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: params.toString()
+        });
 
-        function closeSidebar() {
-            dom.sidebar.classList.remove('open');
-            dom.overlay.classList.remove('active');
-            document.body.classList.remove('sidebar-open');
-        }
-
-        // ============================================================
-        // MODAL FUNCTIONS
-        // ============================================================
-        function openModal(id) { 
-            const modal = document.getElementById(id);
-            if (modal) modal.classList.add('active'); 
-        }
-
-        function closeModal(id) { 
-            const modal = document.getElementById(id);
-            if (modal) modal.classList.remove('active'); 
-        }
-
-        // ============================================================
-        // FORGOT PASSWORD FUNCTIONS
-        // ============================================================
-        async function findUserByEmailAndMobile(email, mobile) {
-            try {
-                const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${STUDENT_SHEET}&action=getData&_=${Date.now()}`;
-                const resp = await fetch(url);
-                const data = await resp.json();
-                
-                if (data.status === 'success' && data.data) {
-                    const found = data.data.find(row => {
-                        const rowEmail = row['Email Id'] ? row['Email Id'].toString().trim() : '';
-                        const rowMobile = row['Mobile Number'] ? row['Mobile Number'].toString().trim() : '';
-                        return rowEmail === email && rowMobile === mobile;
-                    });
-                    return found || null;
-                }
-                return null;
-            } catch (err) {
-                console.error('Error finding user:', err);
-                throw new Error('Error connecting to server: ' + err.message);
+        const result = await resp.json();
+        
+        if (result.status === 'success') {
+            showToast('✅ Signup successful! Logging in...', 'success');
+            closeModal('signupModal');
+            
+            clearCache(CACHE_KEYS.STUDENT_DATA);
+            
+            const user = await getUserData(formData.email);
+            if (user) {
+                await updateUIAfterLogin(formData.email, user, 'student');
             }
-        }
-
-        async function handleForgotPassword(email, mobile) {
-            const statusEl = document.getElementById('forgotStatus');
-            const revealBox = document.getElementById('passwordRevealBox');
-            const passwordEl = document.getElementById('revealedPassword');
-            const submitBtn = document.getElementById('forgotPasswordBtn');
-
-            statusEl.style.display = 'none';
-            revealBox.style.display = 'none';
-            passwordEl.textContent = '********';
-
-            try {
-                showSpinner(submitBtn, true);
-                
-                const user = await findUserByEmailAndMobile(email, mobile);
-                
-                if (user) {
-                    const password = user['Password'] || 'No password found';
-                    forgotPasswordData = user;
-                    
-                    revealBox.style.display = 'block';
-                    passwordEl.textContent = password;
-                    
-                    statusEl.className = 'status-message status-success';
-                    statusEl.textContent = '✅ User found! Your password is shown below.';
-                    statusEl.style.display = 'block';
-                    
-                    showToast('✅ Password recovered successfully!', 'success');
-                } else {
-                    statusEl.className = 'status-message status-error';
-                    statusEl.textContent = '❌ No user found with these credentials. Please check your email and mobile number.';
-                    statusEl.style.display = 'block';
-                    revealBox.style.display = 'none';
-                    showToast('❌ User not found', 'error');
-                }
-            } catch (err) {
-                statusEl.className = 'status-message status-error';
-                statusEl.textContent = '❌ Error: ' + err.message;
-                statusEl.style.display = 'block';
-                showToast('❌ Error: ' + err.message, 'error');
-            } finally {
-                showSpinner(submitBtn, false);
+            
+            document.getElementById('signupForm').reset();
+            document.getElementById('profilePreview').src = 'https://ui-avatars.com/api/?name=User&background=2563eb&color=fff&size=80';
+            croppedImageData.signup = null;
+            document.getElementById('profileImageInput').value = '';
+            document.getElementById('signupPreviewContainer').style.display = 'none';
+            document.getElementById('signupImageStatus').textContent = '';
+            
+            // Reset email status
+            if (dom.signupEmailStatus) {
+                dom.signupEmailStatus.style.display = 'none';
+                dom.signupEmailStatus.textContent = '';
             }
+            
+            return true;
+        } else {
+            throw new Error(result.message || 'Unknown error');
+        }
+    } catch (err) {
+        showToast('❌ Signup failed: ' + err.message, 'error');
+        return false;
+    } finally {
+        showSpinner(submitBtn, false);
+    }
+}
+
+// ============================================================
+// EVENT BINDINGS
+// ============================================================
+function init() {
+    cacheDomElements();
+
+    dom.hamburger.addEventListener('click', openSidebar);
+    dom.closeBtn.addEventListener('click', closeSidebar);
+    dom.overlay.addEventListener('click', closeSidebar);
+
+    let touchStartX = 0, touchStartY = 0;
+    document.querySelector('.app-wrapper').addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    document.querySelector('.app-wrapper').addEventListener('touchend', function(e) {
+        const diffX = e.changedTouches[0].screenX - touchStartX;
+        const diffY = Math.abs(e.changedTouches[0].screenY - touchStartY);
+        if (diffY > 50) return;
+        const isOpen = dom.sidebar.classList.contains('open');
+        if (diffX > 60 && touchStartX < 40 && !isOpen) openSidebar();
+        else if (diffX < -60 && isOpen) closeSidebar();
+    }, { passive: true });
+
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 820) closeSidebar();
+    });
+
+    document.getElementById('loginModalClose').addEventListener('click', () => closeModal('loginModal'));
+    document.getElementById('signupModalClose').addEventListener('click', () => closeModal('signupModal'));
+    document.getElementById('adminModalClose').addEventListener('click', () => closeModal('adminModal'));
+    document.getElementById('changePasswordModalClose').addEventListener('click', () => closeModal('changePasswordModal'));
+    document.getElementById('adminChangePasswordModalClose').addEventListener('click', () => closeModal('adminChangePasswordModal'));
+    document.getElementById('settingsModalClose').addEventListener('click', () => closeModal('settingsModal'));
+    document.getElementById('adminSettingsModalClose').addEventListener('click', () => closeModal('adminSettingsModal'));
+    document.getElementById('forgotPasswordModalClose').addEventListener('click', () => closeModal('forgotPasswordModal'));
+    document.getElementById('editAdminProfileModalClose').addEventListener('click', () => closeModal('editAdminProfileModal'));
+
+    document.querySelectorAll('.modal-overlay').forEach(el => {
+        el.addEventListener('click', function(e) {
+            if (e.target === this) this.classList.remove('active');
+        });
+    });
+
+    document.getElementById('loginBtn').addEventListener('click', () => openModal('loginModal'));
+    document.getElementById('signupBtn').addEventListener('click', () => openModal('signupModal'));
+    document.getElementById('adminLoginBtn').addEventListener('click', () => openModal('adminModal'));
+
+    // Setup signup email validation
+    setupSignupEmailValidation();
+
+    dom.aboutUsLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (currentUserType === 'admin') {
+            showToast('Admin users cannot access About Us', 'warning');
+            return;
+        }
+        document.getElementById('aboutSection').scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+        });
+    });
+
+    dom.settingsLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        if (!currentUser || currentUserType === 'admin') {
+            showToast('Please login as student to access Settings', 'warning');
+            return;
+        }
+        
+        const currentTheme = localStorage.getItem('user-theme-preference') || 'light';
+        document.getElementById('settingsThemeToggle').checked = (currentTheme === 'dark');
+        openModal('settingsModal');
+    });
+
+    document.getElementById('settingsThemeToggle').addEventListener('change', function(e) {
+        const theme = e.target.checked ? 'dark' : 'light';
+        applyTheme(theme);
+        showToast(`✅ ${theme.charAt(0).toUpperCase() + theme.slice(1)} mode applied`, 'success');
+    });
+
+    dom.adminSettingsLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (currentUserType !== 'admin') {
+            showToast('Admin login required', 'warning');
+            return;
+        }
+        const currentTheme = localStorage.getItem('user-theme-preference') || 'light';
+        document.getElementById('adminSettingsThemeToggle').checked = (currentTheme === 'dark');
+        openModal('adminSettingsModal');
+    });
+
+    document.getElementById('adminSettingsThemeToggle').addEventListener('change', function(e) {
+        const theme = e.target.checked ? 'dark' : 'light';
+        applyTheme(theme);
+        showToast(`✅ ${theme.charAt(0).toUpperCase() + theme.slice(1)} mode applied`, 'success');
+    });
+
+    dom.adminLoginCard.addEventListener('click', function(e) {
+        e.preventDefault();
+        openModal('adminModal');
+    });
+
+    dom.editProfileBtn.addEventListener('click', function(e) {
+        if (currentUserType === 'admin') {
+            e.preventDefault();
+            openEditAdminProfileModal();
+        } else if (currentUserType === 'student') {
+            window.location.href = 'editprofile.html';
+        } else {
+            e.preventDefault();
+            showToast('Please login first', 'warning');
+        }
+    });
+
+    document.getElementById('avatarContainer').addEventListener('click', function() {
+        if (currentUserType === 'admin') {
+            openEditAdminProfileModal();
+        }
+    });
+
+    document.getElementById('editAdminImageUploadArea').addEventListener('click', function() {
+        document.getElementById('editAdminProfileImageInput').click();
+    });
+
+    document.getElementById('editAdminProfileImageInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        if (file.size > 5 * 1024 * 1024) {
+            document.getElementById('editAdminImageStatus').textContent = "❌ Image too large! Max 5MB.";
+            document.getElementById('editAdminImageStatus').style.color = "var(--danger)";
+            return;
+        }
+        if (!file.type.startsWith('image/')) {
+            document.getElementById('editAdminImageStatus').textContent = "❌ Please select a valid image.";
+            document.getElementById('editAdminImageStatus').style.color = "var(--danger)";
+            return;
         }
 
-        function closeForgotPasswordAndOpenLogin() {
-            closeModal('forgotPasswordModal');
-            openModal('loginModal');
+        document.getElementById('editAdminProfileSubmitBtn').disabled = true;
+        document.getElementById('editAdminProfileSubmitBtn').title = "Please apply crop first";
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = document.getElementById('editAdminImageToCrop');
+            img.src = event.target.result;
+            const previewContainer = document.getElementById('editAdminPreviewContainer');
+            previewContainer.style.display = 'block';
+            if (croppers.admin) croppers.admin.destroy();
+            croppers.admin = new Cropper(img, {
+                aspectRatio: 1,
+                viewMode: 1,
+                autoCropArea: 1,
+                responsive: true
+            });
+            document.getElementById('editAdminImageStatus').textContent = "✅ Image loaded. Please apply crop.";
+            document.getElementById('editAdminImageStatus').style.color = "var(--success)";
+            croppedImageData.admin = null;
+            document.getElementById('editAdminCroppedThumbnailContainer').style.display = 'none';
+            document.getElementById('applyAdminCropBtn').disabled = false;
+        };
+        reader.readAsDataURL(file);
+    });
+
+    document.addEventListener('click', function(e) {
+        const thumbnail = document.getElementById('editAdminCroppedThumbnailPreview');
+        if (e.target === thumbnail) {
+            document.getElementById('editAdminProfileImageInput').click();
+        }
+    });
+
+    document.getElementById('editAdminProfileForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const newUsername = document.getElementById('editAdminUsername').value.trim();
+        
+        if (!newUsername) {
+            showToast('Username is required', 'error');
+            return;
         }
 
-        // ============================================================
-        // GET USER DATA FROM SHEET
-        // ============================================================
-        async function getUserData(email) {
-            try {
-                const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${STUDENT_SHEET}&action=getData&_=${Date.now()}`;
-                const resp = await fetch(url);
-                const data = await resp.json();
-                if (data.status === 'success' && data.data) {
-                    return data.data.find(row => {
-                        const rowEmail = row['Email Id'] ? row['Email Id'].toString().trim() : '';
-                        return rowEmail === email;
-                    });
-                }
-                return null;
-            } catch (err) {
-                console.error('Error fetching user data:', err);
-                return null;
-            }
-        }
+        const submitBtn = document.getElementById('editAdminProfileSubmitBtn');
+        showSpinner(submitBtn, true);
 
-        // ============================================================
-        // ADMIN FUNCTIONS
-        // ============================================================
-        async function handleAdminLogin(username, password) {
-            try {
-                const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${ADMIN_SHEET}&action=getData&_=${Date.now()}`;
-                const resp = await fetch(url);
-                const data = await resp.json();
-                
-                if (data.status === 'success' && data.data) {
-                    const found = data.data.find(row => {
-                        const rowUser = row['User Name'] ? row['User Name'].toString().trim() : '';
-                        const rowPass = row['Password'] ? row['Password'].toString().trim() : '';
-                        return rowUser === username && rowPass === password;
-                    });
-                    return found || null;
-                }
-                return null;
-            } catch (err) {
-                throw new Error('Admin login error: ' + err.message);
-            }
-        }
-
-        async function getAdminData(username) {
-            try {
-                const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${ADMIN_SHEET}&action=getData&_=${Date.now()}`;
-                const resp = await fetch(url);
-                const data = await resp.json();
-                if (data.status === 'success' && data.data) {
-                    return data.data.find(row => {
-                        const rowUser = row['User Name'] ? row['User Name'].toString().trim() : '';
-                        return rowUser === username;
-                    });
-                }
-                return null;
-            } catch (err) {
-                console.error('Error fetching admin data:', err);
-                return null;
-            }
-        }
-
-        async function updateAdminData(username, updates, rowIndex) {
-            try {
-                const params = new URLSearchParams();
-                params.append("action", "update");
-                params.append("spreadsheetId", SPREADSHEET_ID);
-                params.append("sheetName", ADMIN_SHEET);
-                params.append("rowIndex", rowIndex);
-                
-                for (const [key, value] of Object.entries(updates)) {
-                    params.append(key, value);
-                }
-
-                const resp = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: params.toString()
-                });
-
-                const result = await resp.json();
-                return result;
-            } catch (err) {
-                console.error('Error updating admin data:', err);
-                throw err;
-            }
-        }
-
-        async function updateAdminPassword(username, newPassword, rowIndex) {
-            try {
-                const params = new URLSearchParams();
-                params.append("action", "update");
-                params.append("spreadsheetId", SPREADSHEET_ID);
-                params.append("sheetName", ADMIN_SHEET);
-                params.append("rowIndex", rowIndex);
-                params.append("Password", newPassword);
-
-                const resp = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: params.toString()
-                });
-
-                const result = await resp.json();
-                return result;
-            } catch (err) {
-                console.error('Error updating admin password:', err);
-                throw err;
-            }
-        }
-
-        // ============================================================
-        // UPDATE USER DATA IN SHEET
-        // ============================================================
-        async function updateUserData(email, updates, rowIndex) {
-            try {
-                const params = new URLSearchParams();
-                params.append("action", "update");
-                params.append("spreadsheetId", SPREADSHEET_ID);
-                params.append("sheetName", STUDENT_SHEET);
-                params.append("rowIndex", rowIndex);
-                
-                for (const [key, value] of Object.entries(updates)) {
-                    params.append(key, value);
-                }
-
-                const resp = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: params.toString()
-                });
-
-                const result = await resp.json();
-                return result;
-            } catch (err) {
-                console.error('Error updating user data:', err);
-                throw err;
-            }
-        }
-
-        // ============================================================
-        // SIGNUP FUNCTION
-        // ============================================================
-        async function handleSignup(formData) {
-            const submitBtn = document.getElementById('signupSubmitBtn');
-            showSpinner(submitBtn, true);
-
-            try {
-                let nextSrNo = 1;
-                try {
-                    const fetchUrl = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${STUDENT_SHEET}&action=getData&_=${Date.now()}`;
-                    const fetchResp = await fetch(fetchUrl);
-                    const fetchData = await fetchResp.json();
-                    if (fetchData.status === 'success' && fetchData.data && fetchData.data.length > 0) {
-                        let maxSr = 0;
-                        fetchData.data.forEach(row => {
-                            const sr = parseInt(row['Sr. No']);
-                            if (!isNaN(sr) && sr > maxSr) maxSr = sr;
-                        });
-                        nextSrNo = maxSr + 1;
+        try {
+            const fetchUrl = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${ADMIN_SHEET}&action=getData&_=${Date.now()}`;
+            const fetchResp = await fetch(fetchUrl);
+            const fetchData = await fetchResp.json();
+            
+            let rowIndex = null;
+            if (fetchData.status === 'success' && fetchData.data) {
+                fetchData.data.forEach((row, idx) => {
+                    if (row['User Name'] && row['User Name'].toString().trim() === currentUser) {
+                        rowIndex = idx + 2;
                     }
-                } catch (err) {
-                    console.log('Could not fetch existing data, starting from 1');
-                }
-
-                const params = new URLSearchParams();
-                params.append("action", "insert");
-                params.append("spreadsheetId", SPREADSHEET_ID);
-                params.append("sheetName", STUDENT_SHEET);
-                params.append("Sr. No", nextSrNo);
-                params.append("First Name", formData.firstName);
-                params.append("Last Name", formData.lastName);
-                params.append("Mobile Number", formData.mobile);
-                params.append("Email Id", formData.email);
-                params.append("Education Details", formData.educationDetails);
-                params.append("College Name", formData.collegeName);
-                params.append("Password", formData.password);
-
-                if (croppedImageData.signup && croppedImageData.signup.base64Data) {
-                    try {
-                        params.append("fileCount", "1");
-                        params.append("fileData1", croppedImageData.signup.base64Data);
-                        params.append("fileName1", croppedImageData.signup.fileName);
-                        params.append("fileType1", croppedImageData.signup.mimeType);
-                        params.append("fileColumn1", IMAGE_COLUMN_NAME);
-                        params.append("driveFolderId", DRIVE_FOLDER_ID);
-                    } catch (err) {
-                        showToast('⚠️ Image upload failed, but account will be created.', 'warning');
-                    }
-                }
-
-                const resp = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: params.toString()
                 });
-
-                const result = await resp.json();
-                
-                if (result.status === 'success') {
-                    showToast('✅ Signup successful! Logging in...', 'success');
-                    closeModal('signupModal');
-                    
-                    const user = await getUserData(formData.email);
-                    if (user) {
-                        updateUIAfterLogin(formData.email, user, 'student');
-                    }
-                    
-                    document.getElementById('signupForm').reset();
-                    document.getElementById('profilePreview').src = 'https://ui-avatars.com/api/?name=User&background=2563eb&color=fff&size=80';
-                    croppedImageData.signup = null;
-                    document.getElementById('profileImageInput').value = '';
-                    document.getElementById('signupPreviewContainer').style.display = 'none';
-                    document.getElementById('signupImageStatus').textContent = '';
-                    return true;
-                } else {
-                    throw new Error(result.message || 'Unknown error');
-                }
-            } catch (err) {
-                showToast('❌ Signup failed: ' + err.message, 'error');
-                return false;
-            } finally {
-                showSpinner(submitBtn, false);
             }
-        }
 
-        // ============================================================
-        // LOGIN FUNCTION
-        // ============================================================
-        async function handleLogin(email, password) {
-            try {
-                const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${STUDENT_SHEET}&action=getData&_=${Date.now()}`;
-                const resp = await fetch(url);
-                const data = await resp.json();
-                
-                if (data.status === 'success' && data.data) {
-                    const found = data.data.find(row => {
-                        const rowEmail = row['Email Id'] ? row['Email Id'].toString().trim() : '';
-                        const rowPass = row['Password'] ? row['Password'].toString().trim() : '';
-                        return rowEmail === email && rowPass === password;
-                    });
-                    return found || null;
-                }
-                return null;
-            } catch (err) {
-                throw new Error('Login error: ' + err.message);
-            }
-        }
-
-        // ============================================================
-        // UPDATED UI UPDATE FUNCTION - FIXED MENU VISIBILITY
-        // ============================================================
-        function updateUIAfterLogin(email, userData, userType = 'student') {
-            currentUser = email;
-            currentUserData = userData;
-            currentUserType = userType;
-            
-            // Hide auth buttons, show profile
-            dom.authButtons.style.display = 'none';
-            dom.profileSection.classList.add('visible');
-            
-            // Show menu grid
-            dom.menuGrid.classList.add('visible');
-            
-            // Reset all mode classes
-            dom.menuGrid.classList.remove('guest-mode', 'student-mode', 'admin-mode', 'logged-in');
-            
-            // Add logged-in class
-            dom.menuGrid.classList.add('logged-in');
-            
-            if (userType === 'admin') {
-                // Admin mode
-                dom.menuGrid.classList.add('admin-mode');
-                
-                // Update profile info
-                const fullName = userData['User Name'] || 'Admin';
-                dom.profileName.innerHTML = `${fullName} <span class="admin-badge"><i class="fas fa-user-shield"></i> Admin</span>`;
-                dom.editProfileBtn.textContent = 'Edit Admin Profile';
-                dom.editProfileBtn.style.display = 'inline-flex';
-                document.getElementById('avatarContainer').classList.add('avatar-clickable');
-                
-                // Show admin cards
-                dom.adminManagementCard.style.display = 'block';
-                dom.adminChangePasswordLink.style.display = 'block';
-                dom.adminSettingsLink.style.display = 'block';
-                
-                // Hide student cards (CSS handles this via admin-mode class)
-                
-            } else {
-                // Student mode
-                dom.menuGrid.classList.add('student-mode');
-                
-                // Update profile info
-                const fullName = `${userData['First Name'] || ''} ${userData['Last Name'] || ''}`.trim() || 'User';
-                dom.profileName.textContent = fullName;
-                dom.editProfileBtn.textContent = 'Edit Profile';
-                dom.editProfileBtn.style.display = 'inline-flex';
-                document.getElementById('avatarContainer').classList.remove('avatar-clickable');
-                
-                // Hide admin cards (CSS handles this)
-                dom.adminManagementCard.style.display = 'none';
-                dom.adminChangePasswordLink.style.display = 'none';
-                dom.adminSettingsLink.style.display = 'none';
-            }
-            
-            // Update email
-            dom.profileEmail.textContent = email;
-            
-            // Update profile image
-            const imageLink = userData['Image'] || '';
-            if (imageLink) {
-                const thumbnail = getDriveThumbnail(imageLink);
-                dom.profileAvatar.src = thumbnail;
-            } else {
-                const name = userType === 'admin' ? (userData['User Name'] || 'Admin') : `${userData['First Name'] || ''} ${userData['Last Name'] || ''}`.trim() || 'User';
-                dom.profileAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2563eb&color=fff&size=100`;
-            }
-            
-            // Save session
-            sessionStorage.setItem('ujjwal_user', email);
-            sessionStorage.setItem('ujjwal_user_data', JSON.stringify(userData));
-            sessionStorage.setItem('ujjwal_user_type', userType);
-        }
-
-        // ============================================================
-        // UPDATED LOGOUT FUNCTION - FIXED
-        // ============================================================
-        function logout() {
-            currentUser = null;
-            currentUserData = null;
-            currentUserType = null;
-            
-            // Reset UI
-            dom.authButtons.style.display = 'flex';
-            dom.profileSection.classList.remove('visible');
-            
-            // Reset menu grid
-            dom.menuGrid.classList.remove('visible', 'logged-in', 'student-mode', 'admin-mode', 'guest-mode');
-            dom.menuGrid.classList.add('visible', 'guest-mode');
-            
-            // Reset admin cards
-            dom.adminManagementCard.style.display = 'none';
-            dom.adminChangePasswordLink.style.display = 'none';
-            dom.adminSettingsLink.style.display = 'none';
-            
-            // Reset profile button
-            dom.editProfileBtn.style.display = 'none';
-            document.getElementById('avatarContainer').classList.remove('avatar-clickable');
-            
-            // Reset profile avatar
-            dom.profileAvatar.src = 'https://ui-avatars.com/api/?name=User&background=2563eb&color=fff&size=100';
-            dom.profileName.textContent = 'User Name';
-            dom.profileEmail.textContent = 'user@email.com';
-            
-            // Clear session
-            sessionStorage.removeItem('ujjwal_user');
-            sessionStorage.removeItem('ujjwal_user_data');
-            sessionStorage.removeItem('ujjwal_user_type');
-            
-            showToast('Logged out successfully', 'info');
-        }
-
-        // ============================================================
-        // CHANGE PASSWORD FUNCTIONS
-        // ============================================================
-        async function handleChangePassword(email, newPassword, rowIndex) {
-            try {
-                const params = new URLSearchParams();
-                params.append("action", "update");
-                params.append("spreadsheetId", SPREADSHEET_ID);
-                params.append("sheetName", STUDENT_SHEET);
-                params.append("rowIndex", rowIndex);
-                params.append("Password", newPassword);
-
-                const resp = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: params.toString()
-                });
-
-                const result = await resp.json();
-                return result;
-            } catch (err) {
-                console.error('Error changing password:', err);
-                throw err;
-            }
-        }
-
-        async function handleAdminChangePassword(username, newPassword, rowIndex) {
-            try {
-                const params = new URLSearchParams();
-                params.append("action", "update");
-                params.append("spreadsheetId", SPREADSHEET_ID);
-                params.append("sheetName", ADMIN_SHEET);
-                params.append("rowIndex", rowIndex);
-                params.append("Password", newPassword);
-
-                const resp = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: params.toString()
-                });
-
-                const result = await resp.json();
-                return result;
-            } catch (err) {
-                console.error('Error changing admin password:', err);
-                throw err;
-            }
-        }
-
-        // ============================================================
-        // EDIT ADMIN PROFILE FUNCTIONS
-        // ============================================================
-        async function handleEditAdminProfile(username, newUsername, rowIndex, imageData = null) {
-            try {
-                if (newUsername && newUsername !== username) {
-                    const updateResult = await updateAdminData(username, { 'User Name': newUsername }, rowIndex);
-                    if (updateResult.status !== 'success') {
-                        throw new Error('Failed to update username');
-                    }
-                }
-
-                if (imageData && imageData.base64Data) {
-                    try {
-                        const currentData = await getAdminData(newUsername || username);
-                        const oldImageUrl = currentData ? currentData['Image'] : null;
-                        const oldFileId = oldImageUrl ? extractFileId(oldImageUrl) : null;
-
-                        const uploadResult = await uploadImageWithReplace(
-                            imageData.base64Data,
-                            imageData.fileName,
-                            imageData.mimeType,
-                            oldFileId,
-                            rowIndex,
-                            newUsername || username
-                        );
-
-                        if (uploadResult && uploadResult.status !== 'success') {
-                            throw new Error('Failed to update image: ' + (uploadResult.message || 'Unknown error'));
-                        }
-                    } catch (err) {
-                        console.error('Image update error:', err);
-                        throw new Error('Image upload failed: ' + err.message);
-                    }
-                }
-
-                return { 
-                    status: 'success', 
-                    message: 'Profile updated successfully'
-                };
-            } catch (err) {
-                console.error('Error updating admin profile:', err);
-                throw err;
-            }
-        }
-
-        function openEditAdminProfileModal() {
-            if (currentUserType !== 'admin') {
-                showToast('Admin login required', 'warning');
+            if (!rowIndex) {
+                showToast('Admin not found in sheet', 'error');
                 return;
             }
-            
-            document.getElementById('editAdminUsername').value = currentUserData['User Name'] || '';
-            
-            const currentImage = currentUserData['Image'] || '';
-            if (currentImage) {
-                document.getElementById('editAdminProfilePreview').src = getDriveThumbnail(currentImage);
-            } else {
-                const name = currentUserData['User Name'] || 'Admin';
-                document.getElementById('editAdminProfilePreview').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=f59e0b&color=fff&size=80`;
+
+            let imageData = null;
+            if (croppedImageData.admin && croppedImageData.admin.base64Data) {
+                imageData = croppedImageData.admin;
             }
-            
-            croppedImageData.admin = null;
-            document.getElementById('editAdminPreviewContainer').style.display = 'none';
-            document.getElementById('editAdminImageStatus').textContent = '';
-            document.getElementById('editAdminProfileStatus').style.display = 'none';
-            document.getElementById('editAdminProfileImageInput').value = '';
-            document.getElementById('editAdminCroppedThumbnailContainer').style.display = 'none';
-            document.getElementById('editAdminProfileSubmitBtn').disabled = true;
-            
-            openModal('editAdminProfileModal');
-        }
 
-        // ============================================================
-        // EVENT BINDINGS
-        // ============================================================
-        function init() {
-            cacheDomElements();
+            const result = await handleEditAdminProfile(
+                currentUser,
+                newUsername,
+                rowIndex,
+                imageData
+            );
 
-            dom.hamburger.addEventListener('click', openSidebar);
-            dom.closeBtn.addEventListener('click', closeSidebar);
-            dom.overlay.addEventListener('click', closeSidebar);
-
-            let touchStartX = 0, touchStartY = 0;
-            document.querySelector('.app-wrapper').addEventListener('touchstart', function(e) {
-                touchStartX = e.changedTouches[0].screenX;
-                touchStartY = e.changedTouches[0].screenY;
-            }, { passive: true });
-
-            document.querySelector('.app-wrapper').addEventListener('touchend', function(e) {
-                const diffX = e.changedTouches[0].screenX - touchStartX;
-                const diffY = Math.abs(e.changedTouches[0].screenY - touchStartY);
-                if (diffY > 50) return;
-                const isOpen = dom.sidebar.classList.contains('open');
-                if (diffX > 60 && touchStartX < 40 && !isOpen) openSidebar();
-                else if (diffX < -60 && isOpen) closeSidebar();
-            }, { passive: true });
-
-            window.addEventListener('resize', function() {
-                if (window.innerWidth > 820) closeSidebar();
-            });
-
-            // Modal close
-            document.getElementById('loginModalClose').addEventListener('click', () => closeModal('loginModal'));
-            document.getElementById('signupModalClose').addEventListener('click', () => closeModal('signupModal'));
-            document.getElementById('adminModalClose').addEventListener('click', () => closeModal('adminModal'));
-            document.getElementById('changePasswordModalClose').addEventListener('click', () => closeModal('changePasswordModal'));
-            document.getElementById('adminChangePasswordModalClose').addEventListener('click', () => closeModal('adminChangePasswordModal'));
-            document.getElementById('settingsModalClose').addEventListener('click', () => closeModal('settingsModal'));
-            document.getElementById('adminSettingsModalClose').addEventListener('click', () => closeModal('adminSettingsModal'));
-            document.getElementById('forgotPasswordModalClose').addEventListener('click', () => closeModal('forgotPasswordModal'));
-            document.getElementById('editAdminProfileModalClose').addEventListener('click', () => closeModal('editAdminProfileModal'));
-
-            document.querySelectorAll('.modal-overlay').forEach(el => {
-                el.addEventListener('click', function(e) {
-                    if (e.target === this) this.classList.remove('active');
-                });
-            });
-
-            // Auth buttons
-            document.getElementById('loginBtn').addEventListener('click', () => openModal('loginModal'));
-            document.getElementById('signupBtn').addEventListener('click', () => openModal('signupModal'));
-            document.getElementById('adminLoginBtn').addEventListener('click', () => openModal('adminModal'));
-
-            // ==========================================================
-            // ABOUT US - ALWAYS VISIBLE
-            // ==========================================================
-            document.getElementById('aboutUsLink').addEventListener('click', function(e) {
-                e.preventDefault();
-                document.getElementById('aboutSection').scrollIntoView({ 
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            });
-
-            // ==========================================================
-            // STUDENT SETTINGS - ALWAYS ACCESSIBLE
-            // ==========================================================
-            document.getElementById('settingsLink').addEventListener('click', function(e) {
-                e.preventDefault();
+            if (result.status === 'success') {
+                showToast('✅ Admin profile updated successfully!', 'success');
+                closeModal('editAdminProfileModal');
                 
-                if (currentUserType === 'admin') {
-                    showToast('Please use Admin Settings', 'warning');
-                    return;
-                }
-                
-                const currentTheme = localStorage.getItem('user-theme-preference') || 'light';
-                document.getElementById('settingsThemeToggle').checked = (currentTheme === 'dark');
-                openModal('settingsModal');
-            });
-
-            document.getElementById('settingsThemeToggle').addEventListener('change', function(e) {
-                const theme = e.target.checked ? 'dark' : 'light';
-                applyTheme(theme);
-                showToast(`✅ ${theme.charAt(0).toUpperCase() + theme.slice(1)} mode applied`, 'success');
-            });
-
-            // ==========================================================
-            // ADMIN SETTINGS - REQUIRES ADMIN LOGIN
-            // ==========================================================
-            document.getElementById('adminSettingsLink').addEventListener('click', function(e) {
-                e.preventDefault();
-                if (currentUserType !== 'admin') {
-                    showToast('Admin login required', 'warning');
-                    return;
-                }
-                const currentTheme = localStorage.getItem('user-theme-preference') || 'light';
-                document.getElementById('adminSettingsThemeToggle').checked = (currentTheme === 'dark');
-                openModal('adminSettingsModal');
-            });
-
-            document.getElementById('adminSettingsThemeToggle').addEventListener('change', function(e) {
-                const theme = e.target.checked ? 'dark' : 'light';
-                applyTheme(theme);
-                showToast(`✅ ${theme.charAt(0).toUpperCase() + theme.slice(1)} mode applied`, 'success');
-            });
-
-            // ==========================================================
-            // EDIT PROFILE
-            // ==========================================================
-            dom.editProfileBtn.addEventListener('click', function(e) {
-                if (currentUserType === 'admin') {
-                    e.preventDefault();
-                    openEditAdminProfileModal();
-                } else if (currentUserType === 'student') {
-                    window.location.href = 'editprofile.html';
-                } else {
-                    e.preventDefault();
-                    showToast('Please login first', 'warning');
-                }
-            });
-
-            document.getElementById('avatarContainer').addEventListener('click', function() {
-                if (currentUserType === 'admin') {
-                    openEditAdminProfileModal();
-                }
-            });
-
-            // ==========================================================
-            // EDIT ADMIN IMAGE UPLOAD
-            // ==========================================================
-            document.getElementById('editAdminImageUploadArea').addEventListener('click', function() {
-                document.getElementById('editAdminProfileImageInput').click();
-            });
-
-            document.getElementById('editAdminProfileImageInput').addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (!file) return;
-                
-                if (file.size > 5 * 1024 * 1024) {
-                    document.getElementById('editAdminImageStatus').textContent = "❌ Image too large! Max 5MB.";
-                    document.getElementById('editAdminImageStatus').style.color = "var(--danger)";
-                    return;
-                }
-                if (!file.type.startsWith('image/')) {
-                    document.getElementById('editAdminImageStatus').textContent = "❌ Please select a valid image.";
-                    document.getElementById('editAdminImageStatus').style.color = "var(--danger)";
-                    return;
-                }
-
+                croppedImageData.admin = null;
+                document.getElementById('editAdminPreviewContainer').style.display = 'none';
+                document.getElementById('editAdminCroppedThumbnailContainer').style.display = 'none';
                 document.getElementById('editAdminProfileSubmitBtn').disabled = true;
-                document.getElementById('editAdminProfileSubmitBtn').title = "Please apply crop first";
-
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const img = document.getElementById('editAdminImageToCrop');
-                    img.src = event.target.result;
-                    const previewContainer = document.getElementById('editAdminPreviewContainer');
-                    previewContainer.style.display = 'block';
-                    if (croppers.admin) croppers.admin.destroy();
-                    croppers.admin = new Cropper(img, {
-                        aspectRatio: 1,
-                        viewMode: 1,
-                        autoCropArea: 1,
-                        responsive: true
-                    });
-                    document.getElementById('editAdminImageStatus').textContent = "✅ Image loaded. Please apply crop.";
-                    document.getElementById('editAdminImageStatus').style.color = "var(--success)";
-                    croppedImageData.admin = null;
-                    document.getElementById('editAdminCroppedThumbnailContainer').style.display = 'none';
-                    document.getElementById('applyAdminCropBtn').disabled = false;
-                };
-                reader.readAsDataURL(file);
-            });
-
-            document.addEventListener('click', function(e) {
-                const thumbnail = document.getElementById('editAdminCroppedThumbnailPreview');
-                if (e.target === thumbnail) {
-                    document.getElementById('editAdminProfileImageInput').click();
-                }
-            });
-
-            // ==========================================================
-            // EDIT ADMIN PROFILE FORM SUBMIT
-            // ==========================================================
-            document.getElementById('editAdminProfileForm').addEventListener('submit', async function(e) {
-                e.preventDefault();
                 
-                const newUsername = document.getElementById('editAdminUsername').value.trim();
-                
-                if (!newUsername) {
-                    showToast('Username is required', 'error');
-                    return;
-                }
-
-                const submitBtn = document.getElementById('editAdminProfileSubmitBtn');
-                showSpinner(submitBtn, true);
-
-                try {
-                    const fetchUrl = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${ADMIN_SHEET}&action=getData&_=${Date.now()}`;
-                    const fetchResp = await fetch(fetchUrl);
-                    const fetchData = await fetchResp.json();
-                    
-                    let rowIndex = null;
-                    if (fetchData.status === 'success' && fetchData.data) {
-                        fetchData.data.forEach((row, idx) => {
-                            if (row['User Name'] && row['User Name'].toString().trim() === currentUser) {
-                                rowIndex = idx + 2;
-                            }
-                        });
-                    }
-
-                    if (!rowIndex) {
-                        showToast('Admin not found in sheet', 'error');
-                        return;
-                    }
-
-                    let imageData = null;
-                    if (croppedImageData.admin && croppedImageData.admin.base64Data) {
-                        imageData = croppedImageData.admin;
-                    }
-
-                    const result = await handleEditAdminProfile(
-                        currentUser,
-                        newUsername,
-                        rowIndex,
-                        imageData
-                    );
-
-                    if (result.status === 'success') {
-                        showToast('✅ Admin profile updated successfully!', 'success');
-                        closeModal('editAdminProfileModal');
-                        
-                        croppedImageData.admin = null;
-                        document.getElementById('editAdminPreviewContainer').style.display = 'none';
-                        document.getElementById('editAdminCroppedThumbnailContainer').style.display = 'none';
-                        document.getElementById('editAdminProfileSubmitBtn').disabled = true;
-                        
-                        const updatedAdminData = await getAdminData(newUsername);
-                        if (updatedAdminData) {
-                            currentUser = newUsername;
-                            currentUserData = updatedAdminData;
-                            updateUIAfterLogin(newUsername, updatedAdminData, 'admin');
-                            sessionStorage.setItem('ujjwal_user', newUsername);
-                            sessionStorage.setItem('ujjwal_user_data', JSON.stringify(updatedAdminData));
-                        }
-                    } else {
-                        showToast('❌ Failed to update profile: ' + (result.message || 'Unknown error'), 'error');
-                    }
-                } catch (err) {
-                    showToast('❌ Error: ' + err.message, 'error');
-                } finally {
-                    showSpinner(submitBtn, false);
-                }
-            });
-
-            // ==========================================================
-            // FORGOT PASSWORD
-            // ==========================================================
-            document.getElementById('forgotPasswordLink').addEventListener('click', function(e) {
-                e.preventDefault();
-                closeModal('loginModal');
-                document.getElementById('forgotPasswordForm').reset();
-                document.getElementById('forgotStatus').style.display = 'none';
-                document.getElementById('passwordRevealBox').style.display = 'none';
-                document.getElementById('revealedPassword').textContent = '********';
-                forgotPasswordData = null;
-                setTimeout(() => {
-                    openModal('forgotPasswordModal');
-                }, 200);
-            });
-
-            document.getElementById('forgotPasswordForm').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                
-                const email = document.getElementById('forgotEmail').value.trim();
-                const mobile = document.getElementById('forgotMobile').value.trim();
-
-                if (!email || !mobile) {
-                    showToast('Please fill all fields', 'error');
-                    return;
-                }
-
-                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                    showToast('Invalid email format', 'error');
-                    return;
-                }
-
-                if (!/^[6-9][0-9]{9}$/.test(mobile)) {
-                    showToast('Mobile must be 10 digits starting with 6-9', 'error');
-                    return;
-                }
-
-                await handleForgotPassword(email, mobile);
-            });
-
-            // ==========================================================
-            // LOGIN FORM
-            // ==========================================================
-            document.getElementById('loginForm').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                const email = document.getElementById('loginEmail').value.trim();
-                const password = document.getElementById('loginPassword').value.trim();
-
-                if (!email || !password) {
-                    showToast('Please fill all fields', 'error');
-                    return;
-                }
-
-                const submitBtn = this.querySelector('button[type="submit"]');
-                showSpinner(submitBtn, true);
-
-                try {
-                    const user = await handleLogin(email, password);
-                    if (user) {
-                        closeModal('loginModal');
-                        updateUIAfterLogin(email, user, 'student');
-                        this.reset();
-                        showToast('✅ Login successful!', 'success');
-                    } else {
-                        showToast('❌ Invalid Email or Password', 'error');
-                    }
-                } catch (err) {
-                    showToast('❌ Error: ' + err.message, 'error');
-                } finally {
-                    showSpinner(submitBtn, false);
-                }
-            });
-
-            // ==========================================================
-            // SIGNUP FORM
-            // ==========================================================
-            document.getElementById('signupForm').addEventListener('submit', async function(e) {
-                e.preventDefault();
-
-                const firstName = document.getElementById('firstName').value.trim();
-                const lastName = document.getElementById('lastName').value.trim();
-                const mobile = document.getElementById('mobileNumber').value.trim();
-                const email = document.getElementById('signupEmail').value.trim();
-                const educationDetails = document.getElementById('educationDetails').value.trim();
-                const collegeName = document.getElementById('collegeName').value.trim();
-                const password = document.getElementById('signupPassword').value;
-                const confirm = document.getElementById('confirmPassword').value;
-
-                if (!firstName || !lastName || !email || !password || !confirm) {
-                    showToast('Please fill all required fields', 'error');
-                    return;
-                }
-                if (password !== confirm) {
-                    showToast('Passwords do not match', 'error');
-                    return;
-                }
-                if (password.length < 8) {
-                    showToast('Password must be at least 8 characters', 'error');
-                    return;
-                }
-                if (mobile && !/^[6-9][0-9]{9}$/.test(mobile)) {
-                    showToast('Mobile must be 10 digits starting with 6-9', 'error');
-                    return;
-                }
-                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                    showToast('Invalid email format', 'error');
-                    return;
-                }
-
-                const formData = {
-                    firstName,
-                    lastName,
-                    mobile,
-                    email,
-                    educationDetails,
-                    collegeName,
-                    password
-                };
-
-                await handleSignup(formData);
-            });
-
-            // ==========================================================
-            // SIGNUP IMAGE UPLOAD
-            // ==========================================================
-            document.getElementById('imageUploadArea').addEventListener('click', function() {
-                document.getElementById('profileImageInput').click();
-            });
-
-            document.getElementById('profileImageInput').addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (!file) return;
-                
-                if (file.size > 5 * 1024 * 1024) {
-                    document.getElementById('signupImageStatus').textContent = "❌ Image too large! Max 5MB.";
-                    document.getElementById('signupImageStatus').style.color = "var(--danger)";
-                    return;
-                }
-                if (!file.type.startsWith('image/')) {
-                    document.getElementById('signupImageStatus').textContent = "❌ Please select a valid image.";
-                    document.getElementById('signupImageStatus').style.color = "var(--danger)";
-                    return;
-                }
-
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const img = document.getElementById('signupImageToCrop');
-                    img.src = event.target.result;
-                    document.getElementById('signupPreviewContainer').style.display = 'block';
-                    if (croppers.signup) croppers.signup.destroy();
-                    croppers.signup = new Cropper(img, {
-                        aspectRatio: 1,
-                        viewMode: 1,
-                        autoCropArea: 1,
-                        responsive: true
-                    });
-                    document.getElementById('signupImageStatus').textContent = "✅ Image loaded. Crop if needed.";
-                    document.getElementById('signupImageStatus').style.color = "var(--success)";
-                    croppedImageData.signup = null;
-                };
-                reader.readAsDataURL(file);
-            });
-
-            // ==========================================================
-            // STUDENT CHANGE PASSWORD
-            // ==========================================================
-            document.getElementById('changePasswordLink').addEventListener('click', function(e) {
-                e.preventDefault();
-                if (!currentUser || currentUserType !== 'student') {
-                    showToast('Please login as student first', 'warning');
-                    return;
-                }
-                document.getElementById('changePasswordForm').reset();
-                document.getElementById('changePasswordStatus').style.display = 'none';
-                openModal('changePasswordModal');
-            });
-
-            document.getElementById('changePasswordForm').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                
-                const newPassword = document.getElementById('newPassword').value;
-                const confirmNewPassword = document.getElementById('confirmNewPassword').value;
-
-                if (!newPassword || !confirmNewPassword) {
-                    showToast('Please fill all fields', 'error');
-                    return;
-                }
-                if (newPassword.length < 8) {
-                    showToast('Password must be at least 8 characters', 'error');
-                    return;
-                }
-                if (newPassword !== confirmNewPassword) {
-                    showToast('Passwords do not match', 'error');
-                    return;
-                }
-
-                const submitBtn = document.getElementById('changePasswordBtn');
-                showSpinner(submitBtn, true);
-
-                try {
-                    const userData = await getUserData(currentUser);
-                    if (!userData) {
-                        showToast('User not found', 'error');
-                        return;
-                    }
-
-                    const fetchUrl = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${STUDENT_SHEET}&action=getData&_=${Date.now()}`;
-                    const fetchResp = await fetch(fetchUrl);
-                    const fetchData = await fetchResp.json();
-                    
-                    let rowIndex = null;
-                    if (fetchData.status === 'success' && fetchData.data) {
-                        fetchData.data.forEach((row, idx) => {
-                            if (row['Email Id'] && row['Email Id'].toString().trim() === currentUser) {
-                                rowIndex = idx + 2;
-                            }
-                        });
-                    }
-
-                    if (!rowIndex) {
-                        showToast('User not found in sheet', 'error');
-                        return;
-                    }
-
-                    const result = await handleChangePassword(currentUser, newPassword, rowIndex);
-                    
-                    if (result.status === 'success') {
-                        showToast('✅ Password updated successfully!', 'success');
-                        closeModal('changePasswordModal');
-                        document.getElementById('changePasswordForm').reset();
-                    } else {
-                        showToast('❌ Failed to update password: ' + (result.message || 'Unknown error'), 'error');
-                    }
-                } catch (err) {
-                    showToast('❌ Error: ' + err.message, 'error');
-                } finally {
-                    showSpinner(submitBtn, false);
-                }
-            });
-
-            // ==========================================================
-            // ADMIN CHANGE PASSWORD
-            // ==========================================================
-            document.getElementById('adminChangePasswordLink').addEventListener('click', function(e) {
-                e.preventDefault();
-                if (!currentUser || currentUserType !== 'admin') {
-                    showToast('Admin login required', 'warning');
-                    return;
-                }
-                document.getElementById('adminChangePasswordForm').reset();
-                document.getElementById('adminChangePasswordStatus').style.display = 'none';
-                openModal('adminChangePasswordModal');
-            });
-
-            document.getElementById('adminChangePasswordForm').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                
-                const newPassword = document.getElementById('adminNewPassword').value;
-                const confirmNewPassword = document.getElementById('adminConfirmNewPassword').value;
-
-                if (!newPassword || !confirmNewPassword) {
-                    showToast('Please fill all fields', 'error');
-                    return;
-                }
-                if (newPassword.length < 8) {
-                    showToast('Password must be at least 8 characters', 'error');
-                    return;
-                }
-                if (newPassword !== confirmNewPassword) {
-                    showToast('Passwords do not match', 'error');
-                    return;
-                }
-
-                const submitBtn = document.getElementById('adminChangePasswordBtn');
-                showSpinner(submitBtn, true);
-
-                try {
-                    const adminData = await getAdminData(currentUser);
-                    if (!adminData) {
-                        showToast('Admin not found', 'error');
-                        return;
-                    }
-
-                    const fetchUrl = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${ADMIN_SHEET}&action=getData&_=${Date.now()}`;
-                    const fetchResp = await fetch(fetchUrl);
-                    const fetchData = await fetchResp.json();
-                    
-                    let rowIndex = null;
-                    if (fetchData.status === 'success' && fetchData.data) {
-                        fetchData.data.forEach((row, idx) => {
-                            if (row['User Name'] && row['User Name'].toString().trim() === currentUser) {
-                                rowIndex = idx + 2;
-                            }
-                        });
-                    }
-
-                    if (!rowIndex) {
-                        showToast('Admin not found in sheet', 'error');
-                        return;
-                    }
-
-                    const result = await handleAdminChangePassword(currentUser, newPassword, rowIndex);
-                    
-                    if (result.status === 'success') {
-                        showToast('✅ Admin password updated successfully!', 'success');
-                        closeModal('adminChangePasswordModal');
-                        document.getElementById('adminChangePasswordForm').reset();
-                    } else {
-                        showToast('❌ Failed to update admin password: ' + (result.message || 'Unknown error'), 'error');
-                    }
-                } catch (err) {
-                    showToast('❌ Error: ' + err.message, 'error');
-                } finally {
-                    showSpinner(submitBtn, false);
-                }
-            });
-
-            // ==========================================================
-            // ADMIN LOGIN
-            // ==========================================================
-            function generateMath() {
-                const a = Math.floor(Math.random() * 20) + 1;
-                const b = Math.floor(Math.random() * 20) + 1;
-                document.getElementById('mathQuestion').textContent = `${a} + ${b} = ?`;
-                mathAnswer = a + b;
-            }
-            generateMath();
-
-            document.getElementById('adminForm').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                const user = document.getElementById('adminUser').value.trim();
-                const pass = document.getElementById('adminPass').value.trim();
-                const mathInput = parseInt(document.getElementById('mathAnswer').value);
-
-                if (!user || !pass) {
-                    showToast('Please fill all fields', 'error');
-                    return;
-                }
-                if (mathInput !== mathAnswer) {
-                    showToast('Math verification failed', 'error');
-                    generateMath();
-                    return;
-                }
-
-                const submitBtn = this.querySelector('button[type="submit"]');
-                showSpinner(submitBtn, true);
-
-                try {
-                    const admin = await handleAdminLogin(user, pass);
-                    if (admin) {
-                        showToast('✅ Admin login successful!', 'success');
-                        closeModal('adminModal');
-                        this.reset();
-                        generateMath();
-                        updateUIAfterLogin(user, admin, 'admin');
-                    } else {
-                        showToast('❌ Invalid Admin credentials', 'error');
-                    }
-                } catch (err) {
-                    showToast('❌ Admin login error: ' + err.message, 'error');
-                } finally {
-                    showSpinner(submitBtn, false);
-                }
-            });
-
-            // ==========================================================
-            // ADMIN MANAGEMENT CARD
-            // ==========================================================
-            document.getElementById('adminManagementCard').addEventListener('click', function(e) {
-                if (!currentUser || currentUserType !== 'admin') {
-                    e.preventDefault();
-                    showToast('Admin login required to access Management', 'warning');
-                }
-            });
-
-            // ==========================================================
-            // LOGOUT
-            // ==========================================================
-            document.getElementById('logoutCard').addEventListener('click', function(e) {
-                e.preventDefault();
-                if (currentUser) {
-                    logout();
-                } else {
-                    showToast('You are not logged in', 'warning');
-                }
-            });
-
-            // ==========================================================
-            // SESSION RESTORATION - FIXED
-            // ==========================================================
-            const savedUser = sessionStorage.getItem('ujjwal_user');
-            const savedUserData = sessionStorage.getItem('ujjwal_user_data');
-            const savedUserType = sessionStorage.getItem('ujjwal_user_type');
-            
-            if (savedUser && savedUserData) {
-                try {
-                    const userData = JSON.parse(savedUserData);
-                    const userType = savedUserType || 'student';
-                    updateUIAfterLogin(savedUser, userData, userType);
-                } catch (e) {
-                    console.log('Error restoring session');
-                    // Fallback to guest mode
-                    dom.menuGrid.classList.add('visible', 'guest-mode');
+                const updatedAdminData = await getAdminData(newUsername);
+                if (updatedAdminData) {
+                    currentUser = newUsername;
+                    currentUserData = updatedAdminData;
+                    updateUIAfterLogin(newUsername, updatedAdminData, 'admin');
+                    sessionStorage.setItem('ujjwal_user', newUsername);
+                    sessionStorage.setItem('ujjwal_user_data', JSON.stringify(updatedAdminData));
                 }
             } else {
-                // Guest mode - show only about us and settings
-                dom.menuGrid.classList.add('visible', 'guest-mode');
+                showToast('❌ Failed to update profile: ' + (result.message || 'Unknown error'), 'error');
             }
+        } catch (err) {
+            showToast('❌ Error: ' + err.message, 'error');
+        } finally {
+            showSpinner(submitBtn, false);
+        }
+    });
 
-            console.log('✅ Ujjwal Academy My Account page loaded');
-            console.log('✅ Menu visibility fixed - cards show/hide correctly');
-            console.log('✅ Student mode: Shows student cards');
-            console.log('✅ Admin mode: Shows admin cards');
-            console.log('✅ Guest mode: Shows only About Us & Settings');
+    document.getElementById('forgotPasswordLink').addEventListener('click', function(e) {
+        e.preventDefault();
+        closeModal('loginModal');
+        document.getElementById('forgotPasswordForm').reset();
+        document.getElementById('forgotStatus').style.display = 'none';
+        document.getElementById('passwordRevealBox').style.display = 'none';
+        document.getElementById('revealedPassword').textContent = '********';
+        forgotPasswordData = null;
+        setTimeout(() => {
+            openModal('forgotPasswordModal');
+        }, 200);
+    });
+
+    document.getElementById('forgotPasswordForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('forgotEmail').value.trim();
+        const mobile = document.getElementById('forgotMobile').value.trim();
+
+        if (!email || !mobile) {
+            showToast('Please fill all fields', 'error');
+            return;
         }
 
-        // ============================================================
-        // START APP
-        // ============================================================
-        document.addEventListener('DOMContentLoaded', init);
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            showToast('Invalid email format', 'error');
+            return;
+        }
+
+        if (!/^[6-9][0-9]{9}$/.test(mobile)) {
+            showToast('Mobile must be 10 digits starting with 6-9', 'error');
+            return;
+        }
+
+        await handleForgotPassword(email, mobile);
+    });
+
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value.trim();
+
+        if (!email || !password) {
+            showToast('Please fill all fields', 'error');
+            return;
+        }
+
+        const submitBtn = this.querySelector('button[type="submit"]');
+        showSpinner(submitBtn, true);
+
+        try {
+            const user = await handleLoginFast(email, password);
+            if (user) {
+                closeModal('loginModal');
+                await updateUIAfterLogin(email, user, 'student');
+                this.reset();
+                showToast('✅ Login successful!', 'success');
+            } else {
+                showToast('❌ Invalid Email or Password', 'error');
+            }
+        } catch (err) {
+            showToast('❌ Error: ' + err.message, 'error');
+        } finally {
+            showSpinner(submitBtn, false);
+        }
+    });
+
+    document.getElementById('signupForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const firstName = document.getElementById('firstName').value.trim();
+        const lastName = document.getElementById('lastName').value.trim();
+        const mobile = document.getElementById('mobileNumber').value.trim();
+        const email = document.getElementById('signupEmail').value.trim();
+        const educationDetails = document.getElementById('educationDetails').value.trim();
+        const collegeName = document.getElementById('collegeName').value.trim();
+        const password = document.getElementById('signupPassword').value;
+        const confirm = document.getElementById('confirmPassword').value;
+
+        if (!firstName || !lastName || !email || !password || !confirm) {
+            showToast('Please fill all required fields', 'error');
+            return;
+        }
+        if (password !== confirm) {
+            showToast('Passwords do not match', 'error');
+            return;
+        }
+        if (password.length < 8) {
+            showToast('Password must be at least 8 characters', 'error');
+            return;
+        }
+        if (mobile && !/^[6-9][0-9]{9}$/.test(mobile)) {
+            showToast('Mobile must be 10 digits starting with 6-9', 'error');
+            return;
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            showToast('Invalid email format', 'error');
+            return;
+        }
+
+        // Check if email already exists before submitting
+        const emailExists = await checkEmailExistsInStudentLogin(email);
+        if (emailExists) {
+            showToast('⚠️ Please login! You already registered', 'warning');
+            if (dom.signupEmailStatus) {
+                dom.signupEmailStatus.style.display = 'block';
+                dom.signupEmailStatus.textContent = '❌ Please login! You already registered';
+                dom.signupEmailStatus.style.color = 'var(--danger)';
+                dom.signupEmailStatus.style.background = 'rgba(239, 68, 68, 0.1)';
+                dom.signupEmailStatus.style.border = '1px solid var(--danger)';
+                dom.signupEmail.style.borderColor = 'var(--danger)';
+            }
+            return;
+        }
+
+        const formData = {
+            firstName,
+            lastName,
+            mobile,
+            email,
+            educationDetails,
+            collegeName,
+            password
+        };
+
+        await handleSignup(formData);
+    });
+
+    document.getElementById('imageUploadArea').addEventListener('click', function() {
+        document.getElementById('profileImageInput').click();
+    });
+
+    document.getElementById('profileImageInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        if (file.size > 5 * 1024 * 1024) {
+            document.getElementById('signupImageStatus').textContent = "❌ Image too large! Max 5MB.";
+            document.getElementById('signupImageStatus').style.color = "var(--danger)";
+            return;
+        }
+        if (!file.type.startsWith('image/')) {
+            document.getElementById('signupImageStatus').textContent = "❌ Please select a valid image.";
+            document.getElementById('signupImageStatus').style.color = "var(--danger)";
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = document.getElementById('signupImageToCrop');
+            img.src = event.target.result;
+            document.getElementById('signupPreviewContainer').style.display = 'block';
+            if (croppers.signup) croppers.signup.destroy();
+            croppers.signup = new Cropper(img, {
+                aspectRatio: 1,
+                viewMode: 1,
+                autoCropArea: 1,
+                responsive: true
+            });
+            document.getElementById('signupImageStatus').textContent = "✅ Image loaded. Crop if needed.";
+            document.getElementById('signupImageStatus').style.color = "var(--success)";
+            croppedImageData.signup = null;
+        };
+        reader.readAsDataURL(file);
+    });
+
+    document.getElementById('changePasswordLink').addEventListener('click', function(e) {
+        e.preventDefault();
+        if (!currentUser || currentUserType !== 'student') {
+            showToast('Please login as student first', 'warning');
+            return;
+        }
+        document.getElementById('changePasswordForm').reset();
+        document.getElementById('changePasswordStatus').style.display = 'none';
+        openModal('changePasswordModal');
+    });
+
+    document.getElementById('changePasswordForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+
+        if (!newPassword || !confirmNewPassword) {
+            showToast('Please fill all fields', 'error');
+            return;
+        }
+        if (newPassword.length < 8) {
+            showToast('Password must be at least 8 characters', 'error');
+            return;
+        }
+        if (newPassword !== confirmNewPassword) {
+            showToast('Passwords do not match', 'error');
+            return;
+        }
+
+        const submitBtn = document.getElementById('changePasswordBtn');
+        showSpinner(submitBtn, true);
+
+        try {
+            const userData = await getUserData(currentUser);
+            if (!userData) {
+                showToast('User not found', 'error');
+                return;
+            }
+
+            const fetchUrl = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${STUDENT_SHEET}&action=getData&_=${Date.now()}`;
+            const fetchResp = await fetch(fetchUrl);
+            const fetchData = await fetchResp.json();
+            
+            let rowIndex = null;
+            if (fetchData.status === 'success' && fetchData.data) {
+                fetchData.data.forEach((row, idx) => {
+                    if (row['Email Id'] && row['Email Id'].toString().trim() === currentUser) {
+                        rowIndex = idx + 2;
+                    }
+                });
+            }
+
+            if (!rowIndex) {
+                showToast('User not found in sheet', 'error');
+                return;
+            }
+
+            const result = await updateDataWithBackgroundSync('changePassword', {
+                email: currentUser,
+                newPassword: newPassword,
+                rowIndex: rowIndex
+            });
+            
+            if (result.status === 'success') {
+                showToast('✅ Password updated successfully!', 'success');
+                closeModal('changePasswordModal');
+                document.getElementById('changePasswordForm').reset();
+            } else {
+                showToast('❌ Failed to update password: ' + (result.message || 'Unknown error'), 'error');
+            }
+        } catch (err) {
+            showToast('❌ Error: ' + err.message, 'error');
+        } finally {
+            showSpinner(submitBtn, false);
+        }
+    });
+
+    document.getElementById('adminChangePasswordLink').addEventListener('click', function(e) {
+        e.preventDefault();
+        if (!currentUser || currentUserType !== 'admin') {
+            showToast('Admin login required', 'warning');
+            return;
+        }
+        document.getElementById('adminChangePasswordForm').reset();
+        document.getElementById('adminChangePasswordStatus').style.display = 'none';
+        openModal('adminChangePasswordModal');
+    });
+
+    document.getElementById('adminChangePasswordForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const newPassword = document.getElementById('adminNewPassword').value;
+        const confirmNewPassword = document.getElementById('adminConfirmNewPassword').value;
+
+        if (!newPassword || !confirmNewPassword) {
+            showToast('Please fill all fields', 'error');
+            return;
+        }
+        if (newPassword.length < 8) {
+            showToast('Password must be at least 8 characters', 'error');
+            return;
+        }
+        if (newPassword !== confirmNewPassword) {
+            showToast('Passwords do not match', 'error');
+            return;
+        }
+
+        const submitBtn = document.getElementById('adminChangePasswordBtn');
+        showSpinner(submitBtn, true);
+
+        try {
+            const adminData = await getAdminData(currentUser);
+            if (!adminData) {
+                showToast('Admin not found', 'error');
+                return;
+            }
+
+            const fetchUrl = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${ADMIN_SHEET}&action=getData&_=${Date.now()}`;
+            const fetchResp = await fetch(fetchUrl);
+            const fetchData = await fetchResp.json();
+            
+            let rowIndex = null;
+            if (fetchData.status === 'success' && fetchData.data) {
+                fetchData.data.forEach((row, idx) => {
+                    if (row['User Name'] && row['User Name'].toString().trim() === currentUser) {
+                        rowIndex = idx + 2;
+                    }
+                });
+            }
+
+            if (!rowIndex) {
+                showToast('Admin not found in sheet', 'error');
+                return;
+            }
+
+            const result = await updateDataWithBackgroundSync('adminChangePassword', {
+                username: currentUser,
+                newPassword: newPassword,
+                rowIndex: rowIndex
+            });
+            
+            if (result.status === 'success') {
+                showToast('✅ Admin password updated successfully!', 'success');
+                closeModal('adminChangePasswordModal');
+                document.getElementById('adminChangePasswordForm').reset();
+            } else {
+                showToast('❌ Failed to update admin password: ' + (result.message || 'Unknown error'), 'error');
+            }
+        } catch (err) {
+            showToast('❌ Error: ' + err.message, 'error');
+        } finally {
+            showSpinner(submitBtn, false);
+        }
+    });
+
+    function generateMath() {
+        const a = Math.floor(Math.random() * 20) + 1;
+        const b = Math.floor(Math.random() * 20) + 1;
+        document.getElementById('mathQuestion').textContent = `${a} + ${b} = ?`;
+        mathAnswer = a + b;
+    }
+    generateMath();
+
+    document.getElementById('adminForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const user = document.getElementById('adminUser').value.trim();
+        const pass = document.getElementById('adminPass').value.trim();
+        const mathInput = parseInt(document.getElementById('mathAnswer').value);
+
+        if (!user || !pass) {
+            showToast('Please fill all fields', 'error');
+            return;
+        }
+        if (mathInput !== mathAnswer) {
+            showToast('Math verification failed', 'error');
+            generateMath();
+            return;
+        }
+
+        const submitBtn = this.querySelector('button[type="submit"]');
+        showSpinner(submitBtn, true);
+
+        try {
+            const admin = await handleAdminLoginFast(user, pass);
+            if (admin) {
+                showToast('✅ Admin login successful!', 'success');
+                closeModal('adminModal');
+                this.reset();
+                generateMath();
+                await updateUIAfterLogin(user, admin, 'admin');
+            } else {
+                showToast('❌ Invalid Admin credentials', 'error');
+            }
+        } catch (err) {
+            showToast('❌ Admin login error: ' + err.message, 'error');
+        } finally {
+            showSpinner(submitBtn, false);
+        }
+    });
+
+    document.getElementById('adminManagementCard').addEventListener('click', function(e) {
+        if (!currentUser || currentUserType !== 'admin') {
+            e.preventDefault();
+            showToast('Admin login required to access Management', 'warning');
+        }
+    });
+
+    document.getElementById('logoutCard').addEventListener('click', function(e) {
+        e.preventDefault();
+        if (currentUser) {
+            logout();
+        } else {
+            showToast('You are not logged in', 'warning');
+        }
+    });
+
+    setupYourDetailsHandler();
+
+    const savedUser = sessionStorage.getItem('ujjwal_user');
+    const savedUserData = sessionStorage.getItem('ujjwal_user_data');
+    const savedUserType = sessionStorage.getItem('ujjwal_user_type');
+
+    if (savedUser && savedUserData) {
+        try {
+            const userData = JSON.parse(savedUserData);
+            const userType = savedUserType || 'student';
+            updateUIAfterLogin(savedUser, userData, userType);
+        } catch (e) {
+            console.log('Error restoring session');
+            showGuestMenu();
+            dom.menuGrid.classList.add('visible', 'guest-mode');
+        }
+    } else {
+        showGuestMenu();
+        dom.menuGrid.classList.add('visible', 'guest-mode');
+    }
+
+    console.log('✅ Ujjwal Academy My Account page loaded');
+    console.log('✅ Background data update system active');
+    console.log('✅ Cache TTL: 5 minutes');
+    console.log('✅ Signup email validation active');
+}
+
+document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
