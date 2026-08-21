@@ -1,0 +1,3209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>📚 Ujjwal Academy | Smart Dashboard</title>
+    
+    <!-- Cropper.js for image editing -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    
+    <style>
+        /* ======================== CSS VARIABLES FOR THEMING ======================== */
+        :root {
+            /* Light Mode Colors */
+            --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-secondary: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-light: #94a3b8;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            
+            /* Brand Colors */
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --primary-light: #60a5fa;
+            --secondary: #f59e0b;
+            --secondary-dark: #d97706;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #fbbf24;
+            --info: #06b6d4;
+            
+            /* Gradients */
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-warning: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            
+            /* Table Colors */
+            --table-header-bg: #f8fafc;
+            --table-row-hover: #f1f5f9;
+            --table-border: #e2e8f0;
+            
+            /* Animation */
+            --transition-fast: 150ms ease;
+            --transition-normal: 300ms ease;
+            --transition-slow: 500ms ease;
+        }
+
+        /* Dark Mode Variables */
+        [data-theme="dark"] {
+            --bg-primary: linear-gradient(135deg, #1e1e2e 0%, #2d1b4e 100%);
+            --bg-secondary: #1e1e2e;
+            --card-bg: rgba(30, 30, 46, 0.98);
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-light: #64748b;
+            --border-color: #334155;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4);
+            
+            --table-header-bg: #1e293b;
+            --table-row-hover: #334155;
+            --table-border: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            background: var(--bg-primary);
+            min-height: 100vh;
+            padding: 20px 16px;
+            color: var(--text-primary);
+            transition: background var(--transition-normal), color var(--transition-normal);
+            position: relative;
+        }
+
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page {
+            display: none;
+            animation: fadeSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .page.active-page {
+            display: block;
+        }
+        
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(20px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .soft-card {
+            background: var(--card-bg);
+            border-radius: 2rem;
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 24px;
+        }
+
+        .soft-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .card-header {
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: nowrap;
+            gap: 14px;
+        }
+
+        [data-theme="dark"] .card-header {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+        }
+
+        .card-header h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.02em;
+            flex: 1;
+            min-width: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .search-section {
+            padding: 1.5rem 2rem;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .btn {
+            border: none;
+            padding: 10px 24px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            filter: brightness(1.05);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+            color: white;
+        }
+
+        .btn-info:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-sm {
+            padding: 6px 16px;
+            font-size: 0.75rem;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .search-wrapper {
+            width: 100%;
+        }
+
+        .search-wrapper input {
+            width: 100%;
+            padding: 14px 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 60px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all var(--transition-fast);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .search-wrapper input::placeholder {
+            color: var(--text-light);
+        }
+
+        .search-wrapper input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            overflow-y: visible;
+            scrollbar-width: thin;
+            padding: 0;
+        }
+
+        .table-wrapper::-webkit-scrollbar {
+            height: 6px;
+            background: transparent;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.875rem;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 16px 20px;
+            background: var(--table-header-bg);
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            border-bottom: 3px solid var(--primary);
+            position: relative;
+        }
+
+        .data-table th:first-child {
+            border-top-left-radius: 12px;
+        }
+
+        .data-table th:last-child {
+            border-top-right-radius: 12px;
+        }
+
+        .data-table td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--table-border);
+            color: var(--text-primary);
+            transition: background var(--transition-fast);
+            font-size: 0.9rem;
+        }
+
+        .data-table tr:hover td {
+            background: var(--table-row-hover);
+        }
+
+        .view-action-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .view-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+            filter: brightness(1.05);
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            padding: 2rem;
+        }
+
+        @media (max-width: 640px) {
+            .details-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+                padding: 1rem;
+            }
+        }
+
+        .detail-card {
+            background: linear-gradient(135deg, var(--card-bg), rgba(255,255,255,0.05));
+            border-radius: 1.2rem;
+            padding: 1rem 1.2rem;
+            transition: all var(--transition-fast);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+
+        .detail-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+
+        .detail-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--secondary);
+            font-weight: 700;
+        }
+
+        .detail-value {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-top: 6px;
+            color: var(--text-primary);
+            word-break: break-word;
+        }
+
+        .action-row {
+            padding: 1rem 2rem 2rem;
+            display: flex;
+            gap: 14px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .profile-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            padding: 2rem 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .profile-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 1.2rem;
+            object-fit: cover;
+            border: 4px solid var(--primary);
+            box-shadow: var(--shadow-lg);
+            background: var(--table-header-bg);
+        }
+
+        .profile-info h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .profile-info p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            visibility: hidden;
+            opacity: 0;
+            transition: all var(--transition-normal);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .modal-box {
+            background: var(--card-bg);
+            width: 92%;
+            max-width: 900px;
+            max-height: 85vh;
+            border-radius: 2rem;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+            animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes modalPop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            color: white;
+        }
+
+        .modal-header h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: white;
+            transition: transform var(--transition-fast);
+            line-height: 1;
+        }
+
+        .close-modal:hover {
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+            max-height: calc(85vh - 70px);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .field label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--secondary);
+        }
+
+        .field input, 
+        .field select, 
+        .field textarea {
+            padding: 12px 16px;
+            border-radius: 16px;
+            border: 2px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            transition: all var(--transition-fast);
+            font-family: inherit;
+        }
+
+        .field input:focus, 
+        .field select:focus, 
+        .field textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .field input:disabled {
+            background: var(--text-light);
+            cursor: not-allowed;
+        }
+
+        .fullwidth {
+            grid-column: 1 / -1;
+        }
+
+        .image-section {
+            border: 2px dashed var(--border-color);
+            padding: 20px;
+            border-radius: 1.2rem;
+            text-align: center;
+            margin: 20px 0;
+            background: var(--table-header-bg);
+            transition: all var(--transition-fast);
+        }
+
+        .image-section:hover {
+            border-color: var(--primary);
+        }
+
+        .image-section label {
+            cursor: pointer;
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        #preview-container {
+            max-width: 400px;
+            margin: 15px auto;
+            display: none;
+        }
+
+        #image-to-crop {
+            max-width: 100%;
+            display: block;
+        }
+
+        .crop-controls {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-tool {
+            background: var(--table-header-bg);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            color: var(--text-primary);
+        }
+
+        .btn-tool:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        #image-status {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid var(--border-color);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .status-message {
+            padding: 12px 20px;
+            border-radius: 16px;
+            margin-top: 20px;
+            display: none;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .status-error {
+            background: var(--danger);
+            color: white;
+        }
+
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.4);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 999;
+            text-decoration: none;
+            border: none;
+            font-size: 2rem;
+        }
+
+        .fab:hover {
+            transform: scale(1.1) rotate(90deg);
+            background: var(--primary-dark);
+            box-shadow: 0 15px 30px rgba(79, 70, 229, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 12px; }
+            
+            .card-header {
+                padding: 1rem 1.2rem;
+                flex-direction: row;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .card-header h2 {
+                font-size: 1rem;
+                width: 100%;
+            }
+            
+            .desktop-buttons {
+                display: none;
+            }
+            
+            .mobile-buttons {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+                margin-top: 12px;
+                width: 100%;
+            }
+            
+            .mobile-buttons .btn {
+                width: 100%;
+                justify-content: center;
+                padding: 12px 16px;
+                font-size: 0.85rem;
+                border-radius: 60px;
+            }
+            
+            .search-section {
+                padding: 1rem 1.2rem;
+            }
+            
+            .search-wrapper {
+                width: 100%;
+            }
+            
+            .search-wrapper input {
+                padding: 14px 20px;
+                font-size: 0.95rem;
+                border-radius: 60px;
+            }
+            
+            .data-table th,
+            .data-table td {
+                padding: 12px 12px;
+                font-size: 0.7rem;
+            }
+            
+            .btn {
+                padding: 8px 18px;
+                font-size: 0.8rem;
+            }
+            
+            .modal-box {
+                width: 95%;
+                border-radius: 1.5rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .profile-wrapper {
+                padding: 1rem;
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .details-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .action-row {
+                padding: 1rem;
+                justify-content: center;
+            }
+
+            .action-row .btn {
+                flex: 1;
+                min-width: 120px;
+                justify-content: center;
+                font-size: 0.75rem;
+                padding: 10px 12px;
+            }
+        }
+        
+        @media (min-width: 769px) {
+            .mobile-buttons {
+                display: none !important;
+            }
+        }
+
+        .mobile-buttons {
+            display: none;
+            gap: 12px;
+            margin-top: 12px;
+            width: 100%;
+        }
+
+        .mobile-buttons .btn {
+            border: none;
+            padding: 12px 16px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .mobile-buttons .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .mobile-buttons .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .mobile-buttons .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .mobile-buttons .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .mobile-buttons .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .mobile-buttons .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            filter: brightness(1.05);
+        }
+
+        .mobile-buttons .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .mobile-buttons .btn .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid var(--border-color);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--table-header-bg);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+
+        .table-wrapper::-webkit-scrollbar,
+        .modal-box::-webkit-scrollbar {
+            width: 0px;
+            height: 0px;
+            background: transparent;
+            display: none;
+        }
+        
+        .table-wrapper,
+        .modal-box {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .loading-skeleton {
+            background: linear-gradient(90deg, var(--border-color) 25%, var(--table-header-bg) 50%, var(--border-color) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .alert-popup {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            background: var(--card-bg);
+            border-left: 5px solid var(--primary);
+            padding: 16px 24px;
+            box-shadow: var(--shadow-xl);
+            border-radius: 0 16px 16px 0;
+            font-weight: 600;
+            font-size: 0.95rem;
+            z-index: 1000;
+            display: none;
+            animation: slideIn 0.3s ease-out;
+            color: var(--text-primary);
+            max-width: 400px;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(120%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .alert-popup.success {
+            border-left-color: var(--success);
+        }
+
+        .alert-popup.error {
+            border-left-color: var(--danger);
+        }
+
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            gap: 16px;
+        }
+
+        .loading-spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .loading-message {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .loading-submessage {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .error-container {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .error-icon {
+            font-size: 2.5rem;
+            color: var(--danger);
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .error-title {
+            font-weight: 600;
+            color: var(--danger);
+            font-size: 1.1rem;
+        }
+
+        .error-message {
+            margin-top: 4px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .error-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .empty-container {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .empty-icon {
+            font-size: 2.5rem;
+            color: var(--text-light);
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .empty-title {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .empty-subtitle {
+            margin-top: 4px;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+
+    <!-- ===================== PAGE 1 - LIST VIEW ===================== -->
+    <div id="page1" class="page active-page">
+        <div class="soft-card">
+            <div class="card-header">
+                <h2>📚 12th Commerce Admission Record - Evening Batch</h2>
+                
+                <div class="desktop-buttons">
+                    <button id="refreshBtn" class="btn btn-outline">
+                        <span>⟳</span> Refresh
+                    </button>
+                    <button id="addNewBtn" class="btn btn-primary">
+                        <span>+</span> Add Admission
+                    </button>
+                </div>
+            </div>
+            
+            <div class="search-section">
+                <div class="search-wrapper">
+                    <input type="text" id="searchInput" 
+                           placeholder="🔍 Search by Name, Mobile, or Admission In...">
+                </div>
+                
+                <div class="mobile-buttons">
+                    <button id="mobileRefreshBtn" class="btn btn-outline">
+                        <span>⟳</span> Refresh
+                    </button>
+                    <button id="mobileAddBtn" class="btn btn-primary">
+                        <span>+</span> Add Admission
+                    </button>
+                </div>
+            </div>
+            
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Sr. No</th>
+                            <th>Student Name</th>
+                            <th>Mobile</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr>
+                            <td colspan="4" style="text-align:center;">
+                                <div class="loading-container">
+                                    <div class="loading-spinner"></div>
+                                    <div class="loading-message">Loading students...</div>
+                                    <div class="loading-submessage">Please wait while we fetch your data...</div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== PAGE 2 - DETAIL VIEW ===================== -->
+    <div id="page2" class="page">
+        <div class="soft-card">
+            <div class="card-header">
+                <h2>👤 Student Profile</h2>
+                <button id="backToPage1Btn" class="btn btn-outline">← Back</button>
+            </div>
+            
+            <div class="profile-wrapper">
+                <img id="profileImage" src="" class="profile-img" alt="Student Photo">
+                <div class="profile-info">
+                    <h3 id="profileName">Student Name</h3>
+                    <p>Adm In: <span id="profileAdmIn"></span></p>
+                    <p>Academic Year: <span id="profileAcademic"></span></p>
+                </div>
+            </div>
+            
+            <div id="detailsContainer" class="details-grid">
+                <!-- Details will be rendered here -->
+            </div>
+            
+            <div class="action-row">
+                <button id="editFromDetailBtn" class="btn btn-primary">✏️ Edit</button>
+                <button id="printFromDetailBtn" class="btn btn-success">🖨️ Print Form</button>
+                <button id="downloadPdfBtn" class="btn btn-info">📥 Download PDF</button>
+                <button id="deleteFromDetailBtn" class="btn btn-danger">🗑 Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== GLOBAL MODAL ===================== -->
+    <div id="globalModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3 id="modalTitle">Notice</h3>
+                <button class="close-modal" id="closeGlobalModal">×</button>
+            </div>
+            <div class="modal-body">
+                <p id="modalMsg" style="font-size: 1rem; line-height: 1.5;"></p>
+                <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
+                    <button id="confirmModalBtn" class="btn btn-primary">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== FORM MODAL ===================== -->
+    <div id="formModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="formModalTitle">Add New Admission</h3>
+                <button class="close-modal" id="closeFormModalBtn">×</button>
+            </div>
+            <div class="modal-body" id="formModalBody"></div>
+        </div>
+    </div>
+
+    <!-- ===================== ALERT POPUP ===================== -->
+    <div id="alertBox" class="alert-popup">Message...</div>
+
+</div>
+
+<script>
+// ================================================================
+// ADMIN AUTHENTICATION CHECK
+// ================================================================
+function checkAdminAuth() {
+    const userType = sessionStorage.getItem('ujjwal_user_type');
+    const user = sessionStorage.getItem('ujjwal_user');
+    
+    if (!user || userType !== 'admin') {
+        sessionStorage.setItem('redirect_after_login', window.location.href);
+        window.location.href = '../../Study Material/My Account/myaccount.html';
+        return false;
+    }
+    return true;
+}
+
+/* ======================== DARK MODE SYNC ======================== */
+function syncThemeWithParent() {
+    const localTheme = localStorage.getItem('user-theme-preference');
+    if (localTheme) {
+        document.body.setAttribute('data-theme', localTheme);
+        document.documentElement.setAttribute('data-theme', localTheme);
+    } else {
+        try {
+            if (window.parent && window.parent.document.body) {
+                const parentTheme = window.parent.document.body.getAttribute('data-theme');
+                if (parentTheme) {
+                    document.body.setAttribute('data-theme', parentTheme);
+                    document.documentElement.setAttribute('data-theme', parentTheme);
+                }
+            }
+        } catch(e) { }
+    }
+}
+
+window.addEventListener('DOMContentLoaded', syncThemeWithParent);
+window.addEventListener('storage', syncThemeWithParent);
+setInterval(syncThemeWithParent, 1000);
+
+window.addEventListener('message', function(event) {
+    if (event.data && event.data.type === 'themeChange') {
+        const newTheme = event.data.theme;
+        if (newTheme) {
+            document.body.setAttribute('data-theme', newTheme);
+            document.documentElement.setAttribute('data-theme', newTheme);
+        }
+    }
+});
+
+/* ======================== CONFIGURATION ======================== */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzoDds81u8M5N8micA_hoIBgCS7aCFm0NUmwW6XLH4m_fRJ8R9pGqjgFGMeBxBd2dSL/exec";
+const SPREADSHEET_ID = "1n21WMpSxap6CgfXBt3guK4DUKpFfDG69fiMm3_4r2hc";
+const SHEET_NAME = "12_Com_Evening";
+const DRIVE_FOLDER_ID = "1M0AZkLkR9t2NmkM4kOS8mka5KkobUlwD";
+const IMAGE_COLUMN_NAME = "Image";
+
+// Cache configuration
+const CACHE_KEY = "admissions_cache_12_com";
+const CACHE_TTL = 15 * 60 * 1000;
+const CACHE_VERSION_KEY = "admissions_cache_version_12_com";
+const CURRENT_CACHE_VERSION = "2.7";
+
+/* ======================== GLOBAL STATE ======================== */
+let allStudents = [];
+let currentViewStudent = null;
+let currentEditStudent = null;
+let selectedRowIndex = 2;
+let selectedAdmIn = null;
+let searchDebounceTimer = null;
+let saveInProgress = false;
+let cropper = null;
+let croppedImageData = null;
+let isLoading = false;
+let dataLoaded = false;
+
+/* ======================== DOM REFS ======================== */
+const dom = {};
+
+function cacheDomElements() {
+    dom.page1 = document.getElementById('page1');
+    dom.page2 = document.getElementById('page2');
+    dom.tableBody = document.getElementById('tableBody');
+    dom.searchInput = document.getElementById('searchInput');
+    dom.refreshBtn = document.getElementById('refreshBtn');
+    dom.addNewBtn = document.getElementById('addNewBtn');
+    dom.backBtn = document.getElementById('backToPage1Btn');
+    dom.editBtn = document.getElementById('editFromDetailBtn');
+    dom.deleteBtn = document.getElementById('deleteFromDetailBtn');
+    dom.printBtn = document.getElementById('printFromDetailBtn');
+    dom.downloadBtn = document.getElementById('downloadPdfBtn');
+    dom.detailsContainer = document.getElementById('detailsContainer');
+    dom.profileImage = document.getElementById('profileImage');
+    dom.profileName = document.getElementById('profileName');
+    dom.profileAdmIn = document.getElementById('profileAdmIn');
+    dom.profileAcademic = document.getElementById('profileAcademic');
+    dom.globalModal = document.getElementById('globalModal');
+    dom.formModal = document.getElementById('formModal');
+    dom.modalTitle = document.getElementById('modalTitle');
+    dom.modalMsg = document.getElementById('modalMsg');
+    dom.formModalTitle = document.getElementById('formModalTitle');
+    dom.formModalBody = document.getElementById('formModalBody');
+    dom.alertBox = document.getElementById('alertBox');
+}
+
+/* ======================== DATE FORMATTING FUNCTIONS ======================== */
+function formatToDDMMYYYY(dateInput) {
+    if (!dateInput || dateInput === '') return '—';
+    
+    try {
+        if (typeof dateInput === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateInput)) {
+            const [year, month, day] = dateInput.split('-');
+            return `${day}/${month}/${year}`;
+        }
+        
+        if (typeof dateInput === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(dateInput)) {
+            return dateInput;
+        }
+        
+        const dateObj = new Date(dateInput);
+        if (!isNaN(dateObj.getTime())) {
+            const year = dateObj.getFullYear();
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            return `${day}/${month}/${year}`;
+        }
+        
+        return '—';
+    } catch (error) {
+        console.error('Date display formatting error:', error);
+        return '—';
+    }
+}
+
+function formatToYYYYMMDD(dateString) {
+    if (!dateString || dateString === '') return '';
+    
+    try {
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+            return dateString;
+        }
+        
+        if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
+            const [day, month, year] = dateString.split('/');
+            const testDate = new Date(year, month - 1, day);
+            if (!isNaN(testDate.getTime())) {
+                return `${year}-${month}-${day}`;
+            }
+            return '';
+        }
+        
+        return '';
+    } catch (error) {
+        console.error('Date conversion error:', error);
+        return '';
+    }
+}
+
+function formatDateForDisplay(dateInput) {
+    return formatToDDMMYYYY(dateInput);
+}
+
+function validateAndFormatDate(dateStr, fieldName = 'Date') {
+    if (!dateStr) {
+        return { isValid: false, formattedDate: '', error: `${fieldName} is required.` };
+    }
+    
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+        return { isValid: false, formattedDate: '', error: `Invalid ${fieldName} format. Please select a valid date.` };
+    }
+    
+    const [year, month, day] = dateStr.split('-');
+    const testDate = new Date(year, month - 1, day);
+    if (isNaN(testDate.getTime()) || 
+        testDate.getFullYear() != year || 
+        testDate.getMonth() + 1 != month || 
+        testDate.getDate() != day) {
+        return { isValid: false, formattedDate: '', error: `Invalid ${fieldName}. Please select a valid date.` };
+    }
+    
+    return { isValid: true, formattedDate: dateStr, error: '' };
+}
+
+function getAcademicYear() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth() + 1;
+    return month >= 4 ? `${year}-${year + 1}` : `${year - 1}-${year}`;
+}
+
+function combineFullName(firstName, middleName, lastName) {
+    const parts = [];
+    if (firstName && firstName.trim()) parts.push(firstName.trim());
+    if (middleName && middleName.trim()) parts.push(middleName.trim());
+    if (lastName && lastName.trim()) parts.push(lastName.trim());
+    return parts.join(' ');
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+}
+
+function extractFileId(driveUrl) {
+    if (!driveUrl) return null;
+    const match = driveUrl.match(/[-\w]{25,}/);
+    return match ? match[0] : null;
+}
+
+function getThumbnailUrl(driveUrl) {
+    const fileId = extractFileId(driveUrl);
+    if (fileId) {
+        return `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`;
+    }
+    return driveUrl;
+}
+
+function showToast(msg, type = 'info') {
+    const box = dom.alertBox;
+    if (!box) return;
+    
+    box.textContent = msg;
+    box.className = `alert-popup ${type}`;
+    box.style.display = 'block';
+    clearTimeout(box._timeout);
+    box._timeout = setTimeout(() => { box.style.display = 'none'; }, 4500);
+}
+
+function showModal(msg, title = "Message", isConfirm = false, onConfirm = null, autoClose = 0) {
+    if (!dom.globalModal) return;
+    dom.modalTitle.innerText = title;
+    dom.modalMsg.innerHTML = msg;
+    const confirmBtn = document.getElementById('confirmModalBtn');
+    if (confirmBtn) {
+        confirmBtn.onclick = () => {
+            dom.globalModal.classList.remove('active');
+            if (isConfirm && onConfirm) onConfirm();
+        };
+    }
+    dom.globalModal.classList.add('active');
+    if (autoClose > 0) setTimeout(() => dom.globalModal.classList.remove('active'), autoClose);
+}
+
+function showSpinner(element, show, customHtml = null) {
+    if (!element) return;
+    if (show) {
+        element.disabled = true;
+        const originalText = element.innerHTML;
+        element.setAttribute('data-original-text', originalText);
+        element.innerHTML = customHtml || '<span class="spinner"></span> Loading...';
+    } else {
+        element.disabled = false;
+        const original = element.getAttribute('data-original-text');
+        if (original) element.innerHTML = original;
+    }
+}
+
+/* ======================== CACHE MANAGEMENT ======================== */
+function clearAllCaches() {
+    try {
+        localStorage.removeItem(CACHE_KEY);
+        localStorage.removeItem(CACHE_VERSION_KEY);
+        console.log('✅ All caches cleared');
+        return true;
+    } catch (e) {
+        console.error('Cache clear error:', e);
+        return false;
+    }
+}
+
+function getCache() {
+    try {
+        const cachedVersion = localStorage.getItem(CACHE_VERSION_KEY);
+        if (cachedVersion !== CURRENT_CACHE_VERSION) {
+            console.log('🔄 Cache version mismatch, clearing old cache');
+            localStorage.removeItem(CACHE_KEY);
+            localStorage.setItem(CACHE_VERSION_KEY, CURRENT_CACHE_VERSION);
+            return null;
+        }
+
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (cached) {
+            const { data, timestamp, sheetName } = JSON.parse(cached);
+            if (sheetName !== SHEET_NAME) {
+                console.log(`🔄 Sheet name mismatch: cached="${sheetName}", current="${SHEET_NAME}"`);
+                localStorage.removeItem(CACHE_KEY);
+                return null;
+            }
+            if (Date.now() - timestamp < CACHE_TTL) {
+                console.log(`📦 Using cached data for sheet: ${SHEET_NAME}`);
+                return data;
+            }
+            localStorage.removeItem(CACHE_KEY);
+        }
+    } catch (e) {
+        console.error('Cache read error:', e);
+        localStorage.removeItem(CACHE_KEY);
+    }
+    return null;
+}
+
+function setCache(data) {
+    try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify({
+            data: data,
+            timestamp: Date.now(),
+            sheetName: SHEET_NAME
+        }));
+        localStorage.setItem(CACHE_VERSION_KEY, CURRENT_CACHE_VERSION);
+        console.log(`💾 Cached ${data.length} records for sheet: ${SHEET_NAME}`);
+    } catch (e) {
+        console.error('Cache write error:', e);
+    }
+}
+
+/* ======================== DATA MANAGEMENT ======================== */
+async function loadStudents(forceRefresh = false) {
+    const tableBody = dom.tableBody;
+    if (!tableBody) return [];
+
+    if (!forceRefresh && dataLoaded) {
+        renderTable();
+        return allStudents;
+    }
+
+    try {
+        if (!forceRefresh) {
+            const cached = getCache();
+            if (cached && Array.isArray(cached) && cached.length > 0) {
+                allStudents = cached;
+                dataLoaded = true;
+                renderTable();
+                showToast(`📦 Loaded ${allStudents.length} students from cache`, "info");
+                setTimeout(() => refreshDataInBackground(), 2000);
+                isLoading = false;
+                return allStudents;
+            }
+        }
+
+        if (tableBody) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="4" style="text-align:center;">
+                        <div class="loading-container">
+                            <div class="loading-spinner"></div>
+                            <div class="loading-message">${forceRefresh ? 'Refreshing data...' : 'Loading students from Google Sheets...'}</div>
+                            <div class="loading-submessage">Please wait while we fetch your data...</div>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+
+        const response = await fetch(`${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}&_=${Date.now()}`);
+        const result = await response.json();
+
+        if (result.status === "success" && Array.isArray(result.data)) {
+            allStudents = result.data.map((item, idx) => ({ ...item, _rowIndex: idx + 2 }));
+            setCache(allStudents);
+            dataLoaded = true;
+            renderTable();
+            showToast(`✅ Loaded ${allStudents.length} students from Google Sheets`, "success");
+            isLoading = false;
+            return allStudents;
+        } else {
+            throw new Error(result.message || "Failed to load data");
+        }
+    } catch (err) {
+        console.error('Load students error:', err);
+        
+        try {
+            const cached = localStorage.getItem(CACHE_KEY);
+            if (cached) {
+                const { data, sheetName } = JSON.parse(cached);
+                if (data && Array.isArray(data) && data.length > 0 && sheetName === SHEET_NAME) {
+                    allStudents = data;
+                    dataLoaded = true;
+                    renderTable();
+                    showToast("⚠️ Using cached data (offline mode)", "warning");
+                    isLoading = false;
+                    return allStudents;
+                }
+            }
+        } catch (e) {}
+
+        if (tableBody) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="4">
+                        <div class="error-container">
+                            <span class="error-icon">⚠️</span>
+                            <p class="error-title">Failed to load data</p>
+                            <p class="error-message">${escapeHtml(err.message)}</p>
+                            <div class="error-actions">
+                                <button onclick="handleRetry()" class="btn btn-primary" style="padding: 10px 24px;">
+                                    <span>⟳</span> Retry
+                                </button>
+                                <button onclick="handleClearCache()" class="btn btn-outline" style="padding: 10px 24px;">
+                                    <span>🧹</span> Clear Cache & Retry
+                                </button>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+        isLoading = false;
+        return [];
+    }
+}
+
+async function refreshDataInBackground() {
+    try {
+        const response = await fetch(`${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}&_=${Date.now()}`);
+        const result = await response.json();
+
+        if (result.status === "success" && Array.isArray(result.data)) {
+            const newData = result.data.map((item, idx) => ({ ...item, _rowIndex: idx + 2 }));
+            
+            const currentDataStr = JSON.stringify(allStudents);
+            const newDataStr = JSON.stringify(newData);
+            
+            if (currentDataStr !== newDataStr) {
+                allStudents = newData;
+                setCache(allStudents);
+                renderTable();
+                showToast("🔄 Data updated in background", "info");
+            }
+        }
+    } catch (err) {
+        console.log('Background refresh failed:', err.message);
+    }
+}
+
+async function refreshData() {
+    const refreshBtn = dom.refreshBtn;
+    const mobileRefreshBtn = document.getElementById('mobileRefreshBtn');
+    
+    showSpinner(refreshBtn, true);
+    if (mobileRefreshBtn) {
+        mobileRefreshBtn.disabled = true;
+        mobileRefreshBtn.innerHTML = '<span class="spinner"></span> Loading...';
+    }
+    
+    try {
+        clearAllCaches();
+        dataLoaded = false;
+        await loadStudents(true);
+        showToast("✅ Data refreshed successfully!", "success");
+    } catch (err) {
+        showToast("❌ Refresh failed: " + err.message, "error");
+    } finally {
+        showSpinner(refreshBtn, false);
+        if (mobileRefreshBtn) {
+            mobileRefreshBtn.disabled = false;
+            mobileRefreshBtn.innerHTML = '<span>⟳</span> Refresh';
+        }
+    }
+}
+
+window.handleRetry = function() {
+    dataLoaded = false;
+    clearAllCaches();
+    setTimeout(() => loadStudents(true), 300);
+};
+
+window.handleClearCache = function() {
+    clearAllCaches();
+    dataLoaded = false;
+    showToast("🧹 Cache cleared! Refreshing...", "success");
+    setTimeout(() => loadStudents(true), 300);
+};
+
+/* ======================== TABLE RENDERING ======================== */
+function renderTable(filter = "") {
+    if (!dom.tableBody) return;
+    
+    if (!allStudents || allStudents.length === 0) {
+        dom.tableBody.innerHTML = `
+            <tr>
+                <td colspan="4">
+                    <div class="empty-container">
+                        <span class="empty-icon">📚</span>
+                        <p class="empty-title">No students found</p>
+                        <p class="empty-subtitle">Click "Add Admission" to add your first student</p>
+                    </div>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    const searchLower = filter.toLowerCase().trim();
+    let filtered = allStudents;
+    
+    if (searchLower) {
+        filtered = allStudents.filter(s => {
+            const fullName = combineFullName(
+                s['First Name'] || '', 
+                s['Middle Name'] || '', 
+                s['Last Name'] || ''
+            ).toLowerCase();
+            const mobile = String(s['Personal Mob No'] || '').toLowerCase();
+            const admIn = String(s['Adm In'] || '').toLowerCase();
+            return fullName.includes(searchLower) || mobile.includes(searchLower) || admIn.includes(searchLower);
+        });
+    }
+
+    if (!filtered.length) {
+        dom.tableBody.innerHTML = `
+            <tr>
+                <td colspan="4">
+                    <div class="empty-container">
+                        <span class="empty-icon">🔍</span>
+                        <p class="empty-title">No matching students found</p>
+                        <p class="empty-subtitle">Try adjusting your search</p>
+                    </div>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    filtered.forEach((s, idx) => {
+        const row = document.createElement('tr');
+        const fullName = combineFullName(
+            s['First Name'] || '', 
+            s['Middle Name'] || '', 
+            s['Last Name'] || ''
+        ) || '—';
+        
+        const admIn = s['Adm In'] || '';
+        const actualIndex = allStudents.indexOf(s);
+        
+        row.innerHTML = `
+            <td><strong>${idx + 1}</strong></td>
+            <td>${escapeHtml(fullName)}</td>
+            <td>${escapeHtml(s['Personal Mob No'] || '—')}</td>
+            <td>
+                <button class="view-action-btn" 
+                        data-adm="${escapeHtml(admIn)}" 
+                        data-actual-index="${actualIndex}"
+                        data-full-name="${escapeHtml(fullName)}">
+                    👁️ View
+                </button>
+            </td>
+        `;
+        fragment.appendChild(row);
+    });
+
+    dom.tableBody.innerHTML = '';
+    dom.tableBody.appendChild(fragment);
+
+    dom.tableBody.querySelectorAll('.view-action-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            
+            const admVal = this.getAttribute('data-adm');
+            const actualIndex = parseInt(this.getAttribute('data-actual-index'));
+            const fullName = this.getAttribute('data-full-name');
+            
+            console.log('🔍 View button clicked:', { admVal, actualIndex, fullName });
+            
+            let found = null;
+            
+            if (!isNaN(actualIndex) && actualIndex >= 0 && actualIndex < allStudents.length) {
+                found = allStudents[actualIndex];
+                console.log('✅ Found by index:', found ? found['First Name'] : 'Not found');
+            }
+            
+            if (!found && admVal) {
+                found = allStudents.find(s => String(s['Adm In']) === String(admVal));
+                console.log('✅ Found by Adm In:', found ? found['First Name'] : 'Not found');
+            }
+            
+            if (!found && fullName) {
+                found = allStudents.find(s => {
+                    const studentFullName = combineFullName(
+                        s['First Name'] || '', 
+                        s['Middle Name'] || '', 
+                        s['Last Name'] || ''
+                    );
+                    return studentFullName === fullName;
+                });
+                console.log('✅ Found by full name:', found ? found['First Name'] : 'Not found');
+            }
+            
+            if (found) {
+                currentViewStudent = found;
+                currentEditStudent = found;
+                selectedAdmIn = found['Adm In'];
+                selectedRowIndex = found._rowIndex || 2;
+                showDetailView(found);
+            } else {
+                showToast("❌ Student not found. Please refresh the page.", "error");
+                console.error('❌ Student not found for:', { admVal, actualIndex, fullName });
+            }
+        });
+    });
+}
+
+/* ======================== DETAIL VIEW ======================== */
+function showDetailView(student) {
+    if (!student) {
+        showToast("❌ No student data to display", "error");
+        console.error('❌ showDetailView called with null/undefined student');
+        return;
+    }
+
+    console.log('📋 Rendering detail view for:', {
+        name: student['First Name'],
+        admIn: student['Adm In'],
+        rowIndex: student._rowIndex
+    });
+
+    selectedAdmIn = student['Adm In'];
+    selectedRowIndex = student._rowIndex || 2;
+    currentViewStudent = student;
+    currentEditStudent = student;
+
+    const fullName = combineFullName(
+        student['First Name'] || '', 
+        student['Middle Name'] || '', 
+        student['Last Name'] || ''
+    ) || 'Student';
+    
+    dom.profileName.textContent = fullName;
+    dom.profileAdmIn.textContent = student['Adm In'] || 'N/A';
+    dom.profileAcademic.textContent = student['Academic Year'] || 'N/A';
+
+    const imgUrl = getThumbnailUrl(student['Image'] || '');
+    dom.profileImage.src = imgUrl || 'https://via.placeholder.com/150?text=No+Photo';
+    dom.profileImage.alt = fullName;
+
+    const fields = [
+        { label: "Date of Admission", value: formatDateForDisplay(student['Date of Adm']) },
+        { label: "Academic Year", value: student['Academic Year'] || '—' },
+        { label: "Adm In", value: student['Adm In'] || '—' },
+        { label: "First Name", value: student['First Name'] || '—' },
+        { label: "Middle Name", value: student['Middle Name'] || '—' },
+        { label: "Last Name", value: student['Last Name'] || '—' },
+        { label: "Full Name", value: fullName },
+        { label: "Father Name", value: student['Father Name'] || '—' },
+        { label: "Mother Name", value: student['Mother Name'] || '—' },
+        { label: "Father Occupation", value: student['Father Occupation'] || '—' },
+        { label: "Mother Occupation", value: student['Mother Occupation'] || '—' },
+        { label: "Birth Date", value: formatDateForDisplay(student['Birth Date']) },
+        { label: "Gender", value: student['Gender'] || '—' },
+        { label: "Email ID", value: student['Email Id'] || '—' },
+        { label: "Personal Mobile", value: student['Personal Mob No'] || '—' },
+        { label: "Parent Mobile", value: student['Parent Mob No'] || '—' },
+        { label: "Last School Name", value: student['Last School Name'] || '—' },
+        { label: "Last Session Marks (%)", value: student['Last Session Marks (%)'] || '—' },
+        { label: "Weight (kg)", value: student['Weight'] || '—' },
+        { label: "Height (cm)", value: student['Height'] || '—' },
+        { label: "Address", value: student['Address'] || '—', full: true },
+        { label: "Note", value: student['Note'] || '—', full: true }
+    ];
+
+    const grid = dom.detailsContainer;
+    grid.innerHTML = '';
+    fields.forEach(f => {
+        const card = document.createElement('div');
+        card.className = `detail-card${f.full ? ' fullwidth' : ''}`;
+        card.innerHTML = `
+            <div class="detail-label">${f.label}</div>
+            <div class="detail-value">${escapeHtml(String(f.value || '—'))}</div>
+        `;
+        grid.appendChild(card);
+    });
+
+    dom.page1.classList.remove('active-page');
+    dom.page2.classList.add('active-page');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ======================== NAVIGATION ======================== */
+function goToListView() {
+    dom.page2.classList.remove('active-page');
+    dom.page1.classList.add('active-page');
+    if (!dataLoaded) {
+        loadStudents();
+    }
+}
+
+/* ======================== CRUD OPERATIONS ======================== */
+function findRowIndexByAdmIn(admIn) {
+    if (!admIn) {
+        console.warn('findRowIndexByAdmIn called with empty admIn');
+        return null;
+    }
+    
+    const idx = allStudents.findIndex(s => String(s['Adm In']) === String(admIn));
+    if (idx !== -1) {
+        const rowIndex = allStudents[idx]._rowIndex;
+        console.log(`✅ Found row index ${rowIndex} for Adm In: ${admIn}`);
+        return rowIndex;
+    }
+    
+    const altIdx = allStudents.findIndex(s => 
+        String(s['Adm In']).includes(admIn) || 
+        admIn.includes(String(s['Adm In']))
+    );
+    if (altIdx !== -1) {
+        const rowIndex = allStudents[altIdx]._rowIndex;
+        console.log(`✅ Found row index ${rowIndex} by partial match for Adm In: ${admIn}`);
+        return rowIndex;
+    }
+    
+    console.warn(`❌ Row not found for Adm In: ${admIn}`);
+    return null;
+}
+
+async function deleteStudent() {
+    if (!currentViewStudent) return;
+    const admIn = currentViewStudent['Adm In'];
+    const rowIdx = findRowIndexByAdmIn(admIn);
+    if (!rowIdx) {
+        showModal("Row not found", "Error");
+        return;
+    }
+
+    showModal(
+        `⚠️ Are you sure you want to delete student <strong>${dom.profileName.textContent}</strong> (Adm In: ${admIn})?<br><br>This action cannot be undone and will remove all associated data.`,
+        "Confirm Delete",
+        true,
+        async () => {
+            showSpinner(dom.deleteBtn, true);
+            try {
+                const params = new URLSearchParams();
+                params.append("action", "delete");
+                params.append("spreadsheetId", SPREADSHEET_ID);
+                params.append("sheetName", SHEET_NAME);
+                params.append("rowIndex", rowIdx);
+
+                const response = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: params.toString()
+                });
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    showToast("✅ Student deleted successfully!", "success");
+                    localStorage.removeItem(CACHE_KEY);
+                    dataLoaded = false;
+                    goToListView();
+                } else {
+                    showModal("❌ Delete failed: " + result.message, "Error");
+                }
+            } catch (err) {
+                showModal("❌ Error: " + err.message, "Error");
+            } finally {
+                showSpinner(dom.deleteBtn, false);
+            }
+        }
+    );
+}
+
+/* ======================== PRINT FUNCTIONS ======================== */
+function generatePDFHTML(record, fullName, todayStr, imgUrl) {
+    // Handle image for PDF - use base64 if possible
+    let imageHtml = '<span style="color:#adb5bd;font-size:14px;">📷 No Photo</span>';
+    if (imgUrl) {
+        imageHtml = `<img src="${imgUrl}" alt="Student Photo" style="width:100%;height:100%;object-fit:cover;display:block;">`;
+    }
+
+    return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Admission Form - ${fullName}</title>
+        <style>
+            @page { 
+                size: A4; 
+                margin: 0.3in;
+            }
+            * { 
+                margin: 0; 
+                padding: 0; 
+                box-sizing: border-box; 
+            }
+            body { 
+                font-family: 'Segoe UI', 'Roboto', Arial, sans-serif; 
+                background: white; 
+                padding: 10px; 
+            }
+            #printArea {
+                max-width: 100%;
+                margin: 0 auto;
+                background: white;
+                overflow: hidden;
+            }
+            .print-header {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 15px 20px;
+                text-align: center;
+                position: relative;
+                border-radius: 8px 8px 0 0;
+            }
+            .print-header h1 {
+                font-size: 28px;
+                margin-bottom: 4px;
+                font-weight: 700;
+                letter-spacing: 1px;
+            }
+            .print-header p {
+                font-size: 16px;
+                opacity: 0.95;
+                font-weight: 500;
+            }
+            .print-header .form-id {
+                position: absolute;
+                top: 15px;
+                right: 20px;
+                font-size: 11px;
+                background: rgba(255,255,255,0.2);
+                padding: 4px 12px;
+                border-radius: 20px;
+            }
+            .print-body { 
+                padding: 25px 30px; 
+            }
+            .student-info-row {
+                display: flex;
+                gap: 25px;
+                margin-bottom: 25px;
+                padding-bottom: 20px;
+                border-bottom: 2px solid #e9ecef;
+            }
+            .info-details { 
+                flex: 2; 
+            }
+            .info-item {
+                display: inline-block;
+                width: 48%;
+                margin-bottom: 12px;
+            }
+            .info-label {
+                font-size: 10px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                font-weight: 700;
+                color: #6c757d;
+                display: block;
+                margin-bottom: 2px;
+            }
+            .info-value {
+                font-size: 13px;
+                font-weight: 600;
+                color: #2c3e50;
+            }
+            .photo-container { 
+                flex: 0 0 130px; 
+                text-align: center; 
+            }
+            .photo-frame {
+                width: 130px;
+                height: 150px;
+                padding: 4px;
+                border: 3px solid #e9ecef;
+                border-radius: 10px;
+                overflow: hidden;
+                background: #f8f9fa;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto;
+            }
+            .photo-frame img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+            .section { 
+                margin-bottom: 20px; 
+            }
+            .section-title {
+                font-size: 16px;
+                font-weight: 700;
+                color: #495057;
+                padding-bottom: 6px;
+                margin-bottom: 15px;
+                border-bottom: 3px solid #667eea;
+                display: inline-block;
+            }
+            .details-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+                margin-bottom: 15px;
+            }
+            .detail-field {
+                background: #f8f9fa;
+                padding: 10px 14px;
+                border-radius: 8px;
+                border-left: 3px solid #667eea;
+            }
+            .detail-field.full-width { 
+                grid-column: 1 / -1; 
+            }
+            .detail-label {
+                font-size: 10px;
+                font-weight: 700;
+                text-transform: uppercase;
+                color: #6c757d;
+                letter-spacing: 0.3px;
+                margin-bottom: 4px;
+            }
+            .detail-value {
+                font-size: 13px;
+                font-weight: 500;
+                color: #2c3e50;
+                word-wrap: break-word;
+            }
+            .declaration-box {
+                background: #f8f9fa;
+                padding: 20px;
+                border-radius: 10px;
+                margin: 20px 0;
+                border-left: 4px solid #28a745;
+            }
+            .declaration-text {
+                font-size: 12px;
+                line-height: 1.6;
+                color: #495057;
+            }
+            .print-footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-end;
+                margin-top: 30px;
+                padding-top: 25px;
+                border-top: 2px solid #e9ecef;
+            }
+            .footer-left { 
+                font-size: 11px; 
+                color: #6c757d; 
+            }
+            .signature-line {
+                width: 180px;
+                border-top: 2px solid #2c3e50;
+                margin-top: 35px;
+                padding-top: 8px;
+                font-size: 11px;
+                color: #6c757d;
+                text-align: center;
+            }
+            .stamp {
+                color: #dc3545;
+                font-size: 10px;
+                font-weight: 600;
+                margin-top: 6px;
+                text-align: center;
+            }
+            .watermark {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                opacity: 0.08;
+                font-size: 50px;
+                font-weight: bold;
+                color: #667eea;
+                pointer-events: none;
+                z-index: 1000;
+            }
+            @media print {
+                body { 
+                    background: white; 
+                    padding: 0; 
+                    margin: 0; 
+                }
+                .print-header { 
+                    -webkit-print-color-adjust: exact; 
+                    print-color-adjust: exact; 
+                }
+                .section-title { 
+                    -webkit-print-color-adjust: exact; 
+                    print-color-adjust: exact; 
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div id="printArea">
+            <div class="print-header">
+                <div class="form-id">Adm In: ${record['Adm In'] || 'N/A'}</div>
+                <h1>🏫 Ujjwal Academy</h1>
+                <p>12th Commerce Admission Application Form</p>
+            </div>
+            <div class="print-body">
+                <div class="student-info-row">
+                    <div class="info-details">
+                        <div class="info-item">
+                            <span class="info-label">Academic Year</span>
+                            <span class="info-value">${record['Academic Year'] || '-'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Date of Admission</span>
+                            <span class="info-value">${formatDateForDisplay(record['Date of Adm'])}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Student's Full Name</span>
+                            <span class="info-value">${fullName || '-'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Admission Number</span>
+                            <span class="info-value">${record['Adm In'] || '-'}</span>
+                        </div>
+                    </div>
+                    <div class="photo-container">
+                        <div class="photo-frame">
+                            ${imageHtml}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3 class="section-title">👨‍👩‍👧 Personal & Family Information</h3>
+                    <div class="details-grid">
+                        <div class="detail-field"><div class="detail-label">Father's Name</div><div class="detail-value">${record['Father Name'] || '-'}</div></div>
+                        <div class="detail-field"><div class="detail-label">Mother's Name</div><div class="detail-value">${record['Mother Name'] || '-'}</div></div>
+                        <div class="detail-field"><div class="detail-label">Father's Occupation</div><div class="detail-value">${record['Father Occupation'] || '-'}</div></div>
+                        <div class="detail-field"><div class="detail-label">Mother's Occupation</div><div class="detail-value">${record['Mother Occupation'] || '-'}</div></div>
+                        <div class="detail-field"><div class="detail-label">Date of Birth</div><div class="detail-value">${formatDateForDisplay(record['Birth Date'])}</div></div>
+                        <div class="detail-field"><div class="detail-label">Gender</div><div class="detail-value">${record['Gender'] || '-'}</div></div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3 class="section-title">📞 Contact Information</h3>
+                    <div class="details-grid">
+                        <div class="detail-field"><div class="detail-label">Email ID</div><div class="detail-value">${record['Email Id'] || '-'}</div></div>
+                        <div class="detail-field"><div class="detail-label">Personal Mobile No.</div><div class="detail-value">${record['Personal Mob No'] || '-'}</div></div>
+                        <div class="detail-field"><div class="detail-label">Parent's Mobile No.</div><div class="detail-value">${record['Parent Mob No'] || '-'}</div></div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3 class="section-title">📚 Academic Information</h3>
+                    <div class="details-grid">
+                        <div class="detail-field"><div class="detail-label">Last School Attended</div><div class="detail-value">${record['Last School Name'] || '-'}</div></div>
+                        <div class="detail-field"><div class="detail-label">Last Session Marks (%)</div><div class="detail-value">${record['Last Session Marks (%)'] || '-'}%</div></div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3 class="section-title">🏥 Health Information</h3>
+                    <div class="details-grid">
+                        <div class="detail-field"><div class="detail-label">Weight</div><div class="detail-value">${record['Weight'] || '-'} kg</div></div>
+                        <div class="detail-field"><div class="detail-label">Height</div><div class="detail-value">${record['Height'] || '-'} cm</div></div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3 class="section-title">📍 Address & Additional Notes</h3>
+                    <div class="details-grid">
+                        <div class="detail-field full-width"><div class="detail-label">Residential Address</div><div class="detail-value">${record['Address'] || '-'}</div></div>
+                        <div class="detail-field full-width"><div class="detail-label">Special Notes / Remarks</div><div class="detail-value">${record['Note'] || '-'}</div></div>
+                    </div>
+                </div>
+
+                <div class="declaration-box">
+                    <div class="declaration-text">
+                        <strong>📜 Declaration:</strong><br><br>
+                        I hereby declare that all the information provided above is true, correct, and complete to the best of my knowledge. 
+                        I understand that any false information may lead to cancellation of admission. I agree to abide by the rules and regulations 
+                        of Ujjwal Academy.
+                    </div>
+                    <div style="font-size: 11px; color: #6c757d; margin-top: 8px;">
+                        Parent/Guardian Name: <strong>${record['Father Name'] || record['Mother Name'] || fullName}</strong>
+                    </div>
+                </div>
+
+                <div class="print-footer">
+                    <div class="footer-left">
+                        <div>Date: <strong>${todayStr}</strong></div>
+                        <div style="margin-top: 4px;">Place: ______________</div>
+                    </div>
+                    <div>
+                        <div class="signature-line">Parent/Guardian Signature</div>
+                        <div class="stamp">(Authorized Signatory)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="watermark">UJJWAL ACADEMY</div>
+    </body>
+    </html>`;
+}
+
+
+function printAdmissionForm() {
+    const record = currentViewStudent;
+    if (!record) {
+        showToast("❌ No student data to print", "error");
+        return;
+    }
+
+    const fullName = combineFullName(
+        record['First Name'] || '', 
+        record['Middle Name'] || '', 
+        record['Last Name'] || ''
+    ) || 'Student';
+    
+    const todayStr = new Date().toLocaleDateString('en-GB');
+    const imgUrl = getThumbnailUrl(record['Image'] || '');
+    
+    const printHtml = generatePDFHTML(record, fullName, todayStr, imgUrl);
+
+    const printWindow = window.open('', '_blank', 'width=900,height=700,toolbar=yes,scrollbars=yes,resizable=yes');
+    printWindow.document.write(printHtml);
+    printWindow.document.close();
+    printWindow.onload = function() {
+        setTimeout(() => printWindow.print(), 500);
+    };
+}
+
+/* ======================== DOWNLOAD PDF FUNCTION ======================== */
+function downloadAdmissionPDF() {
+    const record = currentViewStudent;
+    if (!record) {
+        showToast("❌ No student data to download", "error");
+        return;
+    }
+
+    // Check if required libraries are loaded
+    if (typeof html2canvas === 'undefined' || typeof jspdf === 'undefined') {
+        showToast("📥 Loading PDF libraries...", "info");
+        
+        // Load html2canvas
+        const loadHtml2Canvas = new Promise((resolve, reject) => {
+            if (typeof html2canvas !== 'undefined') {
+                resolve();
+                return;
+            }
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+
+        // Load jsPDF
+        const loadJsPDF = new Promise((resolve, reject) => {
+            if (typeof jspdf !== 'undefined') {
+                resolve();
+                return;
+            }
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+
+        Promise.all([loadHtml2Canvas, loadJsPDF])
+            .then(() => {
+                showToast("✅ Libraries loaded, generating PDF...", "success");
+                generatePDFWithCanvas(record);
+            })
+            .catch((err) => {
+                console.error('Library load error:', err);
+                showToast("❌ Failed to load PDF libraries. Please try again.", "error");
+            });
+        return;
+    }
+    
+    // Libraries already loaded, generate PDF
+    generatePDFWithCanvas(record);
+}
+
+/**
+ * 🔥 FIXED: Generates PDF using html2canvas + jsPDF directly
+ * This is more reliable than html2pdf.js
+ */
+function generatePDFWithCanvas(record) {
+    const fullName = combineFullName(
+        record['First Name'] || '', 
+        record['Middle Name'] || '', 
+        record['Last Name'] || ''
+    ) || 'Student';
+    
+    const todayStr = new Date().toLocaleDateString('en-GB');
+    const imgUrl = getThumbnailUrl(record['Image'] || '');
+
+    // Generate HTML content
+    const pdfHtml = generatePDFHTML(record, fullName, todayStr, imgUrl);
+
+    // Create a visible container for rendering
+    const container = document.createElement('div');
+    container.style.position = 'fixed';
+    container.style.left = '50%';
+    container.style.top = '50%';
+    container.style.transform = 'translate(-50%, -50%)';
+    container.style.width = '794px'; // A4 width in pixels at 96 DPI
+    container.style.background = 'white';
+    container.style.padding = '40px';
+    container.style.zIndex = '9999';
+    container.style.boxShadow = '0 10px 40px rgba(0,0,0,0.2)';
+    container.style.borderRadius = '8px';
+    container.style.maxHeight = '90vh';
+    container.style.overflow = 'auto';
+    container.innerHTML = pdfHtml;
+    document.body.appendChild(container);
+
+    // Show spinner
+    showSpinner(dom.downloadBtn, true);
+    showToast("📄 Generating PDF, please wait...", "info");
+
+    // Wait for images to load
+    const images = container.querySelectorAll('img');
+    let imagesLoaded = 0;
+    const totalImages = images.length;
+
+    function generatePDF() {
+        // Use html2canvas to render the content
+        html2canvas(container, {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            backgroundColor: '#ffffff',
+            width: container.scrollWidth,
+            height: container.scrollHeight,
+            onclone: function(doc) {
+                // Ensure all images are loaded in the cloned document
+                const imgs = doc.querySelectorAll('img');
+                imgs.forEach(img => {
+                    if (!img.complete) {
+                        img.style.display = 'none';
+                    }
+                });
+            }
+        }).then(canvas => {
+            try {
+                // Create PDF using jsPDF
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({
+                    unit: 'px',
+                    format: [canvas.width / 2, canvas.height / 2],
+                    orientation: 'portrait'
+                });
+                
+                const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width / 2, canvas.height / 2);
+                pdf.save(`Admission_Form_${fullName.replace(/\s/g, '_')}.pdf`);
+                
+                // Clean up
+                document.body.removeChild(container);
+                showToast("✅ PDF downloaded successfully!", "success");
+                if (dom.downloadBtn) {
+                    showSpinner(dom.downloadBtn, false);
+                }
+            } catch (err) {
+                console.error('PDF generation error:', err);
+                document.body.removeChild(container);
+                showToast("❌ Error generating PDF: " + err.message, "error");
+                if (dom.downloadBtn) {
+                    showSpinner(dom.downloadBtn, false);
+                }
+            }
+        }).catch(err => {
+            console.error('html2canvas error:', err);
+            document.body.removeChild(container);
+            showToast("❌ Error rendering content: " + err.message, "error");
+            if (dom.downloadBtn) {
+                showSpinner(dom.downloadBtn, false);
+            }
+        });
+    }
+
+    if (totalImages === 0) {
+        // No images, generate PDF immediately
+        setTimeout(generatePDF, 500);
+        return;
+    }
+
+    // Wait for all images to load
+    images.forEach((img) => {
+        if (img.complete) {
+            imagesLoaded++;
+            if (imagesLoaded === totalImages) {
+                setTimeout(generatePDF, 500);
+            }
+        } else {
+            img.onload = function() {
+                imagesLoaded++;
+                if (imagesLoaded === totalImages) {
+                    setTimeout(generatePDF, 500);
+                }
+            };
+            img.onerror = function() {
+                imagesLoaded++;
+                if (imagesLoaded === totalImages) {
+                    setTimeout(generatePDF, 500);
+                }
+            };
+        }
+    });
+
+    // Fallback: proceed after 3 seconds even if images don't load
+    setTimeout(() => {
+        if (imagesLoaded < totalImages) {
+            console.warn('⚠️ Some images failed to load, proceeding with PDF generation');
+            generatePDF();
+        }
+    }, 3000);
+}
+
+
+/**
+ * Generates PDF directly using html2pdf.js
+ */
+function generateDirectPDF(record) {
+    const fullName = combineFullName(
+        record['First Name'] || '', 
+        record['Middle Name'] || '', 
+        record['Last Name'] || ''
+    ) || 'Student';
+    
+    const todayStr = new Date().toLocaleDateString('en-GB');
+    const imgUrl = getThumbnailUrl(record['Image'] || '');
+
+    // Generate HTML content
+    const pdfHtml = generatePDFHTML(record, fullName, todayStr, imgUrl);
+
+    // Create a temporary container for PDF generation
+    const tempDiv = document.createElement('div');
+    tempDiv.style.position = 'fixed';
+    tempDiv.style.left = '0';
+    tempDiv.style.top = '0';
+    tempDiv.style.width = '100%';
+    tempDiv.style.maxWidth = '1100px';
+    tempDiv.style.background = 'white';
+    tempDiv.style.padding = '20px';
+    tempDiv.style.zIndex = '-9999';
+    tempDiv.style.opacity = '0';
+    tempDiv.style.pointerEvents = 'none';
+    tempDiv.innerHTML = pdfHtml;
+    document.body.appendChild(tempDiv);
+
+    // Show spinner
+    showSpinner(dom.downloadBtn, true);
+    showToast("📄 Generating PDF, please wait...", "info");
+
+    // 🔥 FIXED: Wait for images to load before generating PDF
+    const images = tempDiv.querySelectorAll('img');
+    let imagesLoaded = 0;
+    const totalImages = images.length;
+
+    if (totalImages === 0) {
+        // No images, generate PDF immediately
+        generatePDFFromElement(tempDiv, fullName);
+        return;
+    }
+
+    // Wait for all images to load
+    images.forEach((img, index) => {
+        if (img.complete) {
+            imagesLoaded++;
+            if (imagesLoaded === totalImages) {
+                generatePDFFromElement(tempDiv, fullName);
+            }
+        } else {
+            img.onload = function() {
+                imagesLoaded++;
+                if (imagesLoaded === totalImages) {
+                    generatePDFFromElement(tempDiv, fullName);
+                }
+            };
+            img.onerror = function() {
+                imagesLoaded++;
+                if (imagesLoaded === totalImages) {
+                    generatePDFFromElement(tempDiv, fullName);
+                }
+            };
+        }
+    });
+
+    // Fallback: if images don't load within 5 seconds, proceed anyway
+    setTimeout(() => {
+        if (imagesLoaded < totalImages) {
+            console.warn('⚠️ Some images failed to load, proceeding with PDF generation');
+            generatePDFFromElement(tempDiv, fullName);
+        }
+    }, 5000);
+}
+
+/**
+ * 🔥 NEW: Generates PDF from element with proper options
+ */
+function generatePDFFromElement(element, fullName) {
+    // PDF generation options - optimized for quality
+    const opt = {
+        margin:        [0.3, 0.3, 0.3, 0.3],
+        filename:      `Admission_Form_${fullName.replace(/\s/g, '_')}.pdf`,
+        image:         { type: 'jpeg', quality: 0.95 },
+        html2canvas:   { 
+            scale: 2, 
+            useCORS: true,
+            logging: false,
+            letterRendering: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff'
+        },
+        jsPDF:         { 
+            unit: 'in', 
+            format: 'a4', 
+            orientation: 'portrait' 
+        },
+        pagebreak:     { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+
+    // 🔥 FIXED: Use .outputPdf() with promise for better handling
+    html2pdf()
+        .set(opt)
+        .from(element)
+        .save()
+        .then(() => {
+            showToast("✅ PDF downloaded successfully!", "success");
+            if (dom.downloadBtn) {
+                showSpinner(dom.downloadBtn, false);
+            }
+            // Clean up
+            if (element && element.parentNode) {
+                element.parentNode.removeChild(element);
+            }
+        })
+        .catch((err) => {
+            console.error('PDF generation error:', err);
+            showToast("❌ Error generating PDF: " + err.message, "error");
+            if (dom.downloadBtn) {
+                showSpinner(dom.downloadBtn, false);
+            }
+            // Clean up
+            if (element && element.parentNode) {
+                element.parentNode.removeChild(element);
+            }
+        });
+}
+
+
+/* ======================== AUTO-FILL ADM IN FUNCTION ======================== */
+function autoFillAdmIn() {
+    const input = document.getElementById('fAdmIn');
+    if (input) {
+        input.value = '12th Commerce';
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        showToast('✅ Auto-filled: 12th Commerce', 'success');
+    }
+}
+
+/* ======================== FORM BUILDER ======================== */
+function buildFormHtml(student = null, isEdit = false) {
+    const def = {
+        "Academic Year": "",
+        "Date of Adm": "",
+        "First Name": "",
+        "Middle Name": "",
+        "Last Name": "",
+        "Father Name": "",
+        "Mother Name": "",
+        "Father Occupation": "",
+        "Mother Occupation": "",
+        "Adm In": "",
+        "Birth Date": "",
+        "Gender": "",
+        "Email Id": "",
+        "Personal Mob No": "",
+        "Parent Mob No": "",
+        "Last School Name": "",
+        "Last Session Marks (%)": "",
+        "Weight": "",
+        "Height": "",
+        "Address": "",
+        "Note": ""
+    };
+
+    if (student) {
+        Object.keys(def).forEach(k => {
+            if (student[k] !== undefined) def[k] = student[k];
+        });
+    }
+
+    const academicYear = getAcademicYear();
+    def["Academic Year"] = def["Academic Year"] || academicYear;
+
+    const dateValue = formatToYYYYMMDD(def["Date of Adm"]);
+    const birthDateValue = formatToYYYYMMDD(def["Birth Date"]);
+
+    return `
+        <form id="studentForm">
+            <div class="form-grid">
+                <div class="field"><label>Academic Year *</label><input type="text" id="fAcademicYear" value="${escapeHtml(def['Academic Year'])}" readonly></div>
+                <div class="field"><label>Date of Admission *</label><input type="date" id="fDateOfAdm" value="${dateValue}" required></div>
+                
+                <div class="field"><label>First Name *</label><input type="text" id="fFirstName" value="${escapeHtml(def['First Name'])}" required></div>
+                <div class="field"><label>Middle Name</label><input type="text" id="fMiddleName" value="${escapeHtml(def['Middle Name'])}"></div>
+                <div class="field"><label>Last Name *</label><input type="text" id="fLastName" value="${escapeHtml(def['Last Name'])}" required></div>
+                
+                <div class="field"><label>Father Name *</label><input type="text" id="fFatherName" value="${escapeHtml(def['Father Name'])}" required></div>
+                <div class="field"><label>Mother Name *</label><input type="text" id="fMotherName" value="${escapeHtml(def['Mother Name'])}" required></div>
+                <div class="field"><label>Father Occupation</label><input type="text" id="fFatherOccupation" value="${escapeHtml(def['Father Occupation'])}"></div>
+                <div class="field"><label>Mother Occupation</label><input type="text" id="fMotherOccupation" value="${escapeHtml(def['Mother Occupation'])}"></div>
+                
+                <div class="field">
+                    <label>Adm In *</label>
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <input type="text" id="fAdmIn" value="${escapeHtml(def['Adm In'])}" 
+                               placeholder="Enter Admission Number" style="flex: 1; min-width: 150px;" required>
+                        <button type="button" class="btn-tool" onclick="autoFillAdmIn()" 
+                                style="padding: 8px 16px; border-radius: 30px; font-size: 0.8rem; white-space: nowrap;">
+                            📝 12th Commerce
+                        </button>
+                    </div>
+                    <small style="color: var(--text-light); font-size: 0.75rem; margin-top: 4px;">
+                        Click "12th Commerce" to auto-fill or type custom admission number
+                    </small>
+                </div>
+                
+                <div class="field"><label>Birth Date *</label><input type="date" id="fBirthDate" value="${birthDateValue}" required></div>
+                <div class="field"><label>Gender *</label>
+                    <select id="fGender" required>
+                        <option value="">Select Gender</option>
+                        <option value="Male" ${def['Gender'] === 'Male' ? 'selected' : ''}>Male</option>
+                        <option value="Female" ${def['Gender'] === 'Female' ? 'selected' : ''}>Female</option>
+                    </select>
+                </div>
+                <div class="field"><label>Email ID *</label><input type="email" id="fEmail" value="${escapeHtml(def['Email Id'])}" required></div>
+                
+                <div class="field"><label>Personal Mobile *</label><input type="tel" id="fPersonalMobile" pattern="[6-9][0-9]{9}" maxlength="10" value="${escapeHtml(def['Personal Mob No'])}" required></div>
+                <div class="field"><label>Parent Mobile *</label><input type="tel" id="fParentMobile" pattern="[6-9][0-9]{9}" maxlength="10" value="${escapeHtml(def['Parent Mob No'])}" required></div>
+                
+                <div class="field fullwidth"><label>Last School Name</label><input type="text" id="fLastSchool" value="${escapeHtml(def['Last School Name'])}"></div>
+                <div class="field"><label>Last Session Marks (%)</label><input type="number" step="0.01" id="fMarks" value="${escapeHtml(def['Last Session Marks (%)'])}"></div>
+                <div class="field"><label>Weight (kg)</label><input type="number" step="0.1" id="fWeight" value="${escapeHtml(def['Weight'])}"></div>
+                <div class="field"><label>Height (cm)</label><input type="number" step="0.1" id="fHeight" value="${escapeHtml(def['Height'])}"></div>
+                
+                <div class="field fullwidth"><label>Address</label><textarea id="fAddress" rows="3">${escapeHtml(def['Address'])}</textarea></div>
+                <div class="field fullwidth"><label>Note</label><textarea id="fNote" rows="2">${escapeHtml(def['Note'])}</textarea></div>
+            </div>
+
+            <div class="image-section">
+                <label style="cursor: pointer; color: var(--primary); font-weight: bold;">
+                    📷 Click to Upload Student Image
+                    <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                </label>
+                <div id="preview-container">
+                    <img id="image-to-crop">
+                    <div class="crop-controls">
+                        <button type="button" class="btn-tool" onclick="rotateLeft()">↺ Rotate Left</button>
+                        <button type="button" class="btn-tool" onclick="rotateRight()">↻ Rotate Right</button>
+                        <button type="button" class="btn-tool" onclick="applyCrop()">✓ Apply Crop</button>
+                    </div>
+                </div>
+                <div id="image-status" style="margin-top: 10px; font-size: 0.85rem; color: var(--text-secondary);"></div>
+            </div>
+
+            <div id="formStatus" class="status-message"></div>
+
+            <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 1.5rem;">
+                <button type="button" id="cancelFormBtn" class="btn btn-outline">Cancel</button>
+                <button type="submit" id="saveFormBtn" class="btn btn-primary">${isEdit ? "💾 Update Student" : "💾 Save Student"}</button>
+            </div>
+        </form>
+    `;
+}
+
+/* ======================== CROPPER FUNCTIONS ======================== */
+function rotateLeft() { if (cropper) cropper.rotate(-90); }
+function rotateRight() { if (cropper) cropper.rotate(90); }
+
+function applyCrop() {
+    if (!cropper) {
+        document.getElementById('image-status').textContent = "❌ No image loaded to crop.";
+        return;
+    }
+    try {
+        const canvas = cropper.getCroppedCanvas({ width: 400, height: 400 });
+        if (!canvas) throw new Error("Could not crop image");
+        
+        const base64Data = canvas.toDataURL('image/jpeg', 0.9);
+        croppedImageData = {
+            base64Data: base64Data.split(',')[1],
+            fileName: `student_photo_${Date.now()}.jpg`,
+            mimeType: 'image/jpeg'
+        };
+        
+        document.getElementById('image-status').textContent = "✅ Image cropped and ready!";
+        document.getElementById('image-status').style.color = "var(--success)";
+        
+        const preview = document.createElement('img');
+        preview.src = base64Data;
+        preview.style.maxWidth = "100px";
+        preview.style.marginTop = "10px";
+        preview.style.borderRadius = "8px";
+        preview.style.border = "2px solid var(--primary)";
+        preview.id = 'cropped-preview';
+        
+        const oldPreview = document.getElementById('cropped-preview');
+        if (oldPreview) oldPreview.remove();
+        document.getElementById('preview-container').appendChild(preview);
+        
+    } catch (error) {
+        document.getElementById('image-status').textContent = "❌ Failed to crop image.";
+        document.getElementById('image-status').style.color = "var(--danger)";
+    }
+}
+
+/* ======================== FORM EVENTS ======================== */
+function attachFormEvents(isEdit, rowIdx) {
+    const form = document.getElementById('studentForm');
+    if (!form) return;
+
+    form.onsubmit = (e) => {
+        handleFormSubmit(e, isEdit, rowIdx);
+    };
+
+    const imageInput = document.getElementById('imageInput');
+    const imageToCrop = document.getElementById('image-to-crop');
+    const previewContainer = document.getElementById('preview-container');
+    const imageStatus = document.getElementById('image-status');
+
+    if (imageInput) {
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    imageStatus.textContent = "❌ Image too large! Max 5MB.";
+                    imageStatus.style.color = "var(--danger)";
+                    return;
+                }
+                if (!file.type.startsWith('image/')) {
+                    imageStatus.textContent = "❌ Please select a valid image.";
+                    imageStatus.style.color = "var(--danger)";
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    imageToCrop.src = event.target.result;
+                    previewContainer.style.display = 'block';
+                    if (cropper) cropper.destroy();
+                    cropper = new Cropper(imageToCrop, {
+                        aspectRatio: 1,
+                        viewMode: 1,
+                        autoCropArea: 1,
+                        responsive: true
+                    });
+                    imageStatus.textContent = "✅ Image loaded. Crop if needed.";
+                    imageStatus.style.color = "var(--success)";
+                    croppedImageData = null;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    document.getElementById('cancelFormBtn')?.addEventListener('click', () => {
+        dom.formModal.classList.remove('active');
+        if (cropper) { cropper.destroy(); cropper = null; }
+    });
+}
+
+/* ======================== FORM SUBMIT ======================== */
+async function handleFormSubmit(e, isEdit, rowIdx) {
+    e.preventDefault();
+    
+    if (saveInProgress) {
+        console.log('Save already in progress, ignoring duplicate submission');
+        return;
+    }
+    saveInProgress = true;
+    
+    const dateInput = document.getElementById('fDateOfAdm');
+    const birthDateInput = document.getElementById('fBirthDate');
+    
+    if (dateInput) dateInput.blur();
+    if (birthDateInput) birthDateInput.blur();
+    
+    const saveBtn = document.getElementById('saveFormBtn');
+    showSpinner(saveBtn, true);
+    
+    const dateValue = dateInput?.value || "";
+    const birthDateValue = birthDateInput?.value || "";
+    
+    console.log('========================================');
+    console.log('📝 SUBMITTING FORM');
+    console.log('Edit mode:', isEdit);
+    console.log('Row index passed:', rowIdx);
+    console.log('Current view student:', currentViewStudent ? currentViewStudent['First Name'] : 'null');
+    console.log('Current edit student:', currentEditStudent ? currentEditStudent['First Name'] : 'null');
+    console.log('Date (YYYY-MM-DD):', dateValue);
+    console.log('Birth Date (YYYY-MM-DD):', birthDateValue);
+    console.log('========================================');
+    
+    const dateValidation = validateAndFormatDate(dateValue, 'Date of Admission');
+    if (!dateValidation.isValid) {
+        showModal(`❌ ${dateValidation.error}`, 'Validation Error');
+        saveInProgress = false;
+        showSpinner(saveBtn, false);
+        return;
+    }
+    
+    const birthValidation = validateAndFormatDate(birthDateValue, 'Birth Date');
+    if (!birthValidation.isValid) {
+        showModal(`❌ ${birthValidation.error}`, 'Validation Error');
+        saveInProgress = false;
+        showSpinner(saveBtn, false);
+        return;
+    }
+    
+    const firstName = document.getElementById('fFirstName')?.value || "";
+    const middleName = document.getElementById('fMiddleName')?.value || "";
+    const lastName = document.getElementById('fLastName')?.value || "";
+    const fullName = combineFullName(firstName, middleName, lastName);
+    
+    const formData = {
+        "Academic Year": document.getElementById('fAcademicYear')?.value || "",
+        "Date of Adm": dateValue,
+        "First Name": firstName,
+        "Middle Name": middleName,
+        "Last Name": lastName,
+        "Full Name": fullName,
+        "Father Name": document.getElementById('fFatherName')?.value || "",
+        "Mother Name": document.getElementById('fMotherName')?.value || "",
+        "Father Occupation": document.getElementById('fFatherOccupation')?.value || "",
+        "Mother Occupation": document.getElementById('fMotherOccupation')?.value || "",
+        "Adm In": document.getElementById('fAdmIn')?.value || "",
+        "Birth Date": birthDateValue,
+        "Gender": document.getElementById('fGender')?.value || "",
+        "Email Id": document.getElementById('fEmail')?.value || "",
+        "Personal Mob No": document.getElementById('fPersonalMobile')?.value || "",
+        "Parent Mob No": document.getElementById('fParentMobile')?.value || "",
+        "Last School Name": document.getElementById('fLastSchool')?.value || "",
+        "Last Session Marks (%)": document.getElementById('fMarks')?.value || "",
+        "Weight": document.getElementById('fWeight')?.value || "",
+        "Height": document.getElementById('fHeight')?.value || "",
+        "Address": document.getElementById('fAddress')?.value || "",
+        "Note": document.getElementById('fNote')?.value || ""
+    };
+
+    const required = ['First Name', 'Last Name', 'Father Name', 'Mother Name', 'Adm In', 'Date of Adm', 'Birth Date', 'Email Id', 'Personal Mob No', 'Parent Mob No'];
+    for (const field of required) {
+        if (!formData[field] || formData[field].trim() === '') {
+            showModal(`❌ ${field} is required`, 'Validation Error');
+            saveInProgress = false;
+            showSpinner(saveBtn, false);
+            return;
+        }
+    }
+
+    const params = new URLSearchParams();
+    params.append("action", isEdit ? "update" : "insert");
+    params.append("spreadsheetId", SPREADSHEET_ID);
+    params.append("sheetName", SHEET_NAME);
+    
+    if (isEdit) {
+        let finalRowIdx = null;
+        
+        if (rowIdx) {
+            finalRowIdx = rowIdx;
+            console.log('✅ Using rowIdx from openEditModal:', finalRowIdx);
+        }
+        else if (currentEditStudent && currentEditStudent._rowIndex) {
+            finalRowIdx = currentEditStudent._rowIndex;
+            console.log('✅ Using currentEditStudent._rowIndex:', finalRowIdx);
+        }
+        else if (currentViewStudent && currentViewStudent._rowIndex) {
+            finalRowIdx = currentViewStudent._rowIndex;
+            console.log('✅ Using currentViewStudent._rowIndex:', finalRowIdx);
+        }
+        else if (formData['Adm In']) {
+            const found = allStudents.find(s => String(s['Adm In']) === String(formData['Adm In']));
+            if (found && found._rowIndex) {
+                finalRowIdx = found._rowIndex;
+                console.log('✅ Found by Adm In in allStudents:', finalRowIdx);
+            }
+        }
+        
+        if (!finalRowIdx) {
+            console.error('❌ Could not determine row index for update!');
+            showModal("❌ Error: Could not determine which row to update. Please refresh and try again.", "Error");
+            saveInProgress = false;
+            showSpinner(saveBtn, false);
+            return;
+        }
+        
+        params.append("rowIndex", finalRowIdx);
+        console.log('🎯 UPDATING ROW:', finalRowIdx);
+        console.log('🎯 Student:', formData['First Name'], formData['Last Name']);
+    }
+    
+    if (DRIVE_FOLDER_ID) params.append("driveFolderId", DRIVE_FOLDER_ID);
+
+    for (const [key, value] of Object.entries(formData)) {
+        if (key === "Full Name") {
+            if (value && value.trim()) {
+                params.append(key, value);
+            }
+        } else {
+            params.append(key, value);
+        }
+    }
+
+    if (croppedImageData && croppedImageData.base64Data) {
+        params.append("fileCount", "1");
+        params.append("fileData1", croppedImageData.base64Data);
+        params.append("fileName1", croppedImageData.fileName);
+        params.append("fileType1", croppedImageData.mimeType);
+        params.append("fileColumn1", IMAGE_COLUMN_NAME);
+    }
+
+    console.log('📤 SENDING TO GOOGLE SHEETS:', {
+        action: isEdit ? 'update' : 'insert',
+        rowIndex: isEdit ? params.get('rowIndex') : 'new',
+        dateOfAdm: formData['Date of Adm'],
+        birthDate: formData['Birth Date'],
+        studentName: formData['First Name'] + ' ' + formData['Last Name']
+    });
+
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
+        
+        const response = await fetch(SCRIPT_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: params.toString(),
+            signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        const result = await response.json();
+
+        if (result.status === "success") {
+            showModal(`${isEdit ? "✅ Student updated" : "✅ Student saved"} successfully!`, "Success", false, null, 2000);
+            
+            await new Promise(resolve => setTimeout(resolve, 500));
+            dom.formModal?.classList.remove('active');
+            
+            localStorage.removeItem(CACHE_KEY);
+            dataLoaded = false;
+            await loadStudents();
+            goToListView();
+        } else {
+            showModal("❌ Error: " + (result.message || "Unknown error"), "Error");
+        }
+    } catch (err) {
+        console.error('Save error:', err);
+        if (err.name === 'AbortError') {
+            showModal("❌ Request timeout. Please check your internet connection and try again.", "Error");
+        } else {
+            showModal("❌ Error: " + err.message, "Error");
+        }
+    } finally {
+        saveInProgress = false;
+        showSpinner(saveBtn, false);
+    }
+}
+
+/* ======================== MODAL OPEN FUNCTIONS ======================== */
+async function openAddModal() {
+    if (!dom.formModalBody) return;
+    dom.formModalBody.innerHTML = '<div style="text-align:center;padding:40px;"><div class="spinner"></div><p style="margin-top:12px;">Loading form...</p></div>';
+    dom.formModal.classList.add('active');
+    dom.formModalTitle.textContent = "➕ Add New Admission";
+    dom.formModalBody.innerHTML = buildFormHtml(null, false);
+    setTimeout(() => attachFormEvents(false, null), 50);
+}
+
+async function openEditModal() {
+    let studentToEdit = currentEditStudent || currentViewStudent;
+    
+    if (!studentToEdit) {
+        showToast("❌ No student selected to edit", "error");
+        console.error('No student to edit. currentEditStudent:', currentEditStudent, 'currentViewStudent:', currentViewStudent);
+        return;
+    }
+    
+    console.log('✏️ Opening edit for student:', {
+        name: studentToEdit['First Name'] + ' ' + studentToEdit['Last Name'],
+        admIn: studentToEdit['Adm In'],
+        rowIndex: studentToEdit._rowIndex
+    });
+    
+    let rowIdx = studentToEdit._rowIndex;
+    
+    if (!rowIdx) {
+        const admIn = studentToEdit['Adm In'];
+        if (admIn) {
+            rowIdx = findRowIndexByAdmIn(admIn);
+        }
+    }
+    
+    if (!rowIdx) {
+        const found = allStudents.find(s => 
+            String(s['Adm In']) === String(studentToEdit['Adm In']) ||
+            (s['First Name'] === studentToEdit['First Name'] && s['Last Name'] === studentToEdit['Last Name'])
+        );
+        if (found) {
+            rowIdx = found._rowIndex;
+            console.log('✅ Found row index by matching in allStudents:', rowIdx);
+        }
+    }
+    
+    if (!rowIdx) {
+        showModal("❌ Could not find the row for this student. Please refresh and try again.", "Error");
+        console.error('❌ Row index not found for:', studentToEdit);
+        return;
+    }
+
+    currentEditStudent = studentToEdit;
+
+    dom.formModalBody.innerHTML = '<div style="text-align:center;padding:40px;"><div class="spinner"></div><p style="margin-top:12px;">Loading edit form...</p></div>';
+    dom.formModal.classList.add('active');
+    dom.formModalTitle.textContent = `✏️ Edit ${studentToEdit['First Name']} ${studentToEdit['Last Name']}`;
+    dom.formModalBody.innerHTML = buildFormHtml(studentToEdit, true);
+    
+    setTimeout(() => attachFormEvents(true, rowIdx), 50);
+}
+
+/* ======================== MOBILE BUTTON HANDLERS ======================== */
+function setupMobileButtons() {
+    const mobileRefreshBtn = document.getElementById('mobileRefreshBtn');
+    const mobileAddBtn = document.getElementById('mobileAddBtn');
+
+    if (mobileRefreshBtn) {
+        mobileRefreshBtn.addEventListener('click', function() {
+            if (dom.refreshBtn) {
+                dom.refreshBtn.click();
+            } else {
+                refreshData();
+            }
+        });
+    }
+
+    if (mobileAddBtn) {
+        mobileAddBtn.addEventListener('click', function() {
+            if (dom.addNewBtn) {
+                dom.addNewBtn.click();
+            } else {
+                openAddModal();
+            }
+        });
+    }
+}
+
+/* ======================== INITIALIZATION ======================== */
+function init() {
+    const isAuthorized = checkAdminAuth();
+    if (!isAuthorized) return;
+    
+    cacheDomElements();
+    setupMobileButtons();
+
+    dataLoaded = false;
+    loadStudents();
+
+    dom.searchInput?.addEventListener('input', (e) => {
+        clearTimeout(searchDebounceTimer);
+        searchDebounceTimer = setTimeout(() => renderTable(e.target.value), 300);
+    });
+
+    dom.refreshBtn?.addEventListener('click', refreshData);
+    dom.addNewBtn?.addEventListener('click', openAddModal);
+    dom.backBtn?.addEventListener('click', goToListView);
+    dom.editBtn?.addEventListener('click', openEditModal);
+    dom.deleteBtn?.addEventListener('click', deleteStudent);
+    dom.printBtn?.addEventListener('click', printAdmissionForm);
+    dom.downloadBtn?.addEventListener('click', downloadAdmissionPDF);
+
+    document.getElementById('closeGlobalModal')?.addEventListener('click', () => dom.globalModal.classList.remove('active'));
+    document.getElementById('closeFormModalBtn')?.addEventListener('click', () => {
+        dom.formModal.classList.remove('active');
+        if (cropper) { cropper.destroy(); cropper = null; }
+    });
+
+    window.onclick = (e) => {
+        if (e.target.classList?.contains('modal-overlay')) {
+            e.target.classList.remove('active');
+            if (cropper) { cropper.destroy(); cropper = null; }
+        }
+    };
+
+    setInterval(() => {
+        refreshDataInBackground();
+    }, 5 * 60 * 1000);
+    
+    setInterval(() => {
+        const cachedVersion = localStorage.getItem(CACHE_VERSION_KEY);
+        if (cachedVersion !== CURRENT_CACHE_VERSION) {
+            console.log('🔄 Cache version changed, reloading data');
+            dataLoaded = false;
+            loadStudents(true);
+        }
+    }, 60000);
+
+    console.log(`📦 Cache Version: ${CURRENT_CACHE_VERSION}`);
+    console.log(`📊 Sheet: ${SHEET_NAME}`);
+    console.log(`✅ Ujjwal Academy Admission System Loaded`);
+}
+
+/* ======================== START APP ======================== */
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(init, 100);
+});
+
+// Expose functions to window for console access
+window.manualClearCache = function() {
+    clearAllCaches();
+    dataLoaded = false;
+    showToast("🧹 Cache cleared! Refreshing...", "success");
+    setTimeout(() => loadStudents(true), 300);
+};
+window.forceRefreshData = function() {
+    dataLoaded = false;
+    clearAllCaches();
+    showToast("🔄 Forcing data refresh...", "info");
+    setTimeout(() => loadStudents(true), 300);
+};
+window.autoFillAdmIn = autoFillAdmIn;
+window.rotateLeft = rotateLeft;
+window.rotateRight = rotateRight;
+window.applyCrop = applyCrop;
+window.handleRetry = handleRetry;
+window.handleClearCache = handleClearCache;
+
+console.log('✅ Ujjwal Academy Admission System Loaded');
+console.log(`📊 Current Sheet: ${SHEET_NAME}`);
+console.log('📦 Cache TTL: ' + (CACHE_TTL / 60000) + ' minutes');
+</script>
+</body>
+</html>
