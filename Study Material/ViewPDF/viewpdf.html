@@ -25,6 +25,7 @@
             --transition-normal: 300ms ease;
             --danger: #ef4444;
             --success: #10b981;
+            --overlay-color: rgba(0, 0, 0, 0.05);
         }
 
         [data-theme="dark"] {
@@ -41,6 +42,7 @@
             --accent-soft: rgba(59, 130, 246, 0.15);
             --card-border: 1px solid rgba(255,255,255,0.04);
             --logo-filter: brightness(0) invert(1);
+            --overlay-color: rgba(255, 255, 255, 0.05);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -54,6 +56,29 @@
             display: flex;
             flex-direction: column;
             overflow-x: hidden;
+            /* Prevent selection on the entire page */
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        /* Prevent text selection on all elements */
+        * {
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+            -webkit-touch-callout: none !important;
+        }
+
+        /* Allow selection only on input/textarea if needed */
+        input, textarea, [contenteditable="true"] {
+            user-select: text !important;
+            -webkit-user-select: text !important;
+            -moz-user-select: text !important;
+            -ms-user-select: text !important;
         }
 
         ::-webkit-scrollbar { width: 0; height: 0; display: none; }
@@ -182,7 +207,7 @@
             gap: 1.5rem;
         }
 
-        /* PDF Viewer Container */
+        /* PDF Container - Screenshot Protection Wrapper */
         .pdf-container {
             background: var(--bg-card);
             border-radius: 32px;
@@ -194,6 +219,126 @@
             display: flex;
             flex-direction: column;
             min-height: 80vh;
+            position: relative;
+        }
+
+        /* ============================================================
+           SCREENSHOT PROTECTION - Multiple Layers
+           ============================================================ */
+
+        /* Layer 1: CSS-only protection - prevents right-click save */
+        .pdf-container {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        /* Layer 2: Anti-screenshot overlay - shows black/pattern when screenshot is attempted */
+        .pdf-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 50;
+            pointer-events: none;
+            /* This creates a subtle pattern that appears in screenshots */
+            background-image: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 0, 0, 0.02) 2px,
+                    rgba(0, 0, 0, 0.02) 4px
+                );
+            background-size: 8px 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Layer 3: When screenshot is detected (via visibility API), show protection */
+        .pdf-container.protected::before {
+            opacity: 1;
+            background-image: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 0, 0, 0.15) 2px,
+                    rgba(0, 0, 0, 0.15) 4px
+                );
+        }
+
+        /* Layer 4: Full black overlay for extreme protection */
+        .pdf-container .protection-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 60;
+            background: #000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .pdf-container .protection-overlay i {
+            font-size: 4rem;
+            color: #f59e0b;
+        }
+
+        .pdf-container .protection-overlay .sub-text {
+            font-size: 1rem;
+            font-weight: 400;
+            opacity: 0.7;
+        }
+
+        .pdf-container.protected .protection-overlay {
+            display: flex !important;
+        }
+
+        /* Layer 5: Watermark overlay that appears in screenshots */
+        .pdf-container .watermark-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 45;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 40px,
+                rgba(37, 99, 235, 0.03) 40px,
+                rgba(37, 99, 235, 0.03) 41px
+            );
+        }
+
+        .pdf-container .watermark-overlay .watermark-text {
+            font-size: 3rem;
+            font-weight: 900;
+            color: rgba(37, 99, 235, 0.06);
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            transform: rotate(-30deg);
+            white-space: nowrap;
+            user-select: none;
+            pointer-events: none;
+        }
+
+        /* When protected, show watermark more prominently */
+        .pdf-container.protected .watermark-overlay {
+            opacity: 1;
+        }
+
+        .pdf-container.protected .watermark-overlay .watermark-text {
+            color: rgba(255, 255, 255, 0.1);
         }
 
         .pdf-header {
@@ -205,6 +350,8 @@
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 1rem;
+            position: relative;
+            z-index: 10;
         }
 
         .pdf-header .pdf-title {
@@ -243,6 +390,8 @@
             align-items: center;
             justify-content: center;
             min-height: 60vh;
+            position: relative;
+            z-index: 1;
         }
 
         /* Loading State */
@@ -277,7 +426,7 @@
             margin-top: 0.5rem;
         }
 
-        /* PDF Iframe */
+        /* PDF Iframe - with additional protection */
         .pdf-iframe-wrapper {
             width: 100%;
             flex: 1;
@@ -289,12 +438,17 @@
             position: relative;
         }
 
+        /* Prevent iframe content from being selected */
         .pdf-iframe-wrapper iframe {
             width: 100%;
             height: 100%;
             min-height: 70vh;
             border: none;
             background: var(--bg-body);
+            /* Prevent selection inside iframe */
+            -webkit-user-select: none;
+            user-select: none;
+            pointer-events: auto;
         }
 
         /* Error State */
@@ -333,7 +487,9 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Responsive */
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
         @media (max-width: 820px) {
             .top-bar { 
                 border-radius: 32px; 
@@ -398,6 +554,17 @@
 
             .pdf-iframe-wrapper iframe {
                 min-height: 100vh;
+            }
+
+            .pdf-container .protection-overlay {
+                font-size: 1.2rem;
+            }
+            .pdf-container .protection-overlay i {
+                font-size: 3rem;
+            }
+            .pdf-container .watermark-overlay .watermark-text {
+                font-size: 2rem;
+                letter-spacing: 4px;
             }
         }
 
@@ -481,6 +648,17 @@
             .pdf-error p {
                 font-size: 0.9rem;
             }
+
+            .pdf-container .protection-overlay {
+                font-size: 1rem;
+            }
+            .pdf-container .protection-overlay i {
+                font-size: 2.5rem;
+            }
+            .pdf-container .watermark-overlay .watermark-text {
+                font-size: 1.5rem;
+                letter-spacing: 2px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -502,9 +680,6 @@
                 <span class="brand-text">Ujjwal Academy</span>
             </div>
             <div class="right-actions">
-               <!-- <a href="7th_Std_Eng.html" class="btn btn-primary">
-                    <i class="fas fa-arrow-left"></i> Back
-                </a> -->
                 <a href="../My Account/myaccount.html" class="btn btn-outline">
                     <i class="fas fa-user"></i> My Account
                 </a>
@@ -512,7 +687,19 @@
         </header>
 
         <div class="main-content">
-            <div class="pdf-container">
+            <div class="pdf-container" id="pdfContainer">
+                <!-- Screenshot Protection: Watermark Layer -->
+                <div class="watermark-overlay" id="watermarkOverlay">
+                    <span class="watermark-text">Ujjwal Academy</span>
+                </div>
+
+                <!-- Screenshot Protection: Full Black Overlay -->
+                <div class="protection-overlay" id="protectionOverlay">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Screenshot Detected</span>
+                    <span class="sub-text">Content is protected</span>
+                </div>
+
                 <!-- PDF Header -->
                 <div class="pdf-header">
                     <div class="pdf-title">
@@ -523,9 +710,6 @@
                         </div>
                     </div>
                     <div class="pdf-actions">
-                       <!-- <button class="btn btn-primary" id="downloadBtn" onclick="downloadPDF()">
-                            <i class="fas fa-download"></i> Download
-                        </button> -->
                         <button class="btn btn-outline" id="openNewTabBtn" onclick="openInNewTab()">
                             <i class="fas fa-external-link-alt"></i> Open Full Screen
                         </button>
@@ -668,6 +852,233 @@
         }
 
         // ============================================================
+        // SCREENSHOT PROTECTION
+        // ============================================================
+        const protection = {
+            isProtected: false,
+            container: null,
+            protectionTimer: null,
+
+            init() {
+                this.container = document.getElementById('pdfContainer');
+                this.setupVisibilityAPI();
+                this.setupKeyboardShortcuts();
+                this.setupContextMenu();
+                this.setupPrintProtection();
+                this.setupCopyProtection();
+                this.setupDragProtection();
+                console.log('🛡️ Screenshot protection initialized');
+            },
+
+            // Layer 1: Visibility API - Detect when page becomes hidden (screenshot being taken)
+            setupVisibilityAPI() {
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden) {
+                        // Page is being hidden - likely screenshot or tab switch
+                        this.activateProtection('Screenshot detected');
+                        console.log('🛡️ Visibility change: Page hidden - protection activated');
+                    } else {
+                        // Page is visible again
+                        this.deactivateProtection();
+                        console.log('🛡️ Visibility change: Page visible - protection deactivated');
+                    }
+                });
+            },
+
+            // Layer 2: Keyboard shortcuts to prevent common screenshot keys
+            setupKeyboardShortcuts() {
+                document.addEventListener('keydown', (e) => {
+                    // Prevent Print Screen (PrtScn)
+                    if (e.key === 'PrintScreen' || e.key === 'Print') {
+                        e.preventDefault();
+                        this.activateProtection('Print Screen detected');
+                        console.log('🛡️ PrintScreen key blocked');
+                        return false;
+                    }
+
+                    // Prevent Ctrl+Shift+S (Save As)
+                    if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 's' || e.key === 'S')) {
+                        e.preventDefault();
+                        this.activateProtection('Save As detected');
+                        console.log('🛡️ Ctrl+Shift+S blocked');
+                        return false;
+                    }
+
+                    // Prevent Ctrl+S (Save)
+                    if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+                        e.preventDefault();
+                        this.activateProtection('Save detected');
+                        console.log('🛡️ Ctrl+S blocked');
+                        return false;
+                    }
+
+                    // Prevent Ctrl+P (Print)
+                    if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P')) {
+                        e.preventDefault();
+                        this.activateProtection('Print detected');
+                        console.log('🛡️ Ctrl+P blocked');
+                        return false;
+                    }
+
+                    // Prevent Ctrl+C (Copy) on the document
+                    if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C')) {
+                        const target = e.target;
+                        if (!target.closest('input') && !target.closest('textarea')) {
+                            e.preventDefault();
+                            console.log('🛡️ Ctrl+C blocked on content');
+                            return false;
+                        }
+                    }
+
+                    // Prevent F12 (Developer Tools)
+                    if (e.key === 'F12') {
+                        e.preventDefault();
+                        console.log('🛡️ F12 blocked');
+                        return false;
+                    }
+                });
+            },
+
+            // Layer 3: Context menu prevention
+            setupContextMenu() {
+                document.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    this.activateProtection('Right-click detected');
+                    console.log('🛡️ Right-click blocked');
+                    return false;
+                });
+
+                // Also prevent on the container specifically
+                const container = document.getElementById('pdfContainer');
+                if (container) {
+                    container.addEventListener('contextmenu', (e) => {
+                        e.preventDefault();
+                        return false;
+                    });
+                }
+            },
+
+            // Layer 4: Print prevention
+            setupPrintProtection() {
+                window.addEventListener('beforeprint', (e) => {
+                    e.preventDefault();
+                    this.activateProtection('Print detected');
+                    console.log('🛡️ Print attempt blocked');
+                    return false;
+                });
+
+                // Also block Ctrl+P via the media query
+                const style = document.createElement('style');
+                style.textContent = `
+                    @media print {
+                        body * { display: none !important; }
+                        body::after {
+                            content: "Printing is not allowed on this document.";
+                            display: block;
+                            font-size: 24px;
+                            color: red;
+                            text-align: center;
+                            padding: 50px;
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+            },
+
+            // Layer 5: Copy prevention
+            setupCopyProtection() {
+                // Prevent copy on the document
+                document.addEventListener('copy', (e) => {
+                    const target = e.target;
+                    if (!target.closest('input') && !target.closest('textarea')) {
+                        e.preventDefault();
+                        console.log('🛡️ Copy blocked on content');
+                        return false;
+                    }
+                });
+
+                // Prevent cut on the document
+                document.addEventListener('cut', (e) => {
+                    const target = e.target;
+                    if (!target.closest('input') && !target.closest('textarea')) {
+                        e.preventDefault();
+                        console.log('🛡️ Cut blocked on content');
+                        return false;
+                    }
+                });
+
+                // Prevent selection on the document
+                document.addEventListener('selectstart', (e) => {
+                    const target = e.target;
+                    if (!target.closest('input') && !target.closest('textarea')) {
+                        e.preventDefault();
+                        console.log('🛡️ Select blocked on content');
+                        return false;
+                    }
+                });
+            },
+
+            // Layer 6: Drag prevention (for images)
+            setupDragProtection() {
+                document.addEventListener('dragstart', (e) => {
+                    e.preventDefault();
+                    console.log('🛡️ Drag blocked');
+                    return false;
+                });
+            },
+
+            // Activate full protection
+            activateProtection(reason = 'Protection activated') {
+                if (this.isProtected) return;
+                
+                this.isProtected = true;
+                const container = this.container;
+                
+                // Add protected class to container
+                container.classList.add('protected');
+                
+                // Show the protection overlay
+                const overlay = document.getElementById('protectionOverlay');
+                if (overlay) {
+                    overlay.style.display = 'flex';
+                }
+                
+                // Log the reason
+                console.log(`🛡️ Protection activated: ${reason}`);
+                
+                // Auto-deactivate after 3 seconds
+                clearTimeout(this.protectionTimer);
+                this.protectionTimer = setTimeout(() => {
+                    this.deactivateProtection();
+                }, 3000);
+            },
+
+            // Deactivate protection
+            deactivateProtection() {
+                if (!this.isProtected) return;
+                
+                this.isProtected = false;
+                const container = this.container;
+                
+                // Remove protected class
+                container.classList.remove('protected');
+                
+                // Hide the protection overlay
+                const overlay = document.getElementById('protectionOverlay');
+                if (overlay) {
+                    overlay.style.display = 'none';
+                }
+                
+                console.log('🛡️ Protection deactivated');
+            },
+
+            // Manual trigger for testing
+            triggerProtection() {
+                this.activateProtection('Manual trigger');
+            }
+        };
+
+        // ============================================================
         // DOM REFS
         // ============================================================
         const dom = {};
@@ -680,7 +1091,6 @@
             dom.errorMessage = document.getElementById('errorMessage');
             dom.pdfIframeWrapper = document.getElementById('pdfIframeWrapper');
             dom.pdfIframe = document.getElementById('pdfIframe');
-            dom.downloadBtn = document.getElementById('downloadBtn');
             dom.openNewTabBtn = document.getElementById('openNewTabBtn');
         }
 
@@ -696,7 +1106,6 @@
         }
 
         function showToast(msg, type = 'info') {
-            // Simple alert for now - can be enhanced with a proper toast
             console.log(`📢 ${type}: ${msg}`);
         }
 
@@ -732,19 +1141,15 @@
             
             // If it's a Google Drive link, convert to direct embed URL
             if (finalUrl.includes('drive.google.com') || finalUrl.includes('docs.google.com')) {
-                // Extract file ID from Google Drive link
                 const fileIdMatch = finalUrl.match(/[-\w]{25,}/);
                 if (fileIdMatch) {
                     const fileId = fileIdMatch[0];
-                    // Use Google Drive embed URL
                     finalUrl = `https://drive.google.com/file/d/${fileId}/preview`;
                     console.log(`📄 Converted Drive link to embed URL: ${finalUrl}`);
                 } else {
-                    // Try to use as-is
                     console.log(`📄 Using Drive link as-is: ${finalUrl}`);
                 }
             } else if (finalUrl.includes('pdf')) {
-                // Keep as is for direct PDF links
                 console.log(`📄 Using direct PDF link: ${finalUrl}`);
             }
 
@@ -755,11 +1160,6 @@
 
             // Set iframe src
             dom.pdfIframe.src = finalUrl;
-
-            // Set download link
-            dom.downloadBtn.onclick = function() {
-                downloadPDF(finalUrl, chapter);
-            };
 
             // Set open new tab link
             dom.openNewTabBtn.onclick = function() {
@@ -775,31 +1175,6 @@
             dom.pdfIframeWrapper.style.display = 'none';
             dom.errorMessage.textContent = message || 'The PDF link could not be loaded. Please try again.';
             console.error(`❌ PDF Error: ${message}`);
-        }
-
-        function downloadPDF(link, chapter) {
-            const url = link || currentLink;
-            const name = chapter || currentChapter || 'document';
-            
-            if (!url) {
-                showToast('No PDF link available to download.', 'error');
-                return;
-            }
-
-            try {
-                // Create a temporary anchor element
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `${name}.pdf`;
-                a.target = '_blank';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                showToast(`Downloading: ${name}`, 'success');
-            } catch (err) {
-                console.error('Download error:', err);
-                showToast('Failed to download PDF. Please try opening in new tab.', 'error');
-            }
         }
 
         function openInNewTab(link, chapter) {
@@ -847,7 +1222,7 @@
         }
 
         // ============================================================
-        // CHECK LOGIN STATUS (for security)
+        // CHECK LOGIN STATUS
         // ============================================================
         function checkLoginStatus() {
             const savedUser = sessionStorage.getItem('ujjwal_user');
@@ -892,10 +1267,12 @@
             syncThemeWithParent();
             console.log('🎨 Theme initialized:', document.body.getAttribute('data-theme'));
 
+            // Initialize screenshot protection
+            protection.init();
+
             // Check login status
             const isLoggedIn = checkLoginStatus();
             if (!isLoggedIn) {
-                // Redirect to login if not authenticated
                 window.location.href = '../My Account/myaccount.html';
                 return;
             }
@@ -924,6 +1301,70 @@
             } else {
                 showError('No PDF link found for this chapter. Please contact support.');
             }
+
+            // ============================================================
+            // ADDITIONAL PROTECTION: Canvas screenshot detection
+            // ============================================================
+            // This is a more advanced technique that uses canvas to detect if
+            // the page is being screenshotted via the browser's native API
+            try {
+                // Create a hidden canvas with tracking data
+                const canvas = document.createElement('canvas');
+                canvas.width = 1;
+                canvas.height = 1;
+                canvas.style.position = 'absolute';
+                canvas.style.left = '-9999px';
+                canvas.style.top = '-9999px';
+                canvas.style.opacity = '0';
+                canvas.style.pointerEvents = 'none';
+                document.body.appendChild(canvas);
+
+                const ctx = canvas.getContext('2d');
+                const imageData = ctx.getImageData(0, 0, 1, 1);
+                
+                // Store a unique fingerprint in the canvas
+                const data = imageData.data;
+                data[0] = 123; // R
+                data[1] = 45;  // G
+                data[2] = 67;  // B
+                data[3] = 255; // A
+                ctx.putImageData(imageData, 0, 0);
+
+                // Periodically check if the canvas data has been modified (screenshot detection)
+                setInterval(() => {
+                    try {
+                        const checkData = ctx.getImageData(0, 0, 1, 1);
+                        const d = checkData.data;
+                        // If the data changed, it means someone tried to screenshot/read the canvas
+                        if (d[0] !== 123 || d[1] !== 45 || d[2] !== 67) {
+                            console.log('🛡️ Canvas tampering detected!');
+                            protection.activateProtection('Canvas tampering detected');
+                        }
+                    } catch (e) {
+                        // Canvas read failed - possible screenshot attempt
+                        console.log('🛡️ Canvas read failed - possible screenshot attempt');
+                        protection.activateProtection('Canvas access blocked');
+                    }
+                }, 1000);
+            } catch (e) {
+                console.log('Canvas protection not available:', e);
+            }
+
+            // ============================================================
+            // WINDOW BLUR DETECTION - Another method to detect screenshots
+            // ============================================================
+            window.addEventListener('blur', function() {
+                // If the window loses focus, it might be a screenshot
+                console.log('🛡️ Window blur detected - possible screenshot');
+                // Small delay to check if it's just a tab switch
+                setTimeout(() => {
+                    if (!document.hasFocus()) {
+                        protection.activateProtection('Window lost focus');
+                    }
+                }, 100);
+            });
+
+            console.log('✅ PDF viewer ready with screenshot protection');
         }
 
         // ============================================================
