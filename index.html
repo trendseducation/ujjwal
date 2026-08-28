@@ -620,6 +620,40 @@
       padding-top: 1.5rem;
     }
 
+    /* Manual Sync Button */
+    .sync-btn {
+      background: var(--accent-soft);
+      border: 1px solid var(--border-light);
+      padding: 0.3rem 1rem;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      color: var(--text-main);
+      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .sync-btn:hover {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+    .sync-btn:hover i {
+      color: white;
+    }
+    .sync-btn i {
+      color: var(--accent);
+      font-size: 0.7rem;
+    }
+    .sync-btn.loading i {
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
     @media (max-width: 820px) {
       .hamburger-btn { display: inline-flex; }
       .account-btn-desktop { display: none; }
@@ -645,7 +679,7 @@
       .hero-card .card-icon { width: 60px; height: 60px; font-size: 2rem; }
 
       .info-row {
-        grid-template-columns: repeat(2, 1fr);
+        flex-direction: column;
         align-items: stretch;
         padding: 1rem 1.2rem;
         gap: 0.8rem;
@@ -659,436 +693,23 @@
       }
     }
 
-    /* ============================================================
-   📱 ENHANCED MOBILE RESPONSIVENESS (max-width: 480px)
-   ============================================================ */
-
-@media (max-width: 480px) {
-  /* ---------- SLIDER ---------- */
-  .slider-wrapper {
-    aspect-ratio: 4 / 3;
-    min-height: 140px;
-    border-radius: 16px;
-    margin-bottom: 1.2rem;
-  }
-
-  .slider-btn {
-    padding: 0.4rem 0.6rem;
-    font-size: 0.9rem;
-    opacity: 0.7;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(6px);
-  }
-
-  .slider-btn:hover {
-    opacity: 1;
-    background: rgba(0, 0, 0, 0.7);
-  }
-
-  .slider-btn.prev {
-    left: 6px;
-  }
-  .slider-btn.next {
-    right: 6px;
-  }
-
-  .slider-dots {
-    bottom: 8px;
-    gap: 6px;
-  }
-  .slider-dots span {
-    width: 7px;
-    height: 7px;
-  }
-  .slider-dots span.active {
-    transform: scale(1.3);
-  }
-
-  /* ---------- INFO ROW ---------- */
-  .info-row {
-    grid-template-columns: repeat(2, 1fr);
-    align-items: stretch;
-    padding: 0.8rem 1rem;
-    gap: 0.6rem;
-    border-radius: 20px;
-    margin-top: 0.5rem;
-  }
-
-  .info-row .highlight {
-    justify-content: center;
-    font-size: 0.85rem;
-    padding: 0.2rem 0;
-  }
-
-  .info-row .highlight i {
-    font-size: 1.1rem;
-  }
-
-  .info-row .meta {
-    font-size: 0.7rem;
-    text-align: center;
-    padding-top: 0.3rem;
-    border-top: 1px solid var(--border-light);
-  }
-
-  /* ---------- VISITOR & TOTAL COUNTERS ---------- */
-  .visitor-counter,
-  .total-counter {
-    justify-content: center;
-    padding: 0.3rem 0.8rem;
-    font-size: 0.8rem;
-    border-radius: 30px;
-    width: 100%;
-    max-width: 200px;
-    margin: 0 auto;
-  }
-
-  .visitor-counter i,
-  .total-counter i {
-    font-size: 0.85rem;
-  }
-
-  .visitor-counter .visitor-count,
-  .total-counter .total-count {
-    font-size: 0.9rem;
-    min-width: 36px;
-    font-weight: 700;
-  }
-
-  .visitor-counter .visitor-label,
-  .total-counter .total-label {
-    font-size: 0.65rem;
-    font-weight: 500;
-    letter-spacing: 0.3px;
-  }
-
-  .visitor-counter .visitor-count.pop,
-  .total-counter .total-count.pop {
-    animation: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  /* ---------- SYNC STATUS ---------- */
-  .sync-status {
-    font-size: 0.55rem;
-    margin-left: 2px;
-  }
-
-  /* ---------- FRONT CARDS ---------- */
-  .front-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.8rem;
-    margin: 0.3rem 0 1rem;
-  }
-
-  .hero-card {
-    padding: 1rem 0.6rem 1rem;
-    border-radius: 18px;
-  }
-
-  .hero-card .card-icon {
-    width: 48px;
-    height: 48px;
-    font-size: 1.5rem;
-    border-radius: 18px;
-    margin: 0 auto 0.6rem;
-  }
-
-  .hero-card h3 {
-    font-size: 0.85rem;
-    font-weight: 600;
-    margin-bottom: 0.1rem;
-  }
-
-  .hero-card p {
-    font-size: 0.7rem;
-    line-height: 1.3;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .badge-new {
-    font-size: 0.5rem;
-    padding: 0.15rem 0.7rem;
-    margin-top: 0.4rem;
-  }
-
-  /* ---------- TOP BAR ---------- */
-  .top-bar {
-    border-radius: 24px;
-    padding: 0.4rem 0.8rem;
-    margin-bottom: 1rem;
-    gap: 0.5rem;
-  }
-
-  .brand-area {
-    gap: 6px;
-  }
-
-  .brand-logo {
-    height: 30px;
-  }
-
-  .brand-text {
-    font-size: 1rem;
-    letter-spacing: -0.2px;
-  }
-
-  .hamburger-btn {
-    font-size: 1.4rem;
-    padding: 0.1rem 0.4rem;
-  }
-
-  /* ---------- SIDEBAR ---------- */
-  .sidebar {
-    width: 260px;
-    padding: 1.5rem 1.2rem 1.5rem;
-  }
-
-  .sidebar-brand img {
-    height: 32px;
-  }
-  .sidebar-brand span {
-    font-size: 1.1rem;
-  }
-
-  .sidebar-menu li {
-    padding: 0.6rem 0.8rem;
-    font-size: 0.85rem;
-    gap: 10px;
-  }
-  .sidebar-menu li i {
-    font-size: 1rem;
-    width: 20px;
-  }
-
-  .sidebar-account a {
-    padding: 0.6rem 0.8rem;
-    font-size: 0.85rem;
-  }
-  .sidebar-close {
-    font-size: 1.2rem;
-    padding: 0.2rem 0.4rem;
-    top: 0.8rem;
-    right: 0.8rem;
-  }
-
-  /* ---------- APP WRAPPER ---------- */
-  .app-wrapper {
-    padding: 0.6rem 0.8rem 1.5rem;
-  }
-
-  /* ---------- FOOTER ---------- */
-  .footer-note {
-    margin-top: 1.2rem;
-    padding-top: 1rem;
-    font-size: 0.65rem;
-  }
-
-  /* ---------- TOAST (if used) ---------- */
-  .toast {
-    top: 10px;
-    right: 10px;
-    left: 10px;
-    max-width: none;
-    font-size: 13px;
-    padding: 12px 16px;
-    border-radius: 12px;
-  }
-}
-
-/* ============================================================
-   📱 EXTRA SMALL DEVICES (max-width: 375px)
-   ============================================================ */
-
-@media (max-width: 375px) {
-  .front-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 0.6rem;
-  }
-
-  .hero-card {
-    padding: 0.8rem 0.4rem;
-  }
-
-  .hero-card .card-icon {
-    width: 40px;
-    height: 40px;
-    font-size: 1.2rem;
-    border-radius: 14px;
-  }
-
-  .hero-card h3 {
-    font-size: 0.75rem;
-  }
-
-  .hero-card p {
-    font-size: 0.6rem;
-  }
-
-  .visitor-counter,
-  .total-counter {
-    max-width: 170px;
-    padding: 0.2rem 0.6rem;
-    font-size: 0.7rem;
-  }
-
-  .visitor-counter .visitor-count,
-  .total-counter .total-count {
-    font-size: 0.8rem;
-    min-width: 30px;
-  }
-
-  .visitor-counter .visitor-label,
-  .total-counter .total-label {
-    font-size: 0.55rem;
-  }
-
-  .brand-text {
-    font-size: 0.85rem;
-  }
-
-  .brand-logo {
-    height: 26px;
-  }
-
-  .slider-wrapper {
-    aspect-ratio: 1 / 1;
-    min-height: 120px;
-    border-radius: 14px;
-  }
-
-  .slider-btn {
-    padding: 0.3rem 0.5rem;
-    font-size: 0.75rem;
-  }
-
-  .info-row {
-    padding: 0.6rem 0.8rem;
-    gap: 0.4rem;
-  }
-
-  .info-row .highlight {
-    font-size: 0.75rem;
-  }
-
-  .info-row .highlight i {
-    font-size: 0.9rem;
-  }
-}
-
-/* ============================================================
-   📱 LANDSCAPE PHONE (480px - 768px)
-   ============================================================ */
-
-@media (min-width: 481px) and (max-width: 768px) {
-  .front-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
-
-  .hero-card {
-    padding: 1.2rem 0.8rem;
-  }
-
-  .hero-card .card-icon {
-    width: 56px;
-    height: 56px;
-    font-size: 1.8rem;
-  }
-
-  .slider-wrapper {
-    aspect-ratio: 16 / 9;
-    min-height: 180px;
-  }
-
-  .info-row {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.8rem;
-    padding: 0.8rem 1.2rem;
-  }
-
-  .visitor-counter,
-  .total-counter {
-    padding: 0.3rem 0.8rem;
-    font-size: 0.8rem;
-  }
-}
-
-/* ============================================================
-   📱 TOUCH DEVICE IMPROVEMENTS
-   ============================================================ */
-
-@media (hover: none) and (pointer: coarse) {
-  /* Larger touch targets */
-  .slider-btn {
-    min-width: 44px;
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .menu-item {
-    padding: 0.6rem 1rem;
-    min-height: 44px;
-  }
-
-  .hero-card {
-    cursor: default;
-  }
-
-  .hero-card:hover {
-    transform: none;
-  }
-
-  .visitor-counter:hover,
-  .total-counter:hover {
-    transform: none;
-  }
-
-  /* Disable hover effects on touch devices */
-  .slider-btn:hover {
-    transform: translateY(-50%);
-  }
-
-  .menu-item:hover {
-    transform: none;
-  }
-
-  .sidebar-menu li:hover {
-    transform: none;
-  }
-
-  .sidebar-account a:hover {
-    transform: none;
-  }
-}
-
-/* ============================================================
-   🎨 ANIMATION OPTIMIZATION FOR MOBILE
-   ============================================================ */
-
-@media (prefers-reduced-motion: reduce) {
-  .slider-slide {
-    transition: opacity 0.3s ease-in-out;
-  }
-
-  .slider-btn:hover {
-    transform: translateY(-50%) scale(1);
-  }
-
-  .visitor-count.pop,
-  .total-count.pop {
-    animation: none;
-  }
-
-  .visitor-counter i {
-    animation: none;
-  }
-}
+    @media (max-width: 480px) {
+      .slider-wrapper { aspect-ratio: 4 / 3; min-height: 140px; }
+      .info-row { flex-direction: column; align-items: stretch; padding: 1rem 1rem; }
+      .visitor-counter, .total-counter {
+        padding: 0.3rem 0.8rem;
+        font-size: 0.85rem;
+      }
+      .visitor-counter .visitor-count,
+      .total-counter .total-count {
+        font-size: 0.9rem;
+        min-width: 40px;
+      }
+      .visitor-counter .visitor-label,
+      .total-counter .total-label {
+        font-size: 0.7rem;
+      }
+    }
 
     body.sidebar-open { overflow: hidden; }
   </style>
@@ -1167,17 +788,17 @@
   </div>
 
   <!-- INFO ROW WITH VISITOR COUNTERS -->
-   <div class="info-row">
-   <!-- <div class="highlight">
+  <div class="info-row">
+    <div class="highlight">
       <i class="fas fa-graduation-cap"></i>
       <span>12,000+ learners</span>
-    </div> -->
+    </div>
     
     <!-- TOTAL VISITS COUNTER -->
     <div class="total-counter" id="totalCounter">
       <i class="fas fa-chart-line"></i>
       <span class="total-label">Total Visits</span>
-      <span class="total-count" id="totalCount">1,000</span>
+      <span class="total-count" id="totalCount">—</span>
       <span class="sync-status" id="totalSyncStatus"></span>
     </div>
 
@@ -1185,17 +806,20 @@
     <div class="visitor-counter" id="visitorCounter">
       <i class="fas fa-user"></i>
       <span class="visitor-label">Unique Visitors</span>
-      <span class="visitor-count" id="visitorCount">1,000</span>
+      <span class="visitor-count" id="visitorCount">—</span>
       <span class="sync-status" id="uniqueSyncStatus"></span>
     </div>
 
-   <!-- <div class="highlight">
+    <div class="highlight">
       <i class="fas fa-star"></i>
       <span>4.9 · 2.3k reviews</span>
-    </div> -->
+    </div>
     
     <div class="meta">
       <i class="far fa-calendar-alt"></i> 2026 – Ujjwal Academy
+      <button class="sync-btn" id="manualSyncBtn" onclick="manualRefresh()">
+        <i class="fas fa-sync-alt"></i> Sync
+      </button>
     </div>
   </div>
 
@@ -1299,15 +923,20 @@
     const VISITOR_SHEET_NAME = 'Visitor';
 
     // ============================================================
-    // DUAL VISITOR COUNTER
+    // ENHANCED VISITOR COUNTER WITH FULL SYNC (PUSH + PULL)
     // ============================================================
     const TOTAL_KEY = 'ujjwal_total_visits';
     const UNIQUE_KEY = 'ujjwal_unique_visitors';
     const SESSION_KEY = 'ujjwal_visitor_session';
     const DATE_KEY = 'ujjwal_visitor_date';
+    const CACHE_KEY = 'ujjwal_visitor_cache';
+    const CACHE_TIME_KEY = 'ujjwal_cache_time';
+    const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
     const BASE_COUNT = 1000;
 
     let isSyncing = false;
+    let syncQueue = [];
+    let isInitialized = false;
 
     // --- Get today's date in DD/MM/YYYY format ---
     function getTodayDate() {
@@ -1390,6 +1019,28 @@
       } catch (e) {}
     }
 
+    // --- Cache Management ---
+    function getCachedData() {
+      try {
+        const cached = localStorage.getItem(CACHE_KEY);
+        const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
+        if (cached && cachedTime) {
+          const age = Date.now() - parseInt(cachedTime);
+          if (age < CACHE_DURATION) {
+            return JSON.parse(cached);
+          }
+        }
+      } catch (e) { /* ignore */ }
+      return null;
+    }
+
+    function setCacheData(data) {
+      try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+        localStorage.setItem(CACHE_TIME_KEY, String(Date.now()));
+      } catch (e) { /* ignore */ }
+    }
+
     // --- Format number ---
     function formatNumber(num) {
       return num.toLocaleString('en-IN');
@@ -1406,7 +1057,7 @@
         const oldValue = totalElement.textContent;
         const newValue = formatNumber(total);
         totalElement.textContent = newValue;
-        if (oldValue !== newValue) {
+        if (oldValue !== newValue && oldValue !== '—') {
           totalElement.classList.remove('pop');
           void totalElement.offsetWidth;
           totalElement.classList.add('pop');
@@ -1417,7 +1068,7 @@
         const oldValue = uniqueElement.textContent;
         const newValue = formatNumber(unique);
         uniqueElement.textContent = newValue;
-        if (oldValue !== newValue) {
+        if (oldValue !== newValue && oldValue !== '—') {
           uniqueElement.classList.remove('pop');
           void uniqueElement.offsetWidth;
           uniqueElement.classList.add('pop');
@@ -1438,14 +1089,172 @@
       }
     }
 
-    // --- Check if today's entry exists ---
+    // ============================================================
+    // PULL SYNC: CHECK FOR UPDATES FROM GOOGLE SHEETS
+    // ============================================================
+    async function checkForUpdates() {
+      try {
+        const url = `${SCRIPT_URL}?spreadsheetId=${VISITOR_SPREADSHEET_ID}&sheetName=${VISITOR_SHEET_NAME}`;
+        const response = await fetch(url);
+        
+        if (!response.ok) throw new Error('Network response was not ok');
+        
+        const result = await response.json();
+        
+        if (result.status === 'success' && result.data) {
+          const today = getTodayDate();
+          let sheetTotal = null;
+          let sheetUnique = null;
+          
+          // Find today's entry
+          result.data.forEach(row => {
+            const rowDate = row['Date'] || row['date'] || row['DATE'] || '';
+            if (rowDate === today) {
+              sheetTotal = parseInt(row['Total Visit']) || null;
+              sheetUnique = parseInt(row['Unique Visit']) || null;
+            }
+          });
+          
+          // If today not found, use the latest entry
+          if (sheetTotal === null && result.data.length > 0) {
+            const lastRow = result.data[result.data.length - 1];
+            sheetTotal = parseInt(lastRow['Total Visit']) || null;
+            sheetUnique = parseInt(lastRow['Unique Visit']) || null;
+          }
+          
+          // If we got values from sheet, compare with local
+          if (sheetTotal !== null && sheetUnique !== null) {
+            const localTotal = getTotalVisits();
+            const localUnique = getUniqueVisitors();
+            
+            // Check if sheet has higher values (updated elsewhere)
+            if (sheetTotal > localTotal || sheetUnique > localUnique) {
+              console.log(`🔄 Updates found from sheet: Total=${sheetTotal}, Unique=${sheetUnique}`);
+              
+              // Update local storage with sheet values
+              setTotalVisits(Math.max(localTotal, sheetTotal));
+              setUniqueVisitors(Math.max(localUnique, sheetUnique));
+              
+              // Update display
+              const newTotal = getTotalVisits();
+              const newUnique = getUniqueVisitors();
+              updateDisplay(newTotal, newUnique, 'success');
+              
+              console.log(`✅ Synced from sheet: Total=${newTotal}, Unique=${newUnique}`);
+              return { updated: true, total: newTotal, unique: newUnique };
+            }
+          }
+        }
+        return { updated: false };
+      } catch (error) {
+        console.error('Error checking for updates:', error);
+        return { updated: false, error: error.message };
+      }
+    }
+
+    // --- Setup auto-sync from Google Sheets (PULL) ---
+    function setupAutoSync() {
+      setInterval(async () => {
+        try {
+          await checkForUpdates();
+        } catch (e) {
+          console.error('Auto-sync error:', e);
+        }
+      }, 30000); // 30 seconds
+      
+      console.log('🔄 Auto-sync (PULL) enabled (every 30 seconds)');
+    }
+
+    // --- Manual refresh function ---
+    window.manualRefresh = async function() {
+      const btn = document.getElementById('manualSyncBtn');
+      btn.classList.add('loading');
+      btn.innerHTML = '<i class="fas fa-spinner"></i> Syncing...';
+      btn.disabled = true;
+      
+      try {
+        const result = await checkForUpdates();
+        if (result.updated) {
+          console.log(`✅ Manual refresh: Total=${result.total}, Unique=${result.unique}`);
+          showToast('Data synced successfully!', 'success');
+        } else {
+          console.log('ℹ️ No updates found');
+          showToast('No updates found', 'info');
+        }
+      } catch (error) {
+        console.error('Manual refresh error:', error);
+        showToast('Sync failed. Please try again.', 'error');
+      } finally {
+        btn.classList.remove('loading');
+        btn.innerHTML = '<i class="fas fa-sync-alt"></i> Sync';
+        btn.disabled = false;
+      }
+    };
+
+    // --- Simple Toast Notification ---
+    function showToast(message, type = 'success') {
+      const existing = document.querySelector('.toast-notification');
+      if (existing) existing.remove();
+
+      const toast = document.createElement('div');
+      toast.className = 'toast-notification';
+      const icon = type === 'success' ? 'fa-check-circle' : 
+                   type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+      const colors = {
+        success: '#10b981',
+        error: '#ef4444',
+        info: '#3b82f6'
+      };
+      
+      toast.innerHTML = `
+        <i class="fas ${icon}"></i>
+        <span>${message}</span>
+      `;
+
+      Object.assign(toast.style, {
+        position: 'fixed',
+        bottom: '24px',
+        right: '24px',
+        padding: '12px 20px',
+        borderRadius: '12px',
+        background: colors[type] || '#3b82f6',
+        color: 'white',
+        fontWeight: '500',
+        fontSize: '14px',
+        boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
+        zIndex: '1000',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        transform: 'translateY(100px)',
+        opacity: '0',
+        transition: 'all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+        maxWidth: '400px',
+        fontFamily: "'Inter', sans-serif"
+      });
+
+      document.body.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.style.transform = 'translateY(0)';
+        toast.style.opacity = '1';
+      });
+
+      setTimeout(() => {
+        toast.style.transform = 'translateY(100px)';
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 400);
+      }, 4000);
+    }
+
+    // ============================================================
+    // PUSH SYNC: SEND TO GOOGLE SHEETS
+    // ============================================================
     async function checkExistingEntry() {
       try {
         const url = `${SCRIPT_URL}?spreadsheetId=${VISITOR_SPREADSHEET_ID}&sheetName=${VISITOR_SHEET_NAME}`;
         const response = await fetch(url);
         const data = await response.json();
-        
-        console.log('📊 Fetched data from sheet:', data);
         
         if (data.status === 'success' && data.data) {
           const today = getTodayDate();
@@ -1454,12 +1263,9 @@
           
           data.data.forEach((row, index) => {
             const rowDate = row['Date'] || row['date'] || row['DATE'] || '';
-            console.log(`📅 Checking row ${index + 2}: Date="${rowDate}", Today="${today}"`);
-            
             if (rowDate === today) {
               existingRow = row;
               rowIndex = index + 2;
-              console.log(`✅ Found existing entry at row ${rowIndex}`);
             }
           });
           
@@ -1467,15 +1273,20 @@
         }
         return { existingRow: null, rowIndex: -1 };
       } catch (error) {
-        console.error('Error checking existing entry:', error);
+        console.error('Error checking entry:', error);
         return { existingRow: null, rowIndex: -1 };
       }
     }
 
-    // --- Sync to Google Sheets (FIXED - Preserves Date) ---
     async function syncToGoogleSheets(total, unique, retryCount = 0) {
       const MAX_RETRIES = 3;
       const today = getTodayDate();
+      
+      if (isSyncing) {
+        syncQueue.push({ total, unique });
+        console.log('⏳ Sync queued');
+        return;
+      }
       
       try {
         isSyncing = true;
@@ -1486,8 +1297,6 @@
         const formData = new FormData();
         formData.append('spreadsheetId', VISITOR_SPREADSHEET_ID);
         formData.append('sheetName', VISITOR_SHEET_NAME);
-        
-        // 🔥 FIX: ALWAYS send the Date to preserve it
         formData.append('Date', today);
         formData.append('Total Visit', String(total));
         formData.append('Unique Visit', String(unique));
@@ -1496,28 +1305,18 @@
           formData.append('action', 'update');
           formData.append('rowIndex', String(rowIndex));
           
-          // 🔥 CRITICAL FIX: Preserve the existing Sr. No
           const existingSrNo = existingRow['Sr. No'] || existingRow['Sr No'] || existingRow['SrNo'] || '';
           if (existingSrNo) {
             formData.append('Sr. No', String(existingSrNo));
             formData.append('Sr No', String(existingSrNo));
             formData.append('SrNo', String(existingSrNo));
           }
-          
-          console.log(`📝 Updating existing entry for ${today} (Row ${rowIndex})`);
-          console.log(`   Preserving Sr. No: ${existingSrNo}`);
+          formData.append('PreserveDate', 'true');
+          console.log(`📝 UPDATING entry for ${today} (Row ${rowIndex})`);
         } else {
           formData.append('action', 'insert');
-          console.log(`📝 Inserting new entry for ${today}`);
+          console.log(`📝 INSERTING new entry for ${today}`);
         }
-
-        console.log('📤 Sending to sheet:', {
-          Date: today,
-          'Total Visit': total,
-          'Unique Visit': unique,
-          action: existingRow ? 'update' : 'insert',
-          rowIndex: existingRow ? rowIndex : 'new'
-        });
 
         const response = await fetch(SCRIPT_URL, {
           method: 'POST',
@@ -1525,82 +1324,42 @@
         });
 
         const result = await response.json();
-        console.log('📥 Response:', result);
         
         if (result.status === 'success') {
-          console.log(`✅ Google Sheets synced: Date=${today} preserved`);
+          console.log(`✅ PUSH Synced: Date=${today}, Total=${total}, Unique=${unique}`);
           updateDisplay(total, unique, 'success');
+          setCacheData({ total, unique });
           setTimeout(() => updateDisplay(total, unique), 3000);
+          processQueue();
           return true;
         } else {
           throw new Error(result.message || 'Sync failed');
         }
         
       } catch (error) {
-        console.error('❌ Google Sheets sync error:', error);
+        console.error('❌ Sync error:', error);
         if (retryCount < MAX_RETRIES) {
-          console.log(`🔄 Retrying sync (${retryCount + 1}/${MAX_RETRIES})...`);
+          console.log(`🔄 Retry ${retryCount + 1}/${MAX_RETRIES} in ${2 * (retryCount + 1)}s...`);
           await new Promise(resolve => setTimeout(resolve, 2000 * (retryCount + 1)));
           return syncToGoogleSheets(total, unique, retryCount + 1);
         }
         updateDisplay(total, unique, 'error');
         setTimeout(() => updateDisplay(total, unique), 5000);
+        processQueue();
         return false;
       } finally {
         isSyncing = false;
       }
     }
 
-    // --- Track visits with background sync ---
-    async function trackVisits() {
-      try {
-        resetForNewDay();
-        
-        let totalVisits = getTotalVisits();
-        let uniqueVisitors = getUniqueVisitors();
-        
-        const sessionId = sessionStorage.getItem(SESSION_KEY);
-        const currentSession = Date.now().toString(36) + '-' + Math.random().toString(36).substr(2, 6);
-        
-        let isNewSession = false;
-        let countsChanged = false;
-
-        if (!sessionId) {
-          isNewSession = true;
-          totalVisits += 1;
-          uniqueVisitors += 1;
-          setTotalVisits(totalVisits);
-          setUniqueVisitors(uniqueVisitors);
-          sessionStorage.setItem(SESSION_KEY, currentSession);
-          countsChanged = true;
-          
-          console.log(`👤 New unique visitor! Total: ${formatNumber(totalVisits)}, Unique: ${formatNumber(uniqueVisitors)}`);
-        } else {
-          totalVisits += 1;
-          setTotalVisits(totalVisits);
-          countsChanged = true;
-          
-          console.log(`👋 Returning visitor. Total: ${formatNumber(totalVisits)}, Unique: ${formatNumber(uniqueVisitors)}`);
-        }
-        
-        updateDisplay(totalVisits, uniqueVisitors);
-        
-        if (countsChanged) {
-          syncToGoogleSheets(totalVisits, uniqueVisitors);
-        }
-        
-        return { totalVisits, uniqueVisitors, isNewSession };
-        
-      } catch (e) {
-        console.error('Error tracking visits:', e);
-        const totalVisits = getTotalVisits();
-        const uniqueVisitors = getUniqueVisitors();
-        updateDisplay(totalVisits, uniqueVisitors);
-        return { totalVisits, uniqueVisitors, isNewSession: false };
+    function processQueue() {
+      if (syncQueue.length > 0) {
+        const next = syncQueue.shift();
+        console.log(`🔄 Processing queued sync: Total=${next.total}, Unique=${next.unique}`);
+        syncToGoogleSheets(next.total, next.unique);
       }
     }
 
-    // --- Periodic sync check ---
     function setupPeriodicSync() {
       setInterval(async () => {
         if (!isSyncing) {
@@ -1610,7 +1369,151 @@
         }
       }, 5 * 60 * 1000);
       
-      console.log('⏰ Periodic sync enabled (every 5 minutes)');
+      console.log('⏰ Periodic sync (PUSH) enabled (every 5 minutes)');
+    }
+
+    // ============================================================
+    // FETCH DATA FROM SHEET WITH CACHE
+    // ============================================================
+    async function fetchDataFromSheet() {
+      const cached = getCachedData();
+      if (cached && cached.total !== undefined && cached.unique !== undefined) {
+        console.log('📦 Using cached data:', cached);
+        return cached;
+      }
+
+      try {
+        const url = `${SCRIPT_URL}?spreadsheetId=${VISITOR_SPREADSHEET_ID}&sheetName=${VISITOR_SHEET_NAME}`;
+        const response = await fetch(url);
+        
+        if (!response.ok) throw new Error('Network response was not ok');
+        
+        const result = await response.json();
+        
+        if (result.status === 'success' && result.data) {
+          const today = getTodayDate();
+          let totalFromSheet = BASE_COUNT;
+          let uniqueFromSheet = BASE_COUNT;
+          
+          result.data.forEach(row => {
+            const rowDate = row['Date'] || row['date'] || row['DATE'] || '';
+            if (rowDate === today) {
+              totalFromSheet = parseInt(row['Total Visit']) || BASE_COUNT;
+              uniqueFromSheet = parseInt(row['Unique Visit']) || BASE_COUNT;
+            }
+          });
+          
+          const data = { total: totalFromSheet, unique: uniqueFromSheet };
+          setCacheData(data);
+          console.log('📊 Fetched from sheet:', data);
+          return data;
+        }
+        
+        throw new Error('Invalid response from server');
+      } catch (error) {
+        console.error('Error fetching from sheet:', error);
+        const staleCache = localStorage.getItem(CACHE_KEY);
+        if (staleCache) {
+          try {
+            const parsed = JSON.parse(staleCache);
+            console.log('📦 Using stale cache:', parsed);
+            return parsed;
+          } catch (e) {}
+        }
+        return { total: BASE_COUNT, unique: BASE_COUNT };
+      }
+    }
+
+    // ============================================================
+    // INITIALIZE
+    // ============================================================
+    async function initializeFromSheet() {
+      try {
+        const data = await fetchDataFromSheet();
+        const today = getTodayDate();
+        const storedDate = getStoredDate();
+        
+        if (storedDate !== today) {
+          setStoredDate(today);
+          setTotalVisits(data.total);
+          setUniqueVisitors(data.unique);
+          console.log(`📅 Initialized for ${today}: Total=${data.total}, Unique=${data.unique}`);
+        } else {
+          const storedTotal = getTotalVisits();
+          const storedUnique = getUniqueVisitors();
+          
+          if (storedTotal < data.total || storedUnique < data.unique) {
+            setTotalVisits(Math.max(storedTotal, data.total));
+            setUniqueVisitors(Math.max(storedUnique, data.unique));
+            console.log(`📊 Updated from sheet: Total=${Math.max(storedTotal, data.total)}, Unique=${Math.max(storedUnique, data.unique)}`);
+          }
+        }
+        
+        const finalTotal = getTotalVisits();
+        const finalUnique = getUniqueVisitors();
+        updateDisplay(finalTotal, finalUnique);
+        console.log(`✅ Initialized: Total=${finalTotal}, Unique=${finalUnique}`);
+        
+        isInitialized = true;
+        return { total: finalTotal, unique: finalUnique };
+      } catch (error) {
+        console.error('Error initializing:', error);
+        const total = getTotalVisits();
+        const unique = getUniqueVisitors();
+        updateDisplay(total, unique);
+        return { total, unique };
+      }
+    }
+
+    // ============================================================
+    // TRACK VISITS
+    // ============================================================
+    async function trackVisits() {
+      try {
+        if (!isInitialized) {
+          await initializeFromSheet();
+        }
+        
+        resetForNewDay();
+        
+        let totalVisits = getTotalVisits();
+        let uniqueVisitors = getUniqueVisitors();
+        
+        const sessionId = sessionStorage.getItem(SESSION_KEY);
+        const currentSession = Date.now().toString(36) + '-' + Math.random().toString(36).substr(2, 6);
+        
+        let countsChanged = false;
+
+        if (!sessionId) {
+          totalVisits += 1;
+          uniqueVisitors += 1;
+          setTotalVisits(totalVisits);
+          setUniqueVisitors(uniqueVisitors);
+          sessionStorage.setItem(SESSION_KEY, currentSession);
+          countsChanged = true;
+          console.log(`👤 New unique visitor! Total: ${formatNumber(totalVisits)}, Unique: ${formatNumber(uniqueVisitors)}`);
+        } else {
+          totalVisits += 1;
+          setTotalVisits(totalVisits);
+          countsChanged = true;
+          console.log(`👋 Returning visitor. Total: ${formatNumber(totalVisits)}, Unique: ${formatNumber(uniqueVisitors)}`);
+        }
+        
+        updateDisplay(totalVisits, uniqueVisitors);
+        
+        if (countsChanged) {
+          syncToGoogleSheets(totalVisits, uniqueVisitors);
+        }
+        
+        return { totalVisits, uniqueVisitors };
+        
+      } catch (e) {
+        console.error('Error tracking visits:', e);
+        const totalVisits = getTotalVisits();
+        const uniqueVisitors = getUniqueVisitors();
+        updateDisplay(totalVisits, uniqueVisitors);
+        return { totalVisits, uniqueVisitors };
+      }
     }
 
     // ============================================================
@@ -1668,9 +1571,9 @@
     // ============================================================
     const SLIDER_SPREADSHEET_ID = '1RWV15Wa0HW3HTkGn_Qdc-YChrb05aZ5vN3q9iAIVUgM';
     const SLIDER_SHEET_NAME = 'Slider';
-    const CACHE_KEY = 'ujjwal_slider_data';
-    const CACHE_TIME_KEY = 'ujjwal_slider_time';
-    const CACHE_DURATION = 30 * 60 * 1000;
+    const SLIDER_CACHE_KEY = 'ujjwal_slider_data';
+    const SLIDER_CACHE_TIME_KEY = 'ujjwal_slider_time';
+    const SLIDER_CACHE_DURATION = 30 * 60 * 1000;
 
     const sliderWrapper = document.getElementById('sliderWrapper');
     const sliderContainer = document.getElementById('sliderContainer');
@@ -1703,13 +1606,13 @@
       return { desktopImages, mobileImages };
     }
 
-    function getCachedData() {
+    function getSliderCachedData() {
       try {
-        const cached = localStorage.getItem(CACHE_KEY);
-        const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
+        const cached = localStorage.getItem(SLIDER_CACHE_KEY);
+        const cachedTime = localStorage.getItem(SLIDER_CACHE_TIME_KEY);
         if (cached && cachedTime) {
           const age = Date.now() - parseInt(cachedTime);
-          if (age < CACHE_DURATION) {
+          if (age < SLIDER_CACHE_DURATION) {
             return JSON.parse(cached);
           }
         }
@@ -1717,25 +1620,25 @@
       return null;
     }
 
-    function setCacheData(data) {
+    function setSliderCacheData(data) {
       try {
-        localStorage.setItem(CACHE_KEY, JSON.stringify(data));
-        localStorage.setItem(CACHE_TIME_KEY, String(Date.now()));
+        localStorage.setItem(SLIDER_CACHE_KEY, JSON.stringify(data));
+        localStorage.setItem(SLIDER_CACHE_TIME_KEY, String(Date.now()));
       } catch (e) { /* ignore */ }
     }
 
     function fetchSliderData() {
-      const cached = getCachedData();
+      const cached = getSliderCachedData();
       if (cached && cached.slides && cached.slides.length > 0) {
         slides = cached.slides;
         renderSlider();
-        fetchFreshData();
+        fetchFreshSliderData();
         return;
       }
-      fetchFreshData();
+      fetchFreshSliderData();
     }
 
-    function fetchFreshData() {
+    function fetchFreshSliderData() {
       const url = `${SCRIPT_URL}?spreadsheetId=${SLIDER_SPREADSHEET_ID}&sheetName=${SLIDER_SHEET_NAME}`;
       fetch(url)
         .then(response => {
@@ -1755,7 +1658,7 @@
               const validImages = images.filter(url => url && url.trim() !== '');
               if (validImages.length > 0) {
                 slides = validImages;
-                setCacheData({ slides: slides });
+                setSliderCacheData({ slides: slides });
                 renderSlider();
                 return;
               }
@@ -1765,7 +1668,7 @@
         })
         .catch(error => {
           console.error('Error fetching slider data:', error);
-          const cached = getCachedData();
+          const cached = getSliderCachedData();
           if (cached && cached.slides && cached.slides.length > 0) {
             slides = cached.slides;
             renderSlider();
@@ -1859,20 +1762,32 @@
     sliderWrapper.addEventListener('mouseleave', startAutoSlide);
 
     // ============================================================
-    // INIT
+    // INIT - FULL SYNC
     // ============================================================
-    
-    // Initialize Visitor Tracking
-    trackVisits();
-    setupPeriodicSync();
-
-    // Initialize Slider
-    fetchSliderData();
-
-    console.log('🏫 Ujjwal Academy - Home');
-    console.log(`📅 Today: ${getTodayDate()}`);
-    console.log(`📊 Total Visits: ${formatNumber(getTotalVisits())}`);
-    console.log(`👤 Unique Visitors: ${formatNumber(getUniqueVisitors())}`);
+    (async function init() {
+      console.log('🚀 Initializing Ujjwal Academy...');
+      
+      // Initialize from Google Sheets
+      await initializeFromSheet();
+      
+      // Track this visit
+      await trackVisits();
+      
+      // Setup PUSH sync (send to sheet)
+      setupPeriodicSync();
+      
+      // Setup PULL sync (check for updates)
+      setupAutoSync();
+      
+      // Initialize Slider
+      fetchSliderData();
+      
+      console.log('🏫 Ujjwal Academy - Home');
+      console.log(`📅 Today: ${getTodayDate()}`);
+      console.log(`📊 Total Visits: ${formatNumber(getTotalVisits())}`);
+      console.log(`👤 Unique Visitors: ${formatNumber(getUniqueVisitors())}`);
+      console.log('🔄 Full sync enabled (PUSH: 5min, PULL: 30sec)');
+    })();
 
   })();
 </script>
