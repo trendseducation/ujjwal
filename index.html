@@ -679,7 +679,7 @@
       .hero-card .card-icon { width: 60px; height: 60px; font-size: 2rem; }
 
       .info-row {
-        flex-direction: column;
+        flex-direction: row;
         align-items: stretch;
         padding: 1rem 1.2rem;
         gap: 0.8rem;
@@ -693,23 +693,574 @@
       }
     }
 
-    @media (max-width: 480px) {
-      .slider-wrapper { aspect-ratio: 4 / 3; min-height: 140px; }
-      .info-row { flex-direction: column; align-items: stretch; padding: 1rem 1rem; }
-      .visitor-counter, .total-counter {
-        padding: 0.3rem 0.8rem;
-        font-size: 0.85rem;
-      }
-      .visitor-counter .visitor-count,
-      .total-counter .total-count {
-        font-size: 0.9rem;
-        min-width: 40px;
-      }
-      .visitor-counter .visitor-label,
-      .total-counter .total-label {
-        font-size: 0.7rem;
-      }
-    }
+    /* ============================================================
+   📱 ENHANCED MOBILE RESPONSIVENESS (max-width: 480px)
+   ============================================================ */
+
+@media (max-width: 480px) {
+  /* ---------- APP WRAPPER ---------- */
+  .app-wrapper {
+    padding: 0.6rem 0.8rem 1.2rem;
+  }
+
+  /* ---------- TOP BAR ---------- */
+  .top-bar {
+    border-radius: 20px;
+    padding: 0.4rem 0.8rem;
+    margin-bottom: 0.8rem;
+    gap: 0.4rem;
+  }
+
+  .brand-area {
+    gap: 6px;
+  }
+
+  .brand-logo {
+    height: 28px;
+  }
+
+  .brand-text {
+    font-size: 0.95rem;
+    letter-spacing: -0.2px;
+  }
+
+  .hamburger-btn {
+    font-size: 1.3rem;
+    padding: 0.1rem 0.4rem;
+  }
+
+  .right-actions {
+    gap: 0.5rem;
+  }
+
+  /* ---------- SLIDER ---------- */
+  .slider-wrapper {
+    aspect-ratio: 4 / 3;
+    min-height: 130px;
+    border-radius: 16px;
+    margin-bottom: 1rem;
+  }
+
+  .slider-btn {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.8rem;
+    opacity: 0.6;
+    min-width: 32px;
+    min-height: 32px;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(6px);
+  }
+
+  .slider-btn:hover {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.7);
+  }
+
+  .slider-btn.prev {
+    left: 6px;
+  }
+  .slider-btn.next {
+    right: 6px;
+  }
+
+  .slider-dots {
+    bottom: 8px;
+    gap: 6px;
+  }
+  .slider-dots span {
+    width: 7px;
+    height: 7px;
+  }
+  .slider-dots span.active {
+    transform: scale(1.3);
+  }
+
+  /* ---------- FRONT CARDS - 2 COLUMN GRID ---------- */
+  .front-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
+    margin: 0.3rem 0 0.8rem;
+  }
+
+  .hero-card {
+    padding: 0.8rem 0.5rem 0.8rem;
+    border-radius: 14px;
+  }
+
+  .hero-card .card-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 1.3rem;
+    border-radius: 14px;
+    margin: 0 auto 0.5rem;
+  }
+
+  .hero-card h3 {
+    font-size: 0.78rem;
+    font-weight: 600;
+    margin-bottom: 0.1rem;
+  }
+
+  .hero-card p {
+    font-size: 0.6rem;
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .badge-new {
+    font-size: 0.45rem;
+    padding: 0.1rem 0.6rem;
+    margin-top: 0.3rem;
+    border-radius: 30px;
+  }
+
+  /* ---------- INFO ROW ---------- */
+  .info-row {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0.7rem 0.8rem;
+    gap: 0.5rem;
+    border-radius: 16px;
+    margin-top: 0.4rem;
+  }
+
+  .info-row .highlight {
+    justify-content: center;
+    font-size: 0.75rem;
+    padding: 0.1rem 0;
+  }
+
+  .info-row .highlight i {
+    font-size: 0.9rem;
+  }
+
+  .info-row .meta {
+    font-size: 0.6rem;
+    text-align: center;
+    padding-top: 0.3rem;
+    border-top: 1px solid var(--border-light);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  /* ---------- VISITOR & TOTAL COUNTERS ---------- */
+  .visitor-counter,
+  .total-counter {
+    justify-content: center;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.7rem;
+    border-radius: 24px;
+    width: 100%;
+    max-width: 180px;
+    margin: 0 auto;
+    gap: 4px;
+  }
+
+  .visitor-counter i,
+  .total-counter i {
+    font-size: 0.75rem;
+  }
+
+  .visitor-counter .visitor-count,
+  .total-counter .total-count {
+    font-size: 0.85rem;
+    min-width: 32px;
+    font-weight: 700;
+  }
+
+  .visitor-counter .visitor-label,
+  .total-counter .total-label {
+    font-size: 0.6rem;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+  }
+
+  .visitor-counter .visitor-count.pop,
+  .total-counter .total-count.pop {
+    animation: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* ---------- SYNC STATUS ---------- */
+  .sync-status {
+    font-size: 0.5rem;
+    margin-left: 2px;
+    min-width: 16px;
+  }
+
+  /* ---------- SYNC BUTTON ---------- */
+  .sync-btn {
+    font-size: 0.6rem;
+    padding: 0.2rem 0.7rem;
+    gap: 4px;
+  }
+  .sync-btn i {
+    font-size: 0.6rem;
+  }
+
+  /* ---------- FOOTER ---------- */
+  .footer-note {
+    margin-top: 1rem;
+    padding-top: 0.8rem;
+    font-size: 0.6rem;
+  }
+
+  /* ---------- SIDEBAR ---------- */
+  .sidebar {
+    width: 260px;
+    padding: 1.2rem 1rem 1.2rem;
+  }
+
+  .sidebar-brand img {
+    height: 30px;
+  }
+  .sidebar-brand span {
+    font-size: 1rem;
+  }
+  .sidebar-brand {
+    gap: 8px;
+    margin-bottom: 1.5rem;
+  }
+
+  .sidebar-menu li {
+    padding: 0.5rem 0.7rem;
+    font-size: 0.8rem;
+    gap: 10px;
+    border-radius: 12px;
+  }
+  .sidebar-menu li i {
+    font-size: 0.9rem;
+    width: 18px;
+  }
+
+  .sidebar-account a {
+    padding: 0.5rem 0.7rem;
+    font-size: 0.8rem;
+  }
+  .sidebar-close {
+    font-size: 1.1rem;
+    padding: 0.2rem 0.4rem;
+    top: 0.6rem;
+    right: 0.6rem;
+  }
+
+  /* ---------- MENU NAV (hidden on mobile) ---------- */
+  .menu-nav {
+    display: none;
+  }
+
+  /* ---------- TOAST ---------- */
+  .toast-notification {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+    max-width: none;
+    font-size: 12px;
+    padding: 10px 16px;
+    border-radius: 10px;
+  }
+}
+
+/* ============================================================
+   📱 EXTRA SMALL DEVICES (max-width: 375px)
+   ============================================================ */
+
+@media (max-width: 375px) {
+  .front-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.4rem;
+  }
+
+  .hero-card {
+    padding: 0.6rem 0.3rem 0.6rem;
+    border-radius: 12px;
+  }
+
+  .hero-card .card-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 1.1rem;
+    border-radius: 10px;
+    margin: 0 auto 0.4rem;
+  }
+
+  .hero-card h3 {
+    font-size: 0.7rem;
+  }
+
+  .hero-card p {
+    font-size: 0.55rem;
+    -webkit-line-clamp: 1;
+  }
+
+  .badge-new {
+    font-size: 0.4rem;
+    padding: 0.08rem 0.5rem;
+  }
+
+  .brand-text {
+    font-size: 0.85rem;
+  }
+
+  .brand-logo {
+    height: 24px;
+  }
+
+  .slider-wrapper {
+    aspect-ratio: 1 / 1;
+    min-height: 110px;
+    border-radius: 12px;
+  }
+
+  .slider-btn {
+    padding: 0.2rem 0.4rem;
+    font-size: 0.7rem;
+    min-width: 28px;
+    min-height: 28px;
+  }
+
+  .info-row {
+    padding: 0.5rem 0.6rem;
+    gap: 0.4rem;
+    border-radius: 14px;
+  }
+
+  .info-row .highlight {
+    font-size: 0.65rem;
+  }
+  .info-row .highlight i {
+    font-size: 0.8rem;
+  }
+  .info-row .meta {
+    font-size: 0.55rem;
+  }
+
+  .visitor-counter,
+  .total-counter {
+    max-width: 150px;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.6rem;
+    border-radius: 20px;
+  }
+
+  .visitor-counter .visitor-count,
+  .total-counter .total-count {
+    font-size: 0.75rem;
+    min-width: 28px;
+  }
+
+  .visitor-counter .visitor-label,
+  .total-counter .total-label {
+    font-size: 0.5rem;
+  }
+
+  .app-wrapper {
+    padding: 0.4rem 0.5rem 1rem;
+  }
+
+  .top-bar {
+    padding: 0.3rem 0.6rem;
+    border-radius: 16px;
+    margin-bottom: 0.6rem;
+  }
+
+  .hamburger-btn {
+    font-size: 1.1rem;
+  }
+}
+
+/* ============================================================
+   📱 LANDSCAPE PHONE (480px - 768px)
+   ============================================================ */
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .front-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
+  }
+
+  .hero-card {
+    padding: 1rem 0.7rem 1rem;
+  }
+
+  .hero-card .card-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.6rem;
+    border-radius: 16px;
+  }
+
+  .hero-card h3 {
+    font-size: 0.9rem;
+  }
+
+  .hero-card p {
+    font-size: 0.7rem;
+  }
+
+  .slider-wrapper {
+    aspect-ratio: 16 / 9;
+    min-height: 170px;
+    border-radius: 20px;
+  }
+
+  .info-row {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.8rem 1rem;
+    border-radius: 18px;
+  }
+
+  .visitor-counter,
+  .total-counter {
+    padding: 0.3rem 0.8rem;
+    font-size: 0.75rem;
+    max-width: 200px;
+  }
+
+  .brand-text {
+    font-size: 1.1rem;
+  }
+  .brand-logo {
+    height: 32px;
+  }
+}
+
+/* ============================================================
+   📱 TOUCH DEVICE IMPROVEMENTS
+   ============================================================ */
+
+@media (hover: none) and (pointer: coarse) {
+  /* Larger touch targets */
+  .slider-btn {
+    min-width: 40px;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .menu-item {
+    padding: 0.5rem 0.8rem;
+    min-height: 40px;
+  }
+
+  .hero-card {
+    cursor: default;
+  }
+
+  .hero-card:hover {
+    transform: none;
+  }
+
+  .visitor-counter:hover,
+  .total-counter:hover {
+    transform: none;
+  }
+
+  /* Disable hover effects on touch devices */
+  .slider-btn:hover {
+    transform: translateY(-50%);
+  }
+
+  .menu-item:hover {
+    transform: none;
+  }
+
+  .sidebar-menu li:hover {
+    transform: none;
+  }
+
+  .sidebar-account a:hover {
+    transform: none;
+  }
+
+  .sync-btn:hover {
+    transform: none;
+  }
+
+  .hero-card .card-icon:hover {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* Active state for touch */
+  .hero-card:active {
+    transform: scale(0.96);
+    transition: transform 0.1s;
+  }
+
+  .sync-btn:active {
+    transform: scale(0.95);
+  }
+
+  .slider-btn:active {
+    transform: translateY(-50%) scale(0.9);
+  }
+}
+
+/* ============================================================
+   🎨 ANIMATION OPTIMIZATION FOR MOBILE
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .slider-slide {
+    transition: opacity 0.3s ease-in-out;
+  }
+
+  .slider-btn:hover {
+    transform: translateY(-50%) scale(1);
+  }
+
+  .visitor-count.pop,
+  .total-count.pop {
+    animation: none;
+  }
+
+  .visitor-counter i {
+    animation: none;
+  }
+
+  .hero-card:hover {
+    transform: none !important;
+  }
+}
+
+/* ============================================================
+   📱 SAFE AREA SUPPORT (Notch phones)
+   ============================================================ */
+
+@supports (padding: max(0px)) {
+  .app-wrapper {
+    padding-left: max(0.8rem, env(safe-area-inset-left));
+    padding-right: max(0.8rem, env(safe-area-inset-right));
+  }
+}
+
+/* ============================================================
+   📱 DARK MODE SPECIFIC MOBILE ADJUSTMENTS
+   ============================================================ */
+
+[data-theme="dark"] @media (max-width: 480px) {
+  .visitor-counter,
+  .total-counter {
+    border-color: var(--border-light);
+  }
+
+  .info-row {
+    border-color: var(--border-light);
+  }
+
+  .hero-card {
+    border-color: var(--border-light);
+  }
+}
 
     body.sidebar-open { overflow: hidden; }
   </style>
@@ -789,10 +1340,10 @@
 
   <!-- INFO ROW WITH VISITOR COUNTERS -->
   <div class="info-row">
-    <div class="highlight">
+    <!-- <div class="highlight">
       <i class="fas fa-graduation-cap"></i>
       <span>12,000+ learners</span>
-    </div>
+    </div> -->
     
     <!-- TOTAL VISITS COUNTER -->
     <div class="total-counter" id="totalCounter">
@@ -810,10 +1361,10 @@
       <span class="sync-status" id="uniqueSyncStatus"></span>
     </div>
 
-    <div class="highlight">
+   <!-- <div class="highlight">
       <i class="fas fa-star"></i>
       <span>4.9 · 2.3k reviews</span>
-    </div>
+    </div> -->
     
     <div class="meta">
       <i class="far fa-calendar-alt"></i> 2026 – Ujjwal Academy
