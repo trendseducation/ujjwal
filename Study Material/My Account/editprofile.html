@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    
+    <!-- ⭐ Remember Me Login Script -->
+    <script src="remember-me-login.js"></script>
+    
     <style>
         /* ============================================================
            CSS VARIABLES & THEME
@@ -224,7 +228,6 @@
             align-items: center;
             gap: 8px;
             font-weight: 500;
-            /* Moved to the right using margin-left: auto */
             margin-left: auto;
         }
 
@@ -1304,175 +1307,170 @@
     </style>
 </head>
 <body>
-    <div class="app-wrapper">
-
-        <!-- ============================================================
-        TOP BAR - Back Button on Right Side
-        ============================================================ -->
-        <header class="top-bar">
-            <div class="top-bar-left">
-                <div class="brand-area">
-                    <img class="brand-logo" src="https://lh3.googleusercontent.com/d/1HUjvQXeYLxFtt5StZMinVh8sXRZ_TI0F" alt="Ujjwal Academy logo">
-                    <span class="brand-text">Ujjwal Academy</span>
-                </div>
+    <!-- ============================================================
+    TOP BAR - Back Button on Right Side
+    ============================================================ -->
+    <header class="top-bar">
+        <div class="top-bar-left">
+            <div class="brand-area">
+                <img class="brand-logo" src="https://lh3.googleusercontent.com/d/1HUjvQXeYLxFtt5StZMinVh8sXRZ_TI0F" alt="Ujjwal Academy logo">
+                <span class="brand-text">Ujjwal Academy</span>
             </div>
-            <div class="top-bar-right">
-                <!-- Back Button - Now on the Right Side -->
-                <a href="myaccount.html" class="back-btn">
-                    <i class="fas fa-arrow-left"></i>
-                    <span class="back-text">Back</span>
-                </a>
-            </div>
-        </header>
-
-        <!-- ============================================================
-        PROFILE LAYOUT
-        ============================================================ -->
-        <div class="profile-layout" id="profileLayout">
-
-            <!-- LEFT SECTION (30%) -->
-            <aside class="profile-left">
-                <div class="profile-card">
-                    <div class="profile-avatar-wrapper">
-                        <div class="profile-avatar-container" id="avatarEditTrigger">
-                            <img id="profileAvatar" class="profile-avatar" src="https://ui-avatars.com/api/?name=User&background=2563eb&color=fff&size=120" alt="Profile">
-                            <div class="avatar-spinner-overlay" id="avatarSpinnerOverlay">
-                                <div class="avatar-spinner"></div>
-                                <span class="avatar-spinner-text">Updating<span class="dots-loader"></span></span>
-                            </div>
-                            <div class="avatar-edit-overlay" title="Edit Profile Image">
-                                <i class="fas fa-camera"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="profile-name" id="profileName">Loading...</div>
-                    <div class="profile-email" id="profileEmail">loading@email.com</div>
-                    <hr class="divider">
-                    <div class="section-nav">
-                        <button class="section-nav-item active" data-section="personal">
-                            <i class="fas fa-user"></i>
-                            <span>Personal</span>
-                        </button>
-                        <button class="section-nav-item" data-section="education">
-                            <i class="fas fa-graduation-cap"></i>
-                            <span>Education</span>
-                        </button>
-                        <button class="section-nav-item" data-section="other">
-                            <i class="fas fa-ellipsis-h"></i>
-                            <span>Other</span>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="profile-card" style="flex: 1;">
-                    <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1rem;">
-                        <i class="fas fa-info-circle"></i> Quick Info
-                    </div>
-                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
-                            <span style="color: var(--text-muted);">Status</span>
-                            <span id="quickStatus" style="font-weight: 600;">—</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
-                            <span style="color: var(--text-muted);">Location</span>
-                            <span id="quickLocation" style="font-weight: 600;">—</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
-                            <span style="color: var(--text-muted);">Insta</span>
-                            <span id="quickInsta" style="font-weight: 600;">—</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
-                            <span style="color: var(--text-muted);">College</span>
-                            <span id="quickCollege" style="font-weight: 600;">—</span>
-                        </div>
-                    </div>
-                </div>
-            </aside>
-
-            <!-- RIGHT SECTION (70%) -->
-            <main class="profile-right" id="profileRight">
-
-                <!-- SECTION 1: PERSONAL INFORMATION -->
-                <div class="section-content active" id="section-personal">
-                    <div class="section-header">
-                        <div class="section-title">
-                            <i class="fas fa-user-circle"></i> Personal Information
-                        </div>
-                        <button class="edit-toggle-btn" data-section="personal">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                    </div>
-                    <div class="field-group" id="personalFields">
-                        <div class="field-item">
-                            <span class="field-label">First Name</span>
-                            <div class="field-value" data-field="First Name">—</div>
-                        </div>
-                        <div class="field-item">
-                            <span class="field-label">Last Name</span>
-                            <div class="field-value" data-field="Last Name">—</div>
-                        </div>
-                        <div class="field-item">
-                            <span class="field-label">Mobile Number</span>
-                            <div class="field-value" data-field="Mobile Number">—</div>
-                        </div>
-                        <div class="field-item">
-                            <span class="field-label">Email Id</span>
-                            <div class="field-value" data-field="Email Id">—</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SECTION 2: EDUCATION DETAILS -->
-                <div class="section-content" id="section-education">
-                    <div class="section-header">
-                        <div class="section-title">
-                            <i class="fas fa-graduation-cap"></i> Education Details
-                        </div>
-                        <button class="edit-toggle-btn" data-section="education">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                    </div>
-                    <div class="field-group single-col" id="educationFields">
-                        <div class="field-item">
-                            <span class="field-label">Education Details</span>
-                            <div class="field-value" data-field="Education Details">—</div>
-                        </div>
-                        <div class="field-item">
-                            <span class="field-label">College / School Name</span>
-                            <div class="field-value" data-field="College Name">—</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SECTION 3: OTHER DETAILS -->
-                <div class="section-content" id="section-other">
-                    <div class="section-header">
-                        <div class="section-title">
-                            <i class="fas fa-ellipsis-h"></i> Other Details
-                        </div>
-                        <button class="edit-toggle-btn" data-section="other">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                    </div>
-                    <div class="field-group" id="otherFields">
-                        <div class="field-item">
-                            <span class="field-label">Insta Id</span>
-                            <div class="field-value" data-field="Insta Id">—</div>
-                        </div>
-                        <div class="field-item">
-                            <span class="field-label">Job Status</span>
-                            <div class="field-value" data-field="Job Status">—</div>
-                        </div>
-                        <div class="field-item" style="grid-column: 1 / -1;">
-                            <span class="field-label">Location</span>
-                            <div class="field-value" data-field="Location">—</div>
-                        </div>
-                    </div>
-                </div>
-
-            </main>
         </div>
+        <div class="top-bar-right">
+            <a href="myaccount.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                <span class="back-text">Back</span>
+            </a>
+        </div>
+    </header>
 
+    <!-- ============================================================
+    PROFILE LAYOUT
+    ============================================================ -->
+    <div class="profile-layout" id="profileLayout">
+
+        <!-- LEFT SECTION (30%) -->
+        <aside class="profile-left">
+            <div class="profile-card">
+                <div class="profile-avatar-wrapper">
+                    <div class="profile-avatar-container" id="avatarEditTrigger">
+                        <img id="profileAvatar" class="profile-avatar" src="https://ui-avatars.com/api/?name=User&background=2563eb&color=fff&size=120" alt="Profile">
+                        <div class="avatar-spinner-overlay" id="avatarSpinnerOverlay">
+                            <div class="avatar-spinner"></div>
+                            <span class="avatar-spinner-text">Updating<span class="dots-loader"></span></span>
+                        </div>
+                        <div class="avatar-edit-overlay" title="Edit Profile Image">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-name" id="profileName">Loading...</div>
+                <div class="profile-email" id="profileEmail">loading@email.com</div>
+                <hr class="divider">
+                <div class="section-nav">
+                    <button class="section-nav-item active" data-section="personal">
+                        <i class="fas fa-user"></i>
+                        <span>Personal</span>
+                    </button>
+                    <button class="section-nav-item" data-section="education">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Education</span>
+                    </button>
+                    <button class="section-nav-item" data-section="other">
+                        <i class="fas fa-ellipsis-h"></i>
+                        <span>Other</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="profile-card" style="flex: 1;">
+                <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1rem;">
+                    <i class="fas fa-info-circle"></i> Quick Info
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                        <span style="color: var(--text-muted);">Status</span>
+                        <span id="quickStatus" style="font-weight: 600;">—</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                        <span style="color: var(--text-muted);">Location</span>
+                        <span id="quickLocation" style="font-weight: 600;">—</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                        <span style="color: var(--text-muted);">Insta</span>
+                        <span id="quickInsta" style="font-weight: 600;">—</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                        <span style="color: var(--text-muted);">College</span>
+                        <span id="quickCollege" style="font-weight: 600;">—</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- RIGHT SECTION (70%) -->
+        <main class="profile-right" id="profileRight">
+
+            <!-- SECTION 1: PERSONAL INFORMATION -->
+            <div class="section-content active" id="section-personal">
+                <div class="section-header">
+                    <div class="section-title">
+                        <i class="fas fa-user-circle"></i> Personal Information
+                    </div>
+                    <button class="edit-toggle-btn" data-section="personal">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                </div>
+                <div class="field-group" id="personalFields">
+                    <div class="field-item">
+                        <span class="field-label">First Name</span>
+                        <div class="field-value" data-field="First Name">—</div>
+                    </div>
+                    <div class="field-item">
+                        <span class="field-label">Last Name</span>
+                        <div class="field-value" data-field="Last Name">—</div>
+                    </div>
+                    <div class="field-item">
+                        <span class="field-label">Mobile Number</span>
+                        <div class="field-value" data-field="Mobile Number">—</div>
+                    </div>
+                    <div class="field-item">
+                        <span class="field-label">Email Id</span>
+                        <div class="field-value" data-field="Email Id">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 2: EDUCATION DETAILS -->
+            <div class="section-content" id="section-education">
+                <div class="section-header">
+                    <div class="section-title">
+                        <i class="fas fa-graduation-cap"></i> Education Details
+                    </div>
+                    <button class="edit-toggle-btn" data-section="education">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                </div>
+                <div class="field-group single-col" id="educationFields">
+                    <div class="field-item">
+                        <span class="field-label">Education Details</span>
+                        <div class="field-value" data-field="Education Details">—</div>
+                    </div>
+                    <div class="field-item">
+                        <span class="field-label">College / School Name</span>
+                        <div class="field-value" data-field="College Name">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 3: OTHER DETAILS -->
+            <div class="section-content" id="section-other">
+                <div class="section-header">
+                    <div class="section-title">
+                        <i class="fas fa-ellipsis-h"></i> Other Details
+                    </div>
+                    <button class="edit-toggle-btn" data-section="other">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                </div>
+                <div class="field-group" id="otherFields">
+                    <div class="field-item">
+                        <span class="field-label">Insta Id</span>
+                        <div class="field-value" data-field="Insta Id">—</div>
+                    </div>
+                    <div class="field-item">
+                        <span class="field-label">Job Status</span>
+                        <div class="field-value" data-field="Job Status">—</div>
+                    </div>
+                    <div class="field-item" style="grid-column: 1 / -1;">
+                        <span class="field-label">Location</span>
+                        <div class="field-value" data-field="Location">—</div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
     </div>
 
     <!-- ============================================================
@@ -1552,7 +1550,7 @@
     <div id="alertBox" class="alert-popup">Message...</div>
 
     <!-- ============================================================
-    SCRIPT
+    SCRIPT - Using remember-me-login.js for authentication
     ============================================================ -->
     <script>
         // ============================================================
@@ -1570,50 +1568,105 @@
         ];
 
         // ============================================================
-        // THEME SYNC
+        // ⭐ THEME SYNC (Uses remember-me-login.js for session)
         // ============================================================
         function getStoredTheme() {
-            return localStorage.getItem('user-theme-preference') || 'light';
+            try {
+                return localStorage.getItem('user-theme-preference') || 'light';
+            } catch(e) {
+                return 'light';
+            }
         }
 
         function applyTheme(theme) {
-            document.body.setAttribute('data-theme', theme);
-            document.documentElement.setAttribute('data-theme', theme);
-            localStorage.setItem('user-theme-preference', theme);
+            try {
+                document.body.setAttribute('data-theme', theme);
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('user-theme-preference', theme);
+                
+                const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+                if (metaThemeColor) {
+                    metaThemeColor.content = theme === 'dark' ? '#0a0f1c' : '#f4f7fc';
+                }
+                
+                console.log(`🎨 Theme applied: ${theme}`);
+                
+                try {
+                    if (window.parent && window.parent !== window) {
+                        window.parent.postMessage({
+                            type: 'themeChange',
+                            theme: theme,
+                            source: 'editprofile.html'
+                        }, '*');
+                    }
+                } catch(e) {}
+            } catch(e) {
+                console.error('Error applying theme:', e);
+            }
         }
 
         function syncThemeWithParent() {
-            const localTheme = localStorage.getItem('user-theme-preference');
-            if (localTheme) {
-                applyTheme(localTheme);
-            } else {
+            try {
+                const localTheme = localStorage.getItem('user-theme-preference');
+                if (localTheme && (localTheme === 'light' || localTheme === 'dark')) {
+                    applyTheme(localTheme);
+                    return;
+                }
+                
                 try {
                     if (window.parent && window.parent.document.body) {
                         const parentTheme = window.parent.document.body.getAttribute('data-theme');
-                        if (parentTheme) {
+                        if (parentTheme && (parentTheme === 'light' || parentTheme === 'dark')) {
                             applyTheme(parentTheme);
+                            return;
                         }
                     }
-                } catch (e) {}
+                } catch(e) {}
+                
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    applyTheme('dark');
+                } else {
+                    applyTheme('light');
+                }
+            } catch(e) {
+                console.error('Error syncing theme:', e);
+                applyTheme('light');
             }
         }
 
-        syncThemeWithParent();
-
+        // Theme event listeners
         window.addEventListener('storage', function(e) {
             if (e.key === 'user-theme-preference') {
-                syncThemeWithParent();
-            }
-        });
-
-        window.addEventListener('message', function(event) {
-            if (event.data && event.data.type === 'themeChange') {
-                const newTheme = event.data.theme;
-                if (newTheme) {
+                const newTheme = e.newValue;
+                if (newTheme && (newTheme === 'light' || newTheme === 'dark')) {
+                    console.log(`📦 Theme changed in another tab: ${newTheme}`);
                     applyTheme(newTheme);
                 }
             }
         });
+
+        window.addEventListener('message', function(event) {
+            try {
+                if (event.data && event.data.type === 'themeChange') {
+                    const newTheme = event.data.theme;
+                    if (newTheme && (newTheme === 'light' || newTheme === 'dark')) {
+                        console.log(`📩 Received theme change from parent: ${newTheme}`);
+                        applyTheme(newTheme);
+                    }
+                }
+            } catch(e) {}
+        });
+
+        if (window.matchMedia) {
+            const darkModeMedia = window.matchMedia('(prefers-color-scheme: dark)');
+            darkModeMedia.addEventListener('change', function(e) {
+                if (!localStorage.getItem('user-theme-preference')) {
+                    const theme = e.matches ? 'dark' : 'light';
+                    console.log(`🖥️ System theme changed: ${theme}`);
+                    applyTheme(theme);
+                }
+            });
+        }
 
         // ============================================================
         // UTILITY FUNCTIONS
@@ -1727,7 +1780,7 @@
         let isApplyingImage = false;
 
         // ============================================================
-        // FETCH USER DATA
+        // ⭐ FETCH USER DATA (Uses remember-me-login.js session)
         // ============================================================
         async function fetchUserData(email) {
             try {
@@ -1885,7 +1938,7 @@
         }
 
         // ============================================================
-        // DISPLAY USER DATA
+        // ⭐ DISPLAY USER DATA (Using remember-me-login.js session)
         // ============================================================
         function displayUserData(data) {
             if (!data) {
@@ -1958,11 +2011,12 @@
                     <i class="fas fa-exclamation-circle"></i>
                     <h3>${message}</h3>
                     <p style="color: var(--text-muted); margin-top: 0.5rem;">Please go back and try again.</p>
-                    <a href="../../index.html" class="btn btn-primary" style="margin-top: 1rem;">
-                        <i class="fas fa-home"></i> Go Home
+                    <a href="myaccount.html" class="btn btn-primary" style="margin-top: 1rem;">
+                        <i class="fas fa-user"></i> Go to Login
                     </a>
                 </div>
             `;
+            document.querySelector('.profile-left').style.display = 'none';
         }
 
         function showLoadingState() {
@@ -2188,7 +2242,7 @@
         }
 
         // ============================================================
-        // ⭐ ENHANCED EDIT MODAL - ATTRACTIVE FIELDS
+        // ENHANCED EDIT MODAL
         // ============================================================
         function openEditModal(section) {
             currentEditingSection = section;
@@ -2244,7 +2298,6 @@
                 const wrapper = document.createElement('div');
                 wrapper.className = 'modal-field-group';
 
-                // Label with icon
                 const label = document.createElement('label');
                 label.className = 'modal-field-label';
                 label.htmlFor = `edit_${field.key.replace(/\s/g, '_')}`;
@@ -2255,11 +2308,9 @@
                 `;
                 wrapper.appendChild(label);
 
-                // Input wrapper with icon
                 const inputWrapper = document.createElement('div');
                 inputWrapper.className = 'modal-input-wrapper';
 
-                // Left icon
                 const leftIcon = document.createElement('span');
                 leftIcon.className = 'input-icon';
                 leftIcon.innerHTML = `<i class="fas ${field.icon || 'fa-pen'}"></i>`;
@@ -2305,7 +2356,6 @@
 
                 wrapper.appendChild(inputWrapper);
 
-                // Helper text
                 const helper = document.createElement('div');
                 helper.className = 'modal-field-helper';
                 if (field.required) {
@@ -2382,7 +2432,14 @@
                         currentUserData = refreshedData;
                         originalData = { ...refreshedData };
                         displayUserData(refreshedData);
+                        // Update session storage
                         sessionStorage.setItem('ujjwal_user_data', JSON.stringify(refreshedData));
+                        if (RememberMe.isRememberMeActive()) {
+                            localStorage.setItem('ujjwal_user_data', JSON.stringify({
+                                value: refreshedData,
+                                expiry: Date.now() + (10 * 24 * 60 * 60 * 1000)
+                            }));
+                        }
                         showToast('✅ Profile updated successfully!', 'success');
 
                         setTimeout(() => {
@@ -2447,7 +2504,14 @@
                         currentUserData = refreshedData;
                         originalData = { ...refreshedData };
                         displayUserData(refreshedData);
+                        // Update session storage
                         sessionStorage.setItem('ujjwal_user_data', JSON.stringify(refreshedData));
+                        if (RememberMe.isRememberMeActive()) {
+                            localStorage.setItem('ujjwal_user_data', JSON.stringify({
+                                value: refreshedData,
+                                expiry: Date.now() + (10 * 24 * 60 * 60 * 1000)
+                            }));
+                        }
                     }
                 } else {
                     throw new Error(result.message || 'Upload failed');
@@ -2467,50 +2531,49 @@
         }
 
         // ============================================================
-        // INITIALIZATION
+        // ⭐ ENHANCED INITIALIZATION (Using remember-me-login.js)
         // ============================================================
         async function init() {
+            // STEP 1: Cache DOM elements
             cacheDomElements();
 
-            const savedUser = sessionStorage.getItem('ujjwal_user');
-            const savedUserData = sessionStorage.getItem('ujjwal_user_data');
-            const savedUserType = sessionStorage.getItem('ujjwal_user_type');
+            // STEP 2: Initialize theme
+            syncThemeWithParent();
+            console.log('🎨 Theme initialized:', document.body.getAttribute('data-theme'));
 
-            if (!savedUser || savedUserType !== 'student') {
-                showErrorState('Please login as a student to view your profile');
-                document.querySelector('.profile-left').style.display = 'none';
+            // STEP 3: ⭐ Check login using remember-me-login.js
+            const isLoggedIn = RememberMe.checkLoginStatus('myaccount.html', function(user) {
+                console.log(`✅ User authenticated via remember-me-login.js: ${user.fullName}`);
+                
+                // Set current user from the session
+                currentUser = user.email;
+                currentUserData = user.data;
+                
+                // Display user data
+                displayUserData(user.data);
+                
+                // If Remember Me is active, ensure sessionStorage is synced
+                if (RememberMe.isRememberMeActive()) {
+                    console.log('📌 Remember Me is active - 10 days session');
+                }
+                
+                // Refresh data in background
+                refreshUserDataInBackground();
+                
+                // Setup event listeners
+                setupEventListeners();
+                
+                console.log('✅ Edit Profile page loaded successfully');
+                console.log(`✅ User: ${user.fullName} (${user.email})`);
+                console.log(`🎨 Current theme: ${document.body.getAttribute('data-theme')}`);
+                console.log('✨ Beautiful textboxes with icons and validation states');
+                console.log('📸 Click on profile avatar to edit image');
+                console.log('ℹ️ Use window.__app for debugging');
+            });
+
+            if (!isLoggedIn) {
+                // RememberMe.checkLoginStatus handles redirect internally
                 return;
-            }
-
-            currentUser = savedUser;
-
-            if (savedUserData) {
-                try {
-                    const data = JSON.parse(savedUserData);
-                    displayUserData(data);
-                    refreshUserDataInBackground();
-                } catch (e) {
-                    await loadUserData();
-                }
-            } else {
-                await loadUserData();
-            }
-
-            setupEventListeners();
-        }
-
-        async function loadUserData() {
-            showLoadingState();
-            try {
-                const data = await fetchUserData(currentUser);
-                if (data) {
-                    displayUserData(data);
-                    sessionStorage.setItem('ujjwal_user_data', JSON.stringify(data));
-                } else {
-                    showErrorState('User data not found');
-                }
-            } catch (err) {
-                showErrorState('Failed to load profile data: ' + err.message);
             }
         }
 
@@ -2518,6 +2581,7 @@
             try {
                 const data = await fetchUserData(currentUser);
                 if (data) {
+                    currentUserData = data;
                     displayUserData(data);
                     sessionStorage.setItem('ujjwal_user_data', JSON.stringify(data));
                 }
@@ -2627,22 +2691,27 @@
         // ============================================================
         document.addEventListener('DOMContentLoaded', init);
 
+        // Ensure theme is applied immediately if DOM is already loaded
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            syncThemeWithParent();
+        }
+
         window.__app = {
             currentUser: () => currentUser,
             currentUserData: () => currentUserData,
-            refresh: loadUserData,
+            refresh: refreshUserDataInBackground,
             showToast: showToast,
             openImageEditor: openImageEditModal,
             cropper: () => cropperInstance,
             showAvatarSpinner: showAvatarSpinner,
-            hideAvatarSpinner: hideAvatarSpinner
+            hideAvatarSpinner: hideAvatarSpinner,
+            RememberMe: window.RememberMe
         };
 
-        console.log('✅ Edit Profile page loaded with Enhanced Modal Design');
-        console.log('✨ Beautiful textboxes with icons and validation states');
+        console.log('✅ Edit Profile page loaded with remember-me-login.js');
+        console.log('🔐 Authentication handled by remember-me-login.js');
         console.log('📸 Click on profile avatar to edit image');
         console.log('ℹ️ Use window.__app for debugging');
     </script>
-
 </body>
 </html>
