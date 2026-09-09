@@ -2007,34 +2007,48 @@ body.sidebar-open {
 
     <!-- Admin Login Modal -->
     <div class="modal-overlay" id="adminModal">
-        <div class="modal-box">
-            <div class="modal-header admin-header">
-                <h3><i class="fas fa-user-shield"></i> Admin Login</h3>
-                <button class="modal-close" id="adminModalClose">×</button>
-            </div>
-            <div class="modal-body">
-                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Secure access for administrators</p>
-                <form id="adminForm">
-                    <div class="form-group">
-                        <label>User Name</label>
-                        <input type="text" id="adminUser" placeholder="Admin username" required>
+    <div class="modal-box">
+        <div class="modal-header admin-header">
+            <h3><i class="fas fa-user-shield"></i> Admin Login</h3>
+            <button class="modal-close" id="adminModalClose">×</button>
+        </div>
+        <div class="modal-body">
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Secure access for administrators</p>
+            <form id="adminForm">
+                <div class="form-group">
+                    <label>User Name</label>
+                    <input type="text" id="adminUser" placeholder="Admin username" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="adminPass" placeholder="••••••••" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('adminPass', this)"><i class="fas fa-eye"></i></button>
                     </div>
-                    <div class="form-group">
-                        <label>Password</label>
-                        <div class="password-wrapper">
-                            <input type="password" id="adminPass" placeholder="••••••••" required>
-                            <button type="button" class="password-toggle" onclick="togglePassword('adminPass', this)"><i class="fas fa-eye"></i></button>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Math Verification: <span id="mathQuestion">12 + 8 = ?</span></label>
-                        <input type="number" id="mathAnswer" placeholder="Enter answer" required>
-                    </div>
-                    <button type="submit" class="btn btn-admin btn-block">Admin Login</button>
-                </form>
-            </div>
+                </div>
+                
+                <!-- ⭐ REMEMBER ME FOR ADMIN -->
+                <div class="remember-me-wrapper" id="adminRememberMeWrapper">
+                    <input type="checkbox" id="adminRememberMeCheckbox">
+                    <label for="adminRememberMeCheckbox" class="remember-me-checkbox"></label>
+                    <label for="adminRememberMeCheckbox" class="remember-me-label">
+                        <i class="fas fa-check-circle" style="font-size: 0.8rem;"></i> Remember Me
+                    </label>
+                    <span class="remember-me-info">
+                        <i class="fas fa-info-circle"></i> Stay logged in for 10 days
+                    </span>
+                </div>
+                
+                <div class="form-group">
+                    <label>Math Verification: <span id="mathQuestion">12 + 8 = ?</span></label>
+                    <input type="number" id="mathAnswer" placeholder="Enter answer" required>
+                </div>
+                <button type="submit" class="btn btn-admin btn-block">Admin Login</button>
+            </form>
         </div>
     </div>
+</div>
+
 
     <!-- Settings Modal -->
     <div class="modal-overlay" id="settingsModal">
@@ -2171,15 +2185,13 @@ function getSessionData(key) {
     if (localData) {
         try {
             const parsed = JSON.parse(localData);
-            if (parsed.expiry && Date.now() < parsed.expiry) {
+            if (parsed.value && parsed.expiry && Date.now() < parsed.expiry) {
                 return parsed.value;
-            } else {
-                // Expired, clean up
-                localStorage.removeItem(key);
-                return null;
             }
+            if (parsed.value !== undefined) return parsed.value;
+            return parsed;
         } catch (e) {
-            return null;
+            return localData;
         }
     }
     
@@ -2423,6 +2435,7 @@ function cacheDomElements() {
     dom.signupSubmitBtn = document.getElementById('signupSubmitBtn');
     
     dom.rememberMeCheckbox = document.getElementById('rememberMeCheckbox');
+    dom.adminRememberMeCheckbox = document.getElementById('adminRememberMeCheckbox');
     dom.sessionInfo = document.getElementById('sessionInfo');
     dom.sessionExpiry = document.getElementById('sessionExpiry');
 }
@@ -2866,7 +2879,7 @@ function updateProfileDisplay(userData, userType) {
 }
 
 // ============================================================
-// ⭐ FAST LOGIN WITH REMEMBER ME
+// ⭐ FAST LOGIN WITH REMEMBER ME (STUDENT)
 // ============================================================
 
 async function handleLoginFast(email, password, rememberMe = false) {
@@ -2907,7 +2920,6 @@ async function handleLoginFast(email, password, rememberMe = false) {
             });
             
             if (found) {
-                // Store session with Remember Me preference
                 storeUserSession(email, found, 'student', rememberMe);
                 return found;
             }
@@ -2920,7 +2932,7 @@ async function handleLoginFast(email, password, rememberMe = false) {
 }
 
 // ============================================================
-// ⭐ STORE USER SESSION WITH REMEMBER ME
+// ⭐ STORE USER SESSION WITH REMEMBER ME (STUDENT)
 // ============================================================
 
 function storeUserSession(email, userData, userType, rememberMe = false) {
@@ -2928,9 +2940,7 @@ function storeUserSession(email, userData, userType, rememberMe = false) {
     currentUserData = userData;
     currentUserType = userType;
     
-    // Store user data
     if (rememberMe) {
-        // Store in localStorage with expiry (10 days)
         localStorage.setItem(SESSION_KEYS.USER, JSON.stringify({
             value: email,
             expiry: Date.now() + SESSION_DURATION
@@ -2952,91 +2962,31 @@ function storeUserSession(email, userData, userType, rememberMe = false) {
             expiry: Date.now() + SESSION_DURATION
         }));
         
-        // Also store in sessionStorage for quick access
         sessionStorage.setItem(SESSION_KEYS.USER, JSON.stringify(email));
         sessionStorage.setItem(SESSION_KEYS.USER_DATA, JSON.stringify(userData));
         sessionStorage.setItem(SESSION_KEYS.USER_TYPE, JSON.stringify(userType));
         
         showToast('✅ Login successful! You will stay logged in for 10 days.', 'success');
     } else {
-        // Store in sessionStorage only (clears on browser close)
         sessionStorage.setItem(SESSION_KEYS.USER, JSON.stringify(email));
         sessionStorage.setItem(SESSION_KEYS.USER_DATA, JSON.stringify(userData));
         sessionStorage.setItem(SESSION_KEYS.USER_TYPE, JSON.stringify(userType));
         
-        // Clear any Remember Me data
         localStorage.removeItem(SESSION_KEYS.REMEMBER_ME);
         localStorage.removeItem(SESSION_KEYS.SESSION_EXPIRY);
         
         showToast('✅ Login successful!', 'success');
     }
     
-    // Update UI
     updateUIAfterLogin(email, userData, userType);
     updateSessionExpiryDisplay();
 }
 
 // ============================================================
-// ⭐ RESTORE SESSION ON PAGE LOAD
+// ⭐ ADMIN LOGIN WITH REMEMBER ME
 // ============================================================
 
-function restoreSession() {
-    // Check if Remember Me is active
-    const rememberMe = isRememberMeActive();
-    
-    if (rememberMe) {
-        // Get user data from localStorage
-        const userData = getSessionData(SESSION_KEYS.USER_DATA);
-        const userType = getSessionData(SESSION_KEYS.USER_TYPE);
-        const email = getSessionData(SESSION_KEYS.USER);
-        
-        if (email && userData) {
-            currentUser = email;
-            currentUserData = userData;
-            currentUserType = userType || 'student';
-            
-            updateUIAfterLogin(email, userData, currentUserType);
-            updateSessionExpiryDisplay();
-            
-            console.log('✅ Session restored from Remember Me (10 days)');
-            return true;
-        } else {
-            // Invalid session, clear everything
-            clearAllSessionData();
-            return false;
-        }
-    } else {
-        // Check sessionStorage
-        const email = sessionStorage.getItem(SESSION_KEYS.USER);
-        const userData = sessionStorage.getItem(SESSION_KEYS.USER_DATA);
-        const userType = sessionStorage.getItem(SESSION_KEYS.USER_TYPE);
-        
-        if (email && userData) {
-            try {
-                const parsedEmail = JSON.parse(email);
-                const parsedData = JSON.parse(userData);
-                const parsedType = JSON.parse(userType) || 'student';
-                
-                currentUser = parsedEmail;
-                currentUserData = parsedData;
-                currentUserType = parsedType;
-                
-                updateUIAfterLogin(parsedEmail, parsedData, parsedType);
-                console.log('✅ Session restored from sessionStorage');
-                return true;
-            } catch (e) {
-                return false;
-            }
-        }
-        return false;
-    }
-}
-
-// ============================================================
-// FAST ADMIN LOGIN
-// ============================================================
-
-async function handleAdminLoginFast(username, password) {
+async function handleAdminLoginFast(username, password, rememberMe = false) {
     try {
         const cacheKey = CACHE_KEYS.ADMIN_DATA;
         let admins = getCachedData(cacheKey);
@@ -3072,7 +3022,11 @@ async function handleAdminLoginFast(username, password) {
                 const rowPass = row['Password'] ? row['Password'].toString().trim() : '';
                 return rowUser === username && rowPass === password;
             });
-            return found || null;
+            
+            if (found) {
+                storeAdminSession(username, found, rememberMe);
+                return found;
+            }
         }
         return null;
     } catch (err) {
@@ -3080,6 +3034,113 @@ async function handleAdminLoginFast(username, password) {
         throw new Error('Admin login error: ' + err.message);
     }
 }
+
+// ============================================================
+// ⭐ STORE ADMIN SESSION WITH REMEMBER ME
+// ============================================================
+
+function storeAdminSession(username, adminData, rememberMe = false) {
+    currentUser = username;
+    currentUserData = adminData;
+    currentUserType = 'admin';
+    
+    if (rememberMe) {
+        localStorage.setItem(SESSION_KEYS.USER, JSON.stringify({
+            value: username,
+            expiry: Date.now() + SESSION_DURATION
+        }));
+        localStorage.setItem(SESSION_KEYS.USER_DATA, JSON.stringify({
+            value: adminData,
+            expiry: Date.now() + SESSION_DURATION
+        }));
+        localStorage.setItem(SESSION_KEYS.USER_TYPE, JSON.stringify({
+            value: 'admin',
+            expiry: Date.now() + SESSION_DURATION
+        }));
+        localStorage.setItem(SESSION_KEYS.REMEMBER_ME, JSON.stringify({
+            value: true,
+            expiry: Date.now() + SESSION_DURATION
+        }));
+        localStorage.setItem(SESSION_KEYS.SESSION_EXPIRY, JSON.stringify({
+            value: Date.now() + SESSION_DURATION,
+            expiry: Date.now() + SESSION_DURATION
+        }));
+        
+        sessionStorage.setItem(SESSION_KEYS.USER, JSON.stringify(username));
+        sessionStorage.setItem(SESSION_KEYS.USER_DATA, JSON.stringify(adminData));
+        sessionStorage.setItem(SESSION_KEYS.USER_TYPE, JSON.stringify('admin'));
+        
+        showToast('✅ Admin login successful! You will stay logged in for 10 days.', 'success');
+    } else {
+        sessionStorage.setItem(SESSION_KEYS.USER, JSON.stringify(username));
+        sessionStorage.setItem(SESSION_KEYS.USER_DATA, JSON.stringify(adminData));
+        sessionStorage.setItem(SESSION_KEYS.USER_TYPE, JSON.stringify('admin'));
+        
+        localStorage.removeItem(SESSION_KEYS.REMEMBER_ME);
+        localStorage.removeItem(SESSION_KEYS.SESSION_EXPIRY);
+        
+        showToast('✅ Admin login successful!', 'success');
+    }
+    
+    updateUIAfterLogin(username, adminData, 'admin');
+    updateSessionExpiryDisplay();
+}
+
+// ============================================================
+// ⭐ RESTORE SESSION ON PAGE LOAD
+// ============================================================
+
+function restoreSession() {
+    const rememberMe = isRememberMeActive();
+    
+    if (rememberMe) {
+        const userData = getSessionData(SESSION_KEYS.USER_DATA);
+        const userType = getSessionData(SESSION_KEYS.USER_TYPE);
+        const email = getSessionData(SESSION_KEYS.USER);
+        
+        if (email && userData) {
+            currentUser = email;
+            currentUserData = userData;
+            currentUserType = userType || 'student';
+            
+            updateUIAfterLogin(email, userData, currentUserType);
+            updateSessionExpiryDisplay();
+            
+            console.log('✅ Session restored from Remember Me (10 days)');
+            return true;
+        } else {
+            clearAllSessionData();
+            return false;
+        }
+    } else {
+        const email = sessionStorage.getItem(SESSION_KEYS.USER);
+        const userData = sessionStorage.getItem(SESSION_KEYS.USER_DATA);
+        const userType = sessionStorage.getItem(SESSION_KEYS.USER_TYPE);
+        
+        if (email && userData) {
+            try {
+                const parsedEmail = JSON.parse(email);
+                const parsedData = JSON.parse(userData);
+                const parsedType = JSON.parse(userType) || 'student';
+                
+                currentUser = parsedEmail;
+                currentUserData = parsedData;
+                currentUserType = parsedType;
+                
+                updateUIAfterLogin(parsedEmail, parsedData, parsedType);
+                console.log('✅ Session restored from sessionStorage');
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+        return false;
+    }
+}
+
+// ============================================================
+// FAST ADMIN LOGIN (Legacy - kept for compatibility)
+// ============================================================
 
 async function fetchStudentLoginData() {
     try {
@@ -4064,7 +4125,6 @@ async function updateUIAfterLogin(email, userData, userType = 'student') {
         hideProfilePlaceholder();
     }
     
-    // Update session info display
     updateSessionExpiryDisplay();
 }
 
@@ -4077,7 +4137,6 @@ function logout() {
     currentUserData = null;
     currentUserType = null;
     
-    // Clear all session data (both localStorage and sessionStorage)
     clearAllSessionData();
     
     dom.authButtons.style.display = 'flex';
@@ -4096,7 +4155,6 @@ function logout() {
     dom.profileEmail.textContent = 'user@email.com';
     hideProfilePlaceholder();
     
-    // Hide session info
     document.getElementById('sessionInfo').style.display = 'none';
     
     showToast('Logged out successfully', 'info');
@@ -4107,7 +4165,6 @@ function logout() {
 // ============================================================
 
 async function handleSignup(formData) {
-    // Double-check email existence before submitting
     const emailExists = await checkEmailExistsInStudentLogin(formData.email);
     if (emailExists) {
         showToast('⚠️ Please login! You already registered', 'warning');
@@ -4184,7 +4241,6 @@ async function handleSignup(formData) {
             
             const user = await getUserData(formData.email);
             if (user) {
-                // Signup uses sessionStorage only (no Remember Me by default)
                 await updateUIAfterLogin(formData.email, user, 'student');
             }
             
@@ -4275,19 +4331,40 @@ function init() {
     // AUTH BUTTONS
     // ================================
     document.getElementById('loginBtn').addEventListener('click', () => {
-        // Pre-fill Remember Me checkbox if it was previously checked
         const rememberMe = isRememberMeActive();
         if (rememberMe) {
             document.getElementById('rememberMeCheckbox').checked = true;
         }
         openModal('loginModal');
     });
+    
     document.getElementById('signupBtn').addEventListener('click', () => openModal('signupModal'));
-    document.getElementById('adminLoginBtn').addEventListener('click', () => openModal('adminModal'));
+    
+    // ⭐ Admin Login Button - Auto-check Remember Me
+    document.getElementById('adminLoginBtn').addEventListener('click', function() {
+        const rememberMe = isRememberMeActive();
+        const userType = getSessionData(SESSION_KEYS.USER_TYPE);
+        
+        if (rememberMe && userType === 'admin') {
+            document.getElementById('adminRememberMeCheckbox').checked = true;
+            const username = getSessionData(SESSION_KEYS.USER);
+            if (username) {
+                document.getElementById('adminUser').value = username;
+            }
+        } else {
+            document.getElementById('adminRememberMeCheckbox').checked = false;
+        }
+        openModal('adminModal');
+    });
 
     // ⭐ Remember Me checkbox - auto check on load
     if (isRememberMeActive()) {
-        document.getElementById('rememberMeCheckbox').checked = true;
+        const userType = getSessionData(SESSION_KEYS.USER_TYPE);
+        if (userType === 'admin') {
+            document.getElementById('adminRememberMeCheckbox').checked = true;
+        } else {
+            document.getElementById('rememberMeCheckbox').checked = true;
+        }
     }
 
     // ================================
@@ -4573,9 +4650,7 @@ function init() {
             const user = await handleLoginFast(email, password, rememberMe);
             if (user) {
                 closeModal('loginModal');
-                // Session is stored inside handleLoginFast with rememberMe flag
                 this.reset();
-                // Remember Me checkbox will be preserved
                 if (rememberMe) {
                     document.getElementById('rememberMeCheckbox').checked = true;
                 }
@@ -4856,7 +4931,7 @@ function init() {
     });
 
     // ================================
-    // ADMIN LOGIN - MATH CAPTCHA
+    // ⭐ ADMIN LOGIN - MATH CAPTCHA & REMEMBER ME
     // ================================
     function generateMath() {
         const a = Math.floor(Math.random() * 20) + 1;
@@ -4871,6 +4946,7 @@ function init() {
         const user = document.getElementById('adminUser').value.trim();
         const pass = document.getElementById('adminPass').value.trim();
         const mathInput = parseInt(document.getElementById('mathAnswer').value);
+        const rememberMe = document.getElementById('adminRememberMeCheckbox').checked;
 
         if (!user || !pass) {
             showToast('Please fill all fields', 'error');
@@ -4886,14 +4962,14 @@ function init() {
         showSpinner(submitBtn, true);
 
         try {
-            const admin = await handleAdminLoginFast(user, pass);
+            const admin = await handleAdminLoginFast(user, pass, rememberMe);
             if (admin) {
-                showToast('✅ Admin login successful!', 'success');
                 closeModal('adminModal');
                 this.reset();
                 generateMath();
-                // Admin login uses sessionStorage only (no Remember Me for security)
-                await updateUIAfterLogin(user, admin, 'admin');
+                if (rememberMe) {
+                    document.getElementById('adminRememberMeCheckbox').checked = true;
+                }
             } else {
                 showToast('❌ Invalid Admin credentials', 'error');
             }
@@ -4936,6 +5012,7 @@ function init() {
     console.log('✅ Cache TTL: 5 minutes');
     console.log('✅ Signup email validation active');
     console.log('✅ Remember Me: 10 days session duration');
+    console.log('✅ Admin Remember Me: 10 days session duration');
     console.log('✅ Session restored:', sessionRestored);
 }
 
