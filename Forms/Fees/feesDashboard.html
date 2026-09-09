@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>Fees Record Dashboard - Ujjwal Academy</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- ⭐ admin-auth.js - Handles authentication ONLY -->
+    <script src="../../Script/loginadmin.js" data-auto-init="true"></script>
+    
+    <!-- ⭐ footer-loader.js - Handles footer loading ONLY -->
+    <script src="../../Script/footer-loader.js" data-footer="true" data-footer-path="../../Script/footer.html"></script>
+    
+    <style>
+        /* ================================================================
+           CSS VARIABLES - Light & Dark Mode
+           ================================================================ */
+        :root {
+            --bg-body: #f4f7fc;
+            --bg-card: #ffffff;
+            --bg-section: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #5b6e8c;
+            --text-light: #94a3b8;
+            --border-light: #e2e8f0;
+            --shadow-sm: 0 12px 28px -8px rgba(0,0,0,0.06);
+            --shadow-hover: 0 24px 40px -12px rgba(0,0,0,0.12);
+            --accent: #2563eb;
+            --accent-soft: rgba(37, 99, 235, 0.08);
+            --accent-hover: #1d4ed8;
+            --card-border: 1px solid rgba(0,0,0,0.04);
+            --gradient-accent: linear-gradient(135deg, #2563eb, #7c3aed);
+            --logo-filter: none;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --danger-light: rgba(239, 68, 68, 0.1);
+            --info: #06b6d4;
+            --transition: 0.3s ease;
+            --fee-accent: #059669;
+            --fee-accent-soft: rgba(5, 150, 105, 0.08);
+            --fee-gradient: linear-gradient(135deg, #059669, #10b981);
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #0a0f1c;
+            --bg-card: #1e293b;
+            --bg-section: #111827;
+            --text-main: #f1f5f9;
+            --text-muted: #9ca3af;
+            --text-light: #64748b;
+            --border-light: #1f2a3e;
+            --shadow-sm: 0 12px 28px -8px rgba(0,0,0,0.6);
+            --shadow-hover: 0 24px 40px -12px rgba(0,0,0,0.8);
+            --accent: #3b82f6;
+            --accent-soft: rgba(59, 130, 246, 0.15);
+            --accent-hover: #60a5fa;
+            --card-border: 1px solid rgba(255,255,255,0.04);
+            --gradient-accent: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            --logo-filter: brightness(0) invert(1);
+            --success: #34d399;
+            --warning: #fbbf24;
+            --danger: #f87171;
+            --danger-light: rgba(239, 68, 68, 0.2);
+            --info: #22d3ee;
+            --fee-accent: #34d399;
+            --fee-accent-soft: rgba(52, 211, 153, 0.15);
+            --fee-gradient: linear-gradient(135deg, #34d399, #059669);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        ::-webkit-scrollbar { width: 0; height: 0; display: none; }
+        * { scrollbar-width: none; -ms-overflow-style: none; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            transition: background-color var(--transition), color var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ================================================================
+           LOADING SPINNER
+           ================================================================ */
+        #authLoading {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-body);
+            z-index: 9999;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        #authLoading.hidden {
+            display: none !important;
+        }
+
+        #authLoading .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border-light);
+            border-top: 4px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        #authLoading p {
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ================================================================
+           MAIN CONTENT
+           ================================================================ */
+        .main-content {
+            flex: 1;
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto 2rem auto;
+            padding: 1.5rem 0.8rem 0 0.8rem;
+        }
+
+        .page-title {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+            margin-bottom: 1.2rem;
+            padding: 0.8rem 0;
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        .page-title h1 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            background: var(--fee-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-title h1 i {
+            font-size: 1.3rem;
+            color: var(--fee-accent);
+            background: var(--fee-accent-soft);
+            padding: 8px;
+            border-radius: 12px;
+        }
+
+        .page-title .academic-year {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: var(--bg-card);
+            padding: 4px 14px;
+            border-radius: 30px;
+            border: var(--card-border);
+            box-shadow: var(--shadow-sm);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .section-header {
+            background: var(--bg-section);
+            border-radius: 16px;
+            padding: 12px 16px;
+            margin: 1.8rem 0 1rem 0;
+            border: var(--card-border);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background var(--transition), border-color var(--transition);
+        }
+
+        .section-header .section-icon {
+            font-size: 1.2rem;
+            color: var(--fee-accent);
+            background: var(--fee-accent-soft);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+
+        .section-header .section-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .section-header .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.2;
+        }
+
+        .section-header .section-sub {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            display: block;
+        }
+
+        .section-header .section-badge {
+            background: var(--fee-accent-soft);
+            color: var(--fee-accent);
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .fees-grid {
+            display: grid;
+            gap: 0.8rem;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .card-link {
+            text-decoration: none;
+            display: block;
+        }
+
+        .fees-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            padding: 1.2rem 0.8rem;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            height: 100%;
+            min-height: 130px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fees-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--fee-gradient);
+            opacity: 0;
+            transition: opacity var(--transition);
+        }
+
+        .fees-card:active::before {
+            opacity: 1;
+        }
+
+        .fees-card:active {
+            transform: scale(0.97);
+        }
+
+        .card-icon {
+            font-size: 1.5rem;
+            color: var(--fee-accent);
+            background: var(--fee-accent-soft);
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            margin: 0 auto 0.6rem;
+            transition: all var(--transition);
+            flex-shrink: 0;
+        }
+
+        .card-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.2rem;
+            line-height: 1.2;
+        }
+
+        .card-description {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            line-height: 1.3;
+            display: none;
+        }
+
+        .card-badge {
+            display: inline-block;
+            margin-top: 0.4rem;
+            font-size: 0.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            padding: 2px 10px;
+            border-radius: 30px;
+            background: var(--fee-accent-soft);
+            color: var(--fee-accent);
+            transition: all var(--transition);
+        }
+
+        .fees-card:active .card-badge {
+            background: var(--fee-gradient);
+            color: white;
+        }
+
+        /* ================================================================
+           RESPONSIVE BREAKPOINTS
+           ================================================================ */
+        @media (min-width: 600px) {
+            .main-content { padding: 1.5rem 1.2rem 0 1.2rem; }
+            .page-title { flex-direction: row; align-items: center; justify-content: space-between; padding: 1rem 0; }
+            .page-title h1 { font-size: 1.6rem; }
+            .page-title .academic-year { font-size: 0.8rem; padding: 6px 16px; }
+            .section-header { padding: 14px 20px; border-radius: 18px; }
+            .section-header .section-icon { width: 44px; height: 44px; font-size: 1.3rem; }
+            .section-header .section-title { font-size: 1.1rem; }
+            .section-header .section-sub { font-size: 0.7rem; }
+            .fees-grid { gap: 1rem; grid-template-columns: repeat(2, 1fr); }
+            .fees-card { padding: 1.5rem 1rem; min-height: 150px; border-radius: 18px; }
+            .card-icon { width: 54px; height: 54px; font-size: 1.6rem; border-radius: 16px; }
+            .card-title { font-size: 0.95rem; }
+            .card-description { display: block; font-size: 0.7rem; }
+            .card-badge { font-size: 0.55rem; padding: 3px 12px; }
+        }
+
+        @media (min-width: 1024px) {
+            .main-content { padding: 2rem 2rem 0 2rem; }
+            .page-title h1 { font-size: 2rem; }
+            .page-title .academic-year { font-size: 0.9rem; padding: 8px 20px; }
+            .section-header { padding: 16px 24px; border-radius: 20px; margin: 2.5rem 0 1.5rem 0; }
+            .section-header .section-icon { width: 50px; height: 50px; font-size: 1.5rem; }
+            .section-header .section-title { font-size: 1.3rem; }
+            .section-header .section-sub { font-size: 0.8rem; }
+            .fees-grid { gap: 1.5rem; grid-template-columns: repeat(4, 1fr); }
+            .fees-card { padding: 1.75rem 1.2rem; min-height: 180px; border-radius: 20px; }
+            .fees-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-hover); }
+            .fees-card:hover::before { opacity: 1; }
+            .fees-card:hover .card-icon { background: var(--fee-gradient); color: white; transform: scale(1.05); }
+            .fees-card:hover .card-badge { background: var(--fee-gradient); color: white; }
+            .card-icon { width: 60px; height: 60px; font-size: 1.8rem; margin: 0 auto 0.8rem; }
+            .card-title { font-size: 1.1rem; }
+            .card-description { font-size: 0.75rem; display: block; }
+            .card-badge { font-size: 0.6rem; padding: 4px 14px; }
+        }
+
+        @media (max-width: 380px) {
+            .main-content { padding: 1rem 0.5rem 0 0.5rem; }
+            .page-title h1 { font-size: 1.1rem; }
+            .page-title h1 i { font-size: 1rem; padding: 6px; }
+            .page-title .academic-year { font-size: 0.6rem; padding: 3px 10px; }
+            .section-header { padding: 10px 12px; margin: 1.2rem 0 0.8rem 0; border-radius: 12px; gap: 8px; }
+            .section-header .section-icon { width: 32px; height: 32px; font-size: 0.9rem; border-radius: 10px; }
+            .section-header .section-title { font-size: 0.85rem; }
+            .section-header .section-sub { font-size: 0.55rem; }
+            .section-header .section-badge { font-size: 0.5rem; padding: 2px 8px; }
+            .fees-grid { gap: 0.5rem; grid-template-columns: 1fr 1fr; }
+            .fees-card { padding: 0.8rem 0.5rem; min-height: 100px; border-radius: 12px; }
+            .card-icon { width: 36px; height: 36px; font-size: 1.1rem; border-radius: 10px; margin-bottom: 0.4rem; }
+            .card-title { font-size: 0.7rem; }
+            .card-description { display: none; }
+            .card-badge { font-size: 0.45rem; padding: 1px 8px; margin-top: 0.2rem; }
+        }
+
+        @media (max-height: 500px) and (orientation: landscape) {
+            .main-content { padding: 0.5rem 0.8rem 0 0.8rem; }
+            .page-title { margin-bottom: 0.6rem; padding: 0.4rem 0; }
+            .page-title h1 { font-size: 1.1rem; }
+            .section-header { padding: 8px 12px; margin: 1rem 0 0.6rem 0; }
+            .fees-grid { gap: 0.5rem; grid-template-columns: repeat(4, 1fr); }
+            .fees-card { padding: 0.6rem 0.4rem; min-height: 80px; }
+            .card-icon { width: 32px; height: 32px; font-size: 0.9rem; margin-bottom: 0.2rem; }
+            .card-title { font-size: 0.65rem; }
+            .card-description { display: none; }
+            .card-badge { font-size: 0.4rem; padding: 1px 6px; }
+        }
+
+        @media (hover: none) {
+            .fees-card:hover { transform: none; box-shadow: var(--shadow-sm); }
+            .fees-card:hover::before { opacity: 0; }
+            .fees-card:active { transform: scale(0.97); }
+            .fees-card:active::before { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================================================================ -->
+    <!-- LOADING OVERLAY -->
+    <!-- ================================================================ -->
+    <div id="authLoading">
+        <div class="spinner"></div>
+        <p><i class="fas fa-shield-alt"></i> Verifying admin access...</p>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- MAIN CONTENT -->
+    <!-- ================================================================ -->
+    <main class="main-content" id="mainContent" style="display:none;">
+
+        <div class="page-title">
+            <h1>
+                <i class="fas fa-coins"></i> Fees Record
+            </h1>
+            <span class="academic-year" id="academicYearDisplay">
+                <i class="far fa-calendar-alt"></i> 2026-27
+            </span>
+        </div>
+
+        <!-- School Section -->
+        <div class="section-header">
+            <div class="section-icon"><i class="fas fa-school"></i></div>
+            <div class="section-info">
+                <div class="section-title">School Section</div>
+                <span class="section-sub">Standards 5th to 10th</span>
+            </div>
+            <span class="section-badge">6</span>
+        </div>
+
+        <div class="fees-grid">
+            <a href="Fees_5th_STD.html" class="card-link">
+                <div class="fees-card">
+                    <div class="card-icon"><i class="fas fa-user-graduate"></i></div>
+                    <h3 class="card-title">5th Standard</h3>
+                    <p class="card-description">Fees Record for Class 5</p>
+                    <span class="card-badge">View</span>
+                </div>
+            </a>
+            <a href="Fees_6th_STD.html" class="card-link">
+                <div class="fees-card">
+                    <div class="card-icon"><i class="fas fa-user-graduate"></i></div>
+                    <h3 class="card-title">6th Standard</h3>
+                    <p class="card-description">Fees Record for Class 6</p>
+                    <span class="card-badge">View</span>
+                </div>
+            </a>
+            <a href="Fees_7th_STD.html" class="card-link">
+                <div class="fees-card">
+                    <div class="card-icon"><i class="fas fa-user-graduate"></i></div>
+                    <h3 class="card-title">7th Standard</h3>
+                    <p class="card-description">Fees Record for Class 7</p>
+                    <span class="card-badge">View</span>
+                </div>
+            </a>
+            <a href="Fees_8th_STD.html" class="card-link">
+                <div class="fees-card">
+                    <div class="card-icon"><i class="fas fa-user-graduate"></i></div>
+                    <h3 class="card-title">8th Standard</h3>
+                    <p class="card-description">Fees Record for Class 8</p>
+                    <span class="card-badge">View</span>
+                </div>
+            </a>
+            <a href="Fees_9th_STD.html" class="card-link">
+                <div class="fees-card">
+                    <div class="card-icon"><i class="fas fa-user-graduate"></i></div>
+                    <h3 class="card-title">9th Standard</h3>
+                    <p class="card-description">Fees Record for Class 9</p>
+                    <span class="card-badge">View</span>
+                </div>
+            </a>
+            <a href="Fees_10th_STD.html" class="card-link">
+                <div class="fees-card">
+                    <div class="card-icon"><i class="fas fa-user-graduate"></i></div>
+                    <h3 class="card-title">10th Standard</h3>
+                    <p class="card-description">Fees Record for Class 10</p>
+                    <span class="card-badge">View</span>
+                </div>
+            </a>
+        </div>
+
+        <!-- College Section -->
+        <div class="section-header">
+            <div class="section-icon"><i class="fas fa-university"></i></div>
+            <div class="section-info">
+                <div class="section-title">College Section</div>
+                <span class="section-sub">11th &amp; 12th Science &amp; Commerce</span>
+            </div>
+            <span class="section-badge">5</span>
+        </div>
+
+        <div class="fees-grid">
+            <a href="Fees_11th_Sci.html" class="card-link">
+                <div class="fees-card">
+                    <div class="card-icon"><i class="fas fa-flask"></i></div>
+                    <h3 class="card-title">11th Science</h3>
+                    <p class="card-description">Fees Record for 11th Science</p>
+                    <span class="card-badge">View</span>
+                </div>
+            </a>
+            <a href="Fees_11th_Com.html" class="card-link">
+                <div class="fees-card">
+                    <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+                    <h3 class="card-title">11th Commerce</h3>
+                    <p class="card-description">Fees Record for 11th Commerce</p>
+                    <span class="card-badge">View</span>
+                </div>
+            </a>
+            <a href="Fees_12th_Sci.html" class="card-link">
+                <div class="fees-card">
+                    <div class="card-icon"><i class="fas fa-atom"></i></div>
+                    <h3 class="card-title">12th Science</h3>
+                    <p class="card-description">Fees Record for 12th Science</p>
+                    <span class="card-badge">View</span>
+                </div>
+            </a>
+            <a href="Fees_12th_Com.html" class="card-link">
+                <div class="fees-card">
+                    <div class="card-icon"><i class="fas fa-coins"></i></div>
+                    <h3 class="card-title">12th Commerce</h3>
+                    <p class="card-description">Fees Record for 12th Commerce</p>
+                    <span class="card-badge">View</span>
+                </div>
+            </a>
+            <a href="Fees_12th_Com_Evening.html" class="card-link">
+                <div class="fees-card">
+                    <div class="card-icon"><i class="fas fa-clock"></i></div>
+                    <h3 class="card-title">12th Commerce Evening</h3>
+                    <p class="card-description">Fees Record for 12th Commerce Evening</p>
+                    <span class="card-badge">View</span>
+                </div>
+            </a>
+        </div>
+
+    </main>
+
+    <!-- ================================================================ -->
+    <!-- ACADEMIC YEAR UPDATE -->
+    <!-- ================================================================ -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function getAcademicYear() {
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = today.getMonth() + 1;
+                return month >= 4 ? `${year}-${year + 1}` : `${year - 1}-${year}`;
+            }
+
+            const display = document.getElementById('academicYearDisplay');
+            if (display) {
+                const academicYear = getAcademicYear();
+                display.innerHTML = `<i class="far fa-calendar-alt"></i> ${academicYear}`;
+                document.title = `Fees Record Dashboard - ${academicYear}`;
+            }
+        });
+
+        console.log('✅ Fees Record Dashboard Loaded');
+    </script>
+
+</body>
+</html>
