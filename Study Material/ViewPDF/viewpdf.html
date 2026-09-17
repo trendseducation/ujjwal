@@ -745,632 +745,740 @@
     </div>
 
     <script>
-        // ============================================================
-        // CONFIGURATION
-        // ============================================================
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzoDds81u8M5N8micA_hoIBgCS7aCFm0NUmwW6XLH4m_fRJ8R9pGqjgFGMeBxBd2dSL/exec";
-        const SPREADSHEET_ID = "1ZCKJ_LYfk_kZ9afgtpOtAQ9-g7-3ZSsS_byQ3F_Rip0";
-        const SHEET_NAME = "English";
+// ============================================================
+// CONFIGURATION
+// ============================================================
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzoDds81u8M5N8micA_hoIBgCS7aCFm0NUmwW6XLH4m_fRJ8R9pGqjgFGMeBxBd2dSL/exec";
+const SPREADSHEET_ID = "1ZCKJ_LYfk_kZ9afgtpOtAQ9-g7-3ZSsS_byQ3F_Rip0";
+const SHEET_NAME = "English";
 
-        // ============================================================
-        // THEME SYNC
-        // ============================================================
-        function getStoredTheme() {
-            try {
-                return localStorage.getItem('user-theme-preference') || 'light';
-            } catch(e) {
-                return 'light';
+// ============================================================
+// ⭐ AUTH KEYS — must match myaccount.html exactly
+// ============================================================
+const AUTH_KEYS = {
+    USER: 'ujjwal_user',
+    USER_DATA: 'ujjwal_user_data',
+    USER_TYPE: 'ujjwal_user_type',
+    REMEMBER_ME: 'ujjwal_remember_me',
+    SESSION_EXPIRY: 'ujjwal_session_expiry',
+    // Legacy keys
+    ADMIN_LOGGED_IN: 'ujjwal_admin_logged_in',
+    ADMIN_USER: 'ujjwal_admin_user'
+};
+
+// ============================================================
+// ⭐ AUTH HELPERS — same as 11_Com_Bk_Imp.html for consistency
+// ============================================================
+
+/**
+ * Parse a stored value — handles:
+ *   1. Plain JSON string
+ *   2. { value, expiry } wrapper (Remember Me format)
+ *   3. Raw string (not JSON)
+ */
+function parseStoredAuth(raw) {
+    if (!raw) return { value: null, expiry: null };
+    try {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object' && 'value' in parsed) {
+            return {
+                value: parsed.value,
+                expiry: parsed.expiry || null
+            };
+        }
+        return { value: parsed, expiry: null };
+    } catch (e) {
+        return { value: raw, expiry: null };
+    }
+}
+
+/**
+ * Read auth key from localStorage first, then sessionStorage.
+ * Auto-cleans expired entries.
+ */
+function readAuthKey(key) {
+    // localStorage (Remember Me)
+    let raw = null;
+    try { raw = localStorage.getItem(key); } catch (e) {}
+
+    if (raw) {
+        const parsed = parseStoredAuth(raw);
+        if (parsed.expiry && Date.now() >= parsed.expiry) {
+            try { localStorage.removeItem(key); } catch (e) {}
+        } else {
+            return parsed.value;
+        }
+    }
+
+    // sessionStorage (session login)
+    try {
+        raw = sessionStorage.getItem(key);
+    } catch (e) {
+        raw = null;
+    }
+
+    if (!raw) return null;
+
+    const parsed = parseStoredAuth(raw);
+    if (parsed.expiry && Date.now() >= parsed.expiry) {
+        try { sessionStorage.removeItem(key); } catch (e) {}
+        return null;
+    }
+    return parsed.value;
+}
+
+/**
+ * Clear every auth key from both storages.
+ */
+function clearAllAuthKeys() {
+    Object.values(AUTH_KEYS).forEach(key => {
+        try { localStorage.removeItem(key); } catch (e) {}
+        try { sessionStorage.removeItem(key); } catch (e) {}
+    });
+}
+
+/**
+ * ⭐ UNIFIED LOGIN CHECK — recognizes:
+ *   - Student login (email + password via myaccount.html)
+ *   - Admin login (username + password via myaccount.html)
+ *   - Signup auto-login (myaccount.html logs user in immediately after signup)
+ *   - Remember Me (10-day localStorage session)
+ *   - Legacy admin flag (ujjwal_admin_logged_in === 'true')
+ *   - Shared RememberMe helper (remember-me-login.js) if loaded
+ */
+function checkAuthStatus() {
+    // 1) Shared helper (authoritative if present)
+    try {
+        if (window.RememberMe && typeof window.RememberMe.isRememberMeActive === 'function') {
+            if (window.RememberMe.isRememberMeActive()) {
+                const user = (typeof window.RememberMe.getUser === 'function')
+                    ? window.RememberMe.getUser()
+                    : null;
+                const type = readAuthKey(AUTH_KEYS.USER_TYPE) || 'student';
+                return {
+                    loggedIn: true,
+                    role: type === 'admin' ? 'admin' : 'student',
+                    user: (user && (user.email || user.username)) || readAuthKey(AUTH_KEYS.USER)
+                };
             }
         }
+    } catch (e) {
+        console.warn('RememberMe helper check failed:', e);
+    }
 
-        function applyTheme(theme) {
-            try {
-                document.body.setAttribute('data-theme', theme);
-                document.documentElement.setAttribute('data-theme', theme);
-                localStorage.setItem('user-theme-preference', theme);
-                
-                const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-                if (metaThemeColor) {
-                    metaThemeColor.content = theme === 'dark' ? '#0a0f1c' : '#f4f7fc';
-                }
-                
-                console.log(`🎨 Theme applied: ${theme}`);
-                
-                try {
-                    if (window.parent && window.parent !== window) {
-                        window.parent.postMessage({
-                            type: 'themeChange',
-                            theme: theme,
-                            source: 'viewpdf.html'
-                        }, '*');
-                    }
-                } catch(e) {}
-            } catch(e) {
-                console.error('Error applying theme:', e);
-            }
+    // 2) Standard session keys
+    const user = readAuthKey(AUTH_KEYS.USER);
+    const userData = readAuthKey(AUTH_KEYS.USER_DATA);
+    const userType = readAuthKey(AUTH_KEYS.USER_TYPE) || 'student';
+
+    if (user && userData) {
+        return {
+            loggedIn: true,
+            role: userType === 'admin' ? 'admin' : 'student',
+            user: user
+        };
+    }
+
+    // 3) Legacy admin flag
+    const legacyAdmin = readAuthKey(AUTH_KEYS.ADMIN_LOGGED_IN);
+    if (legacyAdmin === 'true' || legacyAdmin === true) {
+        return {
+            loggedIn: true,
+            role: 'admin',
+            user: readAuthKey(AUTH_KEYS.ADMIN_USER) || 'Admin'
+        };
+    }
+
+    // 4) Fallback: user key alone (non-empty)
+    if (user && typeof user === 'string' && user.trim() !== '') {
+        return {
+            loggedIn: true,
+            role: userType === 'admin' ? 'admin' : 'student',
+            user: user
+        };
+    }
+
+    return { loggedIn: false, role: null, user: null };
+}
+
+// Backwards-compatible boolean wrapper
+function checkLoginStatus() {
+    return checkAuthStatus().loggedIn;
+}
+
+// ============================================================
+// THEME SYNC
+// ============================================================
+function getStoredTheme() {
+    try {
+        return localStorage.getItem('user-theme-preference') || 'light';
+    } catch (e) {
+        return 'light';
+    }
+}
+
+function applyTheme(theme) {
+    try {
+        document.body.setAttribute('data-theme', theme);
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('user-theme-preference', theme);
+
+        const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+        if (metaThemeColor) {
+            metaThemeColor.content = theme === 'dark' ? '#0a0f1c' : '#f4f7fc';
         }
 
-        function syncThemeWithParent() {
-            try {
-                const localTheme = localStorage.getItem('user-theme-preference');
-                if (localTheme) {
-                    applyTheme(localTheme);
+        console.log(`🎨 Theme applied: ${theme}`);
+
+        try {
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'themeChange',
+                    theme: theme,
+                    source: 'viewpdf.html'
+                }, '*');
+            }
+        } catch (e) {}
+    } catch (e) {
+        console.error('Error applying theme:', e);
+    }
+}
+
+function syncThemeWithParent() {
+    try {
+        const localTheme = localStorage.getItem('user-theme-preference');
+        if (localTheme) {
+            applyTheme(localTheme);
+            return;
+        }
+        try {
+            if (window.parent && window.parent.document.body) {
+                const parentTheme = window.parent.document.body.getAttribute('data-theme');
+                if (parentTheme) {
+                    applyTheme(parentTheme);
                     return;
                 }
-                try {
-                    if (window.parent && window.parent.document.body) {
-                        const parentTheme = window.parent.document.body.getAttribute('data-theme');
-                        if (parentTheme) {
-                            applyTheme(parentTheme);
-                            return;
-                        }
-                    }
-                } catch(e) {}
-                
-                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                    applyTheme('dark');
-                } else {
-                    applyTheme('light');
-                }
-            } catch(e) {
-                console.error('Error syncing theme:', e);
-                applyTheme('light');
+            }
+        } catch (e) {}
+
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            applyTheme('dark');
+        } else {
+            applyTheme('light');
+        }
+    } catch (e) {
+        console.error('Error syncing theme:', e);
+        applyTheme('light');
+    }
+}
+
+window.addEventListener('message', function (event) {
+    try {
+        if (event.data && event.data.type === 'themeChange') {
+            const newTheme = event.data.theme;
+            if (newTheme && (newTheme === 'light' || newTheme === 'dark')) {
+                console.log(`📩 Received theme change from parent: ${newTheme}`);
+                applyTheme(newTheme);
             }
         }
+    } catch (e) {}
+});
 
-        window.addEventListener('message', function(event) {
-            try {
-                if (event.data && event.data.type === 'themeChange') {
-                    const newTheme = event.data.theme;
-                    if (newTheme && (newTheme === 'light' || newTheme === 'dark')) {
-                        console.log(`📩 Received theme change from parent: ${newTheme}`);
-                        applyTheme(newTheme);
-                    }
-                }
-            } catch(e) {}
-        });
-
-        window.addEventListener('storage', function(e) {
-            if (e.key === 'user-theme-preference') {
-                const newTheme = e.newValue;
-                if (newTheme && (newTheme === 'light' || newTheme === 'dark')) {
-                    console.log(`📦 Theme changed in another tab: ${newTheme}`);
-                    applyTheme(newTheme);
-                }
-            }
-        });
-
-        if (window.matchMedia) {
-            const darkModeMedia = window.matchMedia('(prefers-color-scheme: dark)');
-            darkModeMedia.addEventListener('change', function(e) {
-                if (!localStorage.getItem('user-theme-preference')) {
-                    const theme = e.matches ? 'dark' : 'light';
-                    console.log(`🖥️ System theme changed: ${theme}`);
-                    applyTheme(theme);
-                }
-            });
+window.addEventListener('storage', function (e) {
+    if (e.key === 'user-theme-preference') {
+        const newTheme = e.newValue;
+        if (newTheme && (newTheme === 'light' || newTheme === 'dark')) {
+            console.log(`📦 Theme changed in another tab: ${newTheme}`);
+            applyTheme(newTheme);
         }
+    }
 
-        // ============================================================
-        // SCREENSHOT PROTECTION
-        // ============================================================
-        const protection = {
-            isProtected: false,
-            container: null,
-            protectionTimer: null,
-
-            init() {
-                this.container = document.getElementById('pdfContainer');
-                this.setupVisibilityAPI();
-                this.setupKeyboardShortcuts();
-                this.setupContextMenu();
-                this.setupPrintProtection();
-                this.setupCopyProtection();
-                this.setupDragProtection();
-                console.log('🛡️ Screenshot protection initialized');
-            },
-
-            // Layer 1: Visibility API - Detect when page becomes hidden (screenshot being taken)
-            setupVisibilityAPI() {
-                document.addEventListener('visibilitychange', () => {
-                    if (document.hidden) {
-                        // Page is being hidden - likely screenshot or tab switch
-                        this.activateProtection('Screenshot detected');
-                        console.log('🛡️ Visibility change: Page hidden - protection activated');
-                    } else {
-                        // Page is visible again
-                        this.deactivateProtection();
-                        console.log('🛡️ Visibility change: Page visible - protection deactivated');
-                    }
-                });
-            },
-
-            // Layer 2: Keyboard shortcuts to prevent common screenshot keys
-            setupKeyboardShortcuts() {
-                document.addEventListener('keydown', (e) => {
-                    // Prevent Print Screen (PrtScn)
-                    if (e.key === 'PrintScreen' || e.key === 'Print') {
-                        e.preventDefault();
-                        this.activateProtection('Print Screen detected');
-                        console.log('🛡️ PrintScreen key blocked');
-                        return false;
-                    }
-
-                    // Prevent Ctrl+Shift+S (Save As)
-                    if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 's' || e.key === 'S')) {
-                        e.preventDefault();
-                        this.activateProtection('Save As detected');
-                        console.log('🛡️ Ctrl+Shift+S blocked');
-                        return false;
-                    }
-
-                    // Prevent Ctrl+S (Save)
-                    if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
-                        e.preventDefault();
-                        this.activateProtection('Save detected');
-                        console.log('🛡️ Ctrl+S blocked');
-                        return false;
-                    }
-
-                    // Prevent Ctrl+P (Print)
-                    if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P')) {
-                        e.preventDefault();
-                        this.activateProtection('Print detected');
-                        console.log('🛡️ Ctrl+P blocked');
-                        return false;
-                    }
-
-                    // Prevent Ctrl+C (Copy) on the document
-                    if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C')) {
-                        const target = e.target;
-                        if (!target.closest('input') && !target.closest('textarea')) {
-                            e.preventDefault();
-                            console.log('🛡️ Ctrl+C blocked on content');
-                            return false;
-                        }
-                    }
-
-                    // Prevent F12 (Developer Tools)
-                    if (e.key === 'F12') {
-                        e.preventDefault();
-                        console.log('🛡️ F12 blocked');
-                        return false;
-                    }
-                });
-            },
-
-            // Layer 3: Context menu prevention
-            setupContextMenu() {
-                document.addEventListener('contextmenu', (e) => {
-                    e.preventDefault();
-                    this.activateProtection('Right-click detected');
-                    console.log('🛡️ Right-click blocked');
-                    return false;
-                });
-
-                // Also prevent on the container specifically
-                const container = document.getElementById('pdfContainer');
-                if (container) {
-                    container.addEventListener('contextmenu', (e) => {
-                        e.preventDefault();
-                        return false;
-                    });
-                }
-            },
-
-            // Layer 4: Print prevention
-            setupPrintProtection() {
-                window.addEventListener('beforeprint', (e) => {
-                    e.preventDefault();
-                    this.activateProtection('Print detected');
-                    console.log('🛡️ Print attempt blocked');
-                    return false;
-                });
-
-                // Also block Ctrl+P via the media query
-                const style = document.createElement('style');
-                style.textContent = `
-                    @media print {
-                        body * { display: none !important; }
-                        body::after {
-                            content: "Printing is not allowed on this document.";
-                            display: block;
-                            font-size: 24px;
-                            color: red;
-                            text-align: center;
-                            padding: 50px;
-                        }
-                    }
-                `;
-                document.head.appendChild(style);
-            },
-
-            // Layer 5: Copy prevention
-            setupCopyProtection() {
-                // Prevent copy on the document
-                document.addEventListener('copy', (e) => {
-                    const target = e.target;
-                    if (!target.closest('input') && !target.closest('textarea')) {
-                        e.preventDefault();
-                        console.log('🛡️ Copy blocked on content');
-                        return false;
-                    }
-                });
-
-                // Prevent cut on the document
-                document.addEventListener('cut', (e) => {
-                    const target = e.target;
-                    if (!target.closest('input') && !target.closest('textarea')) {
-                        e.preventDefault();
-                        console.log('🛡️ Cut blocked on content');
-                        return false;
-                    }
-                });
-
-                // Prevent selection on the document
-                document.addEventListener('selectstart', (e) => {
-                    const target = e.target;
-                    if (!target.closest('input') && !target.closest('textarea')) {
-                        e.preventDefault();
-                        console.log('🛡️ Select blocked on content');
-                        return false;
-                    }
-                });
-            },
-
-            // Layer 6: Drag prevention (for images)
-            setupDragProtection() {
-                document.addEventListener('dragstart', (e) => {
-                    e.preventDefault();
-                    console.log('🛡️ Drag blocked');
-                    return false;
-                });
-            },
-
-            // Activate full protection
-            activateProtection(reason = 'Protection activated') {
-                if (this.isProtected) return;
-                
-                this.isProtected = true;
-                const container = this.container;
-                
-                // Add protected class to container
-                container.classList.add('protected');
-                
-                // Show the protection overlay
-                const overlay = document.getElementById('protectionOverlay');
-                if (overlay) {
-                    overlay.style.display = 'flex';
-                }
-                
-                // Log the reason
-                console.log(`🛡️ Protection activated: ${reason}`);
-                
-                // Auto-deactivate after 3 seconds
-                clearTimeout(this.protectionTimer);
-                this.protectionTimer = setTimeout(() => {
-                    this.deactivateProtection();
-                }, 3000);
-            },
-
-            // Deactivate protection
-            deactivateProtection() {
-                if (!this.isProtected) return;
-                
-                this.isProtected = false;
-                const container = this.container;
-                
-                // Remove protected class
-                container.classList.remove('protected');
-                
-                // Hide the protection overlay
-                const overlay = document.getElementById('protectionOverlay');
-                if (overlay) {
-                    overlay.style.display = 'none';
-                }
-                
-                console.log('🛡️ Protection deactivated');
-            },
-
-            // Manual trigger for testing
-            triggerProtection() {
-                this.activateProtection('Manual trigger');
-            }
-        };
-
-        // ============================================================
-        // DOM REFS
-        // ============================================================
-        const dom = {};
-
-        function cacheDomElements() {
-            dom.chapterTitle = document.getElementById('chapterTitle');
-            dom.chapterSubtitle = document.getElementById('chapterSubtitle');
-            dom.pdfLoading = document.getElementById('pdfLoading');
-            dom.pdfError = document.getElementById('pdfError');
-            dom.errorMessage = document.getElementById('errorMessage');
-            dom.pdfIframeWrapper = document.getElementById('pdfIframeWrapper');
-            dom.pdfIframe = document.getElementById('pdfIframe');
-            dom.openNewTabBtn = document.getElementById('openNewTabBtn');
+    // ⭐ Cross-tab auth sync — if user logs out elsewhere, redirect to login
+    if (e.key === AUTH_KEYS.USER && e.newValue === null) {
+        console.log('🔒 Logout detected in another tab');
+        if (!checkLoginStatus()) {
+            window.location.href = '../My Account/myaccount.html';
         }
+    }
+});
 
-        // ============================================================
-        // UTILITY FUNCTIONS
-        // ============================================================
-        function getUrlParams() {
-            const params = new URLSearchParams(window.location.search);
-            return {
-                link: params.get('link') || '',
-                chapter: params.get('chapter') || 'Chapter'
-            };
+if (window.matchMedia) {
+    const darkModeMedia = window.matchMedia('(prefers-color-scheme: dark)');
+    darkModeMedia.addEventListener('change', function (e) {
+        if (!localStorage.getItem('user-theme-preference')) {
+            const theme = e.matches ? 'dark' : 'light';
+            console.log(`🖥️ System theme changed: ${theme}`);
+            applyTheme(theme);
         }
+    });
+}
 
-        function showToast(msg, type = 'info') {
-            console.log(`📢 ${type}: ${msg}`);
-        }
+// ============================================================
+// SCREENSHOT PROTECTION
+// ============================================================
+const protection = {
+    isProtected: false,
+    container: null,
+    protectionTimer: null,
 
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
+    init() {
+        this.container = document.getElementById('pdfContainer');
+        this.setupVisibilityAPI();
+        this.setupKeyboardShortcuts();
+        this.setupContextMenu();
+        this.setupPrintProtection();
+        this.setupCopyProtection();
+        this.setupDragProtection();
+        console.log('🛡️ Screenshot protection initialized');
+    },
 
-        // ============================================================
-        // PDF VIEWER FUNCTIONS
-        // ============================================================
-        let currentLink = '';
-        let currentChapter = '';
-
-        function loadPDF(link, chapter) {
-            currentLink = link;
-            currentChapter = chapter;
-
-            // Update header
-            dom.chapterTitle.textContent = chapter || 'Chapter';
-            dom.chapterSubtitle.textContent = 'Read in PDF';
-
-            // Validate link
-            if (!link || link.trim() === '') {
-                showError('No PDF link available for this chapter.');
-                return;
-            }
-
-            // Check if link is a Google Drive link
-            let finalUrl = link.trim();
-            
-            // If it's a Google Drive link, convert to direct embed URL
-            if (finalUrl.includes('drive.google.com') || finalUrl.includes('docs.google.com')) {
-                const fileIdMatch = finalUrl.match(/[-\w]{25,}/);
-                if (fileIdMatch) {
-                    const fileId = fileIdMatch[0];
-                    finalUrl = `https://drive.google.com/file/d/${fileId}/preview`;
-                    console.log(`📄 Converted Drive link to embed URL: ${finalUrl}`);
-                } else {
-                    console.log(`📄 Using Drive link as-is: ${finalUrl}`);
-                }
-            } else if (finalUrl.includes('pdf')) {
-                console.log(`📄 Using direct PDF link: ${finalUrl}`);
-            }
-
-            // Show iframe
-            dom.pdfLoading.style.display = 'none';
-            dom.pdfError.style.display = 'none';
-            dom.pdfIframeWrapper.style.display = 'block';
-
-            // Set iframe src
-            dom.pdfIframe.src = finalUrl;
-
-            // Set open new tab link
-            dom.openNewTabBtn.onclick = function() {
-                openInNewTab(finalUrl, chapter);
-            };
-
-            console.log(`📄 PDF loaded for: ${chapter}`);
-        }
-
-        function showError(message) {
-            dom.pdfLoading.style.display = 'none';
-            dom.pdfError.style.display = 'block';
-            dom.pdfIframeWrapper.style.display = 'none';
-            dom.errorMessage.textContent = message || 'The PDF link could not be loaded. Please try again.';
-            console.error(`❌ PDF Error: ${message}`);
-        }
-
-        function openInNewTab(link, chapter) {
-            const url = link || currentLink;
-            const name = chapter || currentChapter || 'document';
-            
-            if (!url) {
-                showToast('No PDF link available to open.', 'error');
-                return;
-            }
-
-            try {
-                window.open(url, '_blank', 'noopener,noreferrer');
-                showToast(`Opening: ${name}`, 'success');
-            } catch (err) {
-                console.error('Open new tab error:', err);
-                showToast('Failed to open PDF in new tab.', 'error');
-            }
-        }
-
-        // ============================================================
-        // FETCH CHAPTER LINK FROM GOOGLE SHEET (Fallback)
-        // ============================================================
-        async function fetchChapterLinkFromSheet(chapterName) {
-            try {
-                const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}&_=${Date.now()}`;
-                const resp = await fetch(url);
-                const data = await resp.json();
-                
-                if (data.status === 'success' && data.data) {
-                    const chapter = data.data.find(row => {
-                        const name = row['Chapter Name'] || '';
-                        return name.toLowerCase().trim() === chapterName.toLowerCase().trim();
-                    });
-                    
-                    if (chapter && chapter['Link']) {
-                        return chapter['Link'];
-                    }
-                }
-                return null;
-            } catch (err) {
-                console.error('Error fetching chapter link:', err);
-                return null;
-            }
-        }
-
-        // ============================================================
-        // CHECK LOGIN STATUS
-        // ============================================================
-        function checkLoginStatus() {
-            const savedUser = sessionStorage.getItem('ujjwal_user');
-            const savedUserData = sessionStorage.getItem('ujjwal_user_data');
-            const isAdmin = sessionStorage.getItem('ujjwal_admin_logged_in') === 'true';
-            
-            if ((savedUser && savedUserData) || isAdmin) {
-                console.log('✅ User authenticated (Student or Admin)');
-                return true;
-            }
-            
-            console.log('❌ No user or admin logged in');
-            return false;
-        }
-
-        // ============================================================
-        // KEYBOARD SHORTCUTS
-        // ============================================================
-        document.addEventListener('keydown', function(e) {
-            // Escape to go back
-            if (e.key === 'Escape') {
-                window.location.href = '7th_Std_Eng.html';
-            }
-            
-            // F for fullscreen
-            if (e.key === 'f' || e.key === 'F') {
-                if (dom.pdfIframeWrapper) {
-                    if (dom.pdfIframeWrapper.requestFullscreen) {
-                        dom.pdfIframeWrapper.requestFullscreen();
-                    }
-                }
-            }
-        });
-
-        // ============================================================
-        // INITIALIZE PAGE
-        // ============================================================
-        async function init() {
-            cacheDomElements();
-
-            // Initialize theme
-            syncThemeWithParent();
-            console.log('🎨 Theme initialized:', document.body.getAttribute('data-theme'));
-
-            // Initialize screenshot protection
-            protection.init();
-
-            // Check login status
-            const isLoggedIn = checkLoginStatus();
-            if (!isLoggedIn) {
-                window.location.href = '../My Account/myaccount.html';
-                return;
-            }
-
-            // Get URL parameters
-            const params = getUrlParams();
-            let link = params.link;
-            const chapter = params.chapter;
-
-            console.log(`📄 Opening: ${chapter}`);
-            console.log(`🔗 Link: ${link}`);
-
-            // If no link provided, try to fetch from sheet
-            if (!link || link.trim() === '') {
-                console.log('🔍 No link in URL, fetching from sheet...');
-                const fetchedLink = await fetchChapterLinkFromSheet(chapter);
-                if (fetchedLink) {
-                    link = fetchedLink;
-                    console.log(`✅ Found link in sheet: ${link}`);
-                }
-            }
-
-            // Load PDF
-            if (link && link.trim() !== '') {
-                loadPDF(link, chapter);
+    setupVisibilityAPI() {
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                this.activateProtection('Screenshot detected');
+                console.log('🛡️ Visibility change: Page hidden - protection activated');
             } else {
-                showError('No PDF link found for this chapter. Please contact support.');
+                this.deactivateProtection();
+                console.log('🛡️ Visibility change: Page visible - protection deactivated');
+            }
+        });
+    },
+
+    setupKeyboardShortcuts() {
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'PrintScreen' || e.key === 'Print') {
+                e.preventDefault();
+                this.activateProtection('Print Screen detected');
+                console.log('🛡️ PrintScreen key blocked');
+                return false;
             }
 
-            // ============================================================
-            // ADDITIONAL PROTECTION: Canvas screenshot detection
-            // ============================================================
-            // This is a more advanced technique that uses canvas to detect if
-            // the page is being screenshotted via the browser's native API
-            try {
-                // Create a hidden canvas with tracking data
-                const canvas = document.createElement('canvas');
-                canvas.width = 1;
-                canvas.height = 1;
-                canvas.style.position = 'absolute';
-                canvas.style.left = '-9999px';
-                canvas.style.top = '-9999px';
-                canvas.style.opacity = '0';
-                canvas.style.pointerEvents = 'none';
-                document.body.appendChild(canvas);
-
-                const ctx = canvas.getContext('2d');
-                const imageData = ctx.getImageData(0, 0, 1, 1);
-                
-                // Store a unique fingerprint in the canvas
-                const data = imageData.data;
-                data[0] = 123; // R
-                data[1] = 45;  // G
-                data[2] = 67;  // B
-                data[3] = 255; // A
-                ctx.putImageData(imageData, 0, 0);
-
-                // Periodically check if the canvas data has been modified (screenshot detection)
-                setInterval(() => {
-                    try {
-                        const checkData = ctx.getImageData(0, 0, 1, 1);
-                        const d = checkData.data;
-                        // If the data changed, it means someone tried to screenshot/read the canvas
-                        if (d[0] !== 123 || d[1] !== 45 || d[2] !== 67) {
-                            console.log('🛡️ Canvas tampering detected!');
-                            protection.activateProtection('Canvas tampering detected');
-                        }
-                    } catch (e) {
-                        // Canvas read failed - possible screenshot attempt
-                        console.log('🛡️ Canvas read failed - possible screenshot attempt');
-                        protection.activateProtection('Canvas access blocked');
-                    }
-                }, 1000);
-            } catch (e) {
-                console.log('Canvas protection not available:', e);
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 's' || e.key === 'S')) {
+                e.preventDefault();
+                this.activateProtection('Save As detected');
+                console.log('🛡️ Ctrl+Shift+S blocked');
+                return false;
             }
 
-            // ============================================================
-            // WINDOW BLUR DETECTION - Another method to detect screenshots
-            // ============================================================
-            window.addEventListener('blur', function() {
-                // If the window loses focus, it might be a screenshot
-                console.log('🛡️ Window blur detected - possible screenshot');
-                // Small delay to check if it's just a tab switch
-                setTimeout(() => {
-                    if (!document.hasFocus()) {
-                        protection.activateProtection('Window lost focus');
-                    }
-                }, 100);
+            if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+                e.preventDefault();
+                this.activateProtection('Save detected');
+                console.log('🛡️ Ctrl+S blocked');
+                return false;
+            }
+
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P')) {
+                e.preventDefault();
+                this.activateProtection('Print detected');
+                console.log('🛡️ Ctrl+P blocked');
+                return false;
+            }
+
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C')) {
+                const target = e.target;
+                if (!target.closest('input') && !target.closest('textarea')) {
+                    e.preventDefault();
+                    console.log('🛡️ Ctrl+C blocked on content');
+                    return false;
+                }
+            }
+
+            if (e.key === 'F12') {
+                e.preventDefault();
+                console.log('🛡️ F12 blocked');
+                return false;
+            }
+        });
+    },
+
+    setupContextMenu() {
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            this.activateProtection('Right-click detected');
+            console.log('🛡️ Right-click blocked');
+            return false;
+        });
+
+        const container = document.getElementById('pdfContainer');
+        if (container) {
+            container.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                return false;
             });
+        }
+    },
 
-            console.log('✅ PDF viewer ready with screenshot protection');
+    setupPrintProtection() {
+        window.addEventListener('beforeprint', (e) => {
+            e.preventDefault();
+            this.activateProtection('Print detected');
+            console.log('🛡️ Print attempt blocked');
+            return false;
+        });
+
+        const style = document.createElement('style');
+        style.textContent = `
+            @media print {
+                body * { display: none !important; }
+                body::after {
+                    content: "Printing is not allowed on this document.";
+                    display: block;
+                    font-size: 24px;
+                    color: red;
+                    text-align: center;
+                    padding: 50px;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    },
+
+    setupCopyProtection() {
+        document.addEventListener('copy', (e) => {
+            const target = e.target;
+            if (!target.closest('input') && !target.closest('textarea')) {
+                e.preventDefault();
+                console.log('🛡️ Copy blocked on content');
+                return false;
+            }
+        });
+
+        document.addEventListener('cut', (e) => {
+            const target = e.target;
+            if (!target.closest('input') && !target.closest('textarea')) {
+                e.preventDefault();
+                console.log('🛡️ Cut blocked on content');
+                return false;
+            }
+        });
+
+        document.addEventListener('selectstart', (e) => {
+            const target = e.target;
+            if (!target.closest('input') && !target.closest('textarea')) {
+                e.preventDefault();
+                console.log('🛡️ Select blocked on content');
+                return false;
+            }
+        });
+    },
+
+    setupDragProtection() {
+        document.addEventListener('dragstart', (e) => {
+            e.preventDefault();
+            console.log('🛡️ Drag blocked');
+            return false;
+        });
+    },
+
+    activateProtection(reason = 'Protection activated') {
+        if (this.isProtected) return;
+
+        this.isProtected = true;
+        const container = this.container;
+
+        container.classList.add('protected');
+
+        const overlay = document.getElementById('protectionOverlay');
+        if (overlay) {
+            overlay.style.display = 'flex';
         }
 
-        // ============================================================
-        // START APP
-        // ============================================================
-        document.addEventListener('DOMContentLoaded', init);
-    </script>
+        console.log(`🛡️ Protection activated: ${reason}`);
+
+        clearTimeout(this.protectionTimer);
+        this.protectionTimer = setTimeout(() => {
+            this.deactivateProtection();
+        }, 3000);
+    },
+
+    deactivateProtection() {
+        if (!this.isProtected) return;
+
+        this.isProtected = false;
+        const container = this.container;
+
+        container.classList.remove('protected');
+
+        const overlay = document.getElementById('protectionOverlay');
+        if (overlay) {
+            overlay.style.display = 'none';
+        }
+
+        console.log('🛡️ Protection deactivated');
+    },
+
+    triggerProtection() {
+        this.activateProtection('Manual trigger');
+    }
+};
+
+// ============================================================
+// DOM REFS
+// ============================================================
+const dom = {};
+
+function cacheDomElements() {
+    dom.chapterTitle = document.getElementById('chapterTitle');
+    dom.chapterSubtitle = document.getElementById('chapterSubtitle');
+    dom.pdfLoading = document.getElementById('pdfLoading');
+    dom.pdfError = document.getElementById('pdfError');
+    dom.errorMessage = document.getElementById('errorMessage');
+    dom.pdfIframeWrapper = document.getElementById('pdfIframeWrapper');
+    dom.pdfIframe = document.getElementById('pdfIframe');
+    dom.openNewTabBtn = document.getElementById('openNewTabBtn');
+}
+
+// ============================================================
+// UTILITY FUNCTIONS
+// ============================================================
+function getUrlParams() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+        link: params.get('link') || '',
+        chapter: params.get('chapter') || 'Chapter'
+    };
+}
+
+function showToast(msg, type = 'info') {
+    console.log(`📢 ${type}: ${msg}`);
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// ============================================================
+// PDF VIEWER FUNCTIONS
+// ============================================================
+let currentLink = '';
+let currentChapter = '';
+
+function loadPDF(link, chapter) {
+    currentLink = link;
+    currentChapter = chapter;
+
+    dom.chapterTitle.textContent = chapter || 'Chapter';
+    dom.chapterSubtitle.textContent = 'Read in PDF';
+
+    if (!link || link.trim() === '') {
+        showError('No PDF link available for this chapter.');
+        return;
+    }
+
+    let finalUrl = link.trim();
+
+    if (finalUrl.includes('drive.google.com') || finalUrl.includes('docs.google.com')) {
+        const fileIdMatch = finalUrl.match(/[-\w]{25,}/);
+        if (fileIdMatch) {
+            const fileId = fileIdMatch[0];
+            finalUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+            console.log(`📄 Converted Drive link to embed URL: ${finalUrl}`);
+        } else {
+            console.log(`📄 Using Drive link as-is: ${finalUrl}`);
+        }
+    } else if (finalUrl.includes('pdf')) {
+        console.log(`📄 Using direct PDF link: ${finalUrl}`);
+    }
+
+    dom.pdfLoading.style.display = 'none';
+    dom.pdfError.style.display = 'none';
+    dom.pdfIframeWrapper.style.display = 'block';
+
+    dom.pdfIframe.src = finalUrl;
+
+    dom.openNewTabBtn.onclick = function () {
+        openInNewTab(finalUrl, chapter);
+    };
+
+    console.log(`📄 PDF loaded for: ${chapter}`);
+}
+
+function showError(message) {
+    dom.pdfLoading.style.display = 'none';
+    dom.pdfError.style.display = 'block';
+    dom.pdfIframeWrapper.style.display = 'none';
+    dom.errorMessage.textContent = message || 'The PDF link could not be loaded. Please try again.';
+    console.error(`❌ PDF Error: ${message}`);
+}
+
+function openInNewTab(link, chapter) {
+    const url = link || currentLink;
+    const name = chapter || currentChapter || 'document';
+
+    if (!url) {
+        showToast('No PDF link available to open.', 'error');
+        return;
+    }
+
+    try {
+        window.open(url, '_blank', 'noopener,noreferrer');
+        showToast(`Opening: ${name}`, 'success');
+    } catch (err) {
+        console.error('Open new tab error:', err);
+        showToast('Failed to open PDF in new tab.', 'error');
+    }
+}
+
+// ============================================================
+// FETCH CHAPTER LINK FROM GOOGLE SHEET (Fallback)
+// ============================================================
+async function fetchChapterLinkFromSheet(chapterName) {
+    try {
+        const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}&_=${Date.now()}`;
+        const resp = await fetch(url);
+        const data = await resp.json();
+
+        if (data.status === 'success' && data.data) {
+            const chapter = data.data.find(row => {
+                const name = row['Chapter Name'] || '';
+                return name.toLowerCase().trim() === chapterName.toLowerCase().trim();
+            });
+
+            if (chapter && chapter['Link']) {
+                return chapter['Link'];
+            }
+        }
+        return null;
+    } catch (err) {
+        console.error('Error fetching chapter link:', err);
+        return null;
+    }
+}
+
+// ============================================================
+// KEYBOARD SHORTCUTS
+// ============================================================
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+        window.location.href = '7th_Std_Eng.html';
+    }
+
+    if (e.key === 'f' || e.key === 'F') {
+        if (dom.pdfIframeWrapper) {
+            if (dom.pdfIframeWrapper.requestFullscreen) {
+                dom.pdfIframeWrapper.requestFullscreen();
+            }
+        }
+    }
+});
+
+// ============================================================
+// INITIALIZE PAGE
+// ============================================================
+async function init() {
+    cacheDomElements();
+
+    syncThemeWithParent();
+    console.log('🎨 Theme initialized:', document.body.getAttribute('data-theme'));
+
+    protection.init();
+
+    // ⭐ ENHANCED: Check all login paths (student, admin, signup, remember-me)
+    const auth = checkAuthStatus();
+    console.log(`🔐 Auth check → loggedIn=${auth.loggedIn}, role=${auth.role}, user=${auth.user}`);
+
+    if (!auth.loggedIn) {
+        console.log('🔒 Login required — redirecting to myaccount.html');
+        window.location.href = '../My Account/myaccount.html';
+        return;
+    }
+
+    console.log(`✅ Authenticated as ${auth.role} — loading PDF`);
+
+    // ⭐ Periodic re-check — if session ends mid-view, redirect to login
+    setInterval(() => {
+        if (!checkLoginStatus()) {
+            console.log('🔒 Session ended — redirecting to login');
+            window.location.href = '../My Account/myaccount.html';
+        }
+    }, 15000);
+
+    const params = getUrlParams();
+    let link = params.link;
+    const chapter = params.chapter;
+
+    console.log(`📄 Opening: ${chapter}`);
+    console.log(`🔗 Link: ${link}`);
+
+    if (!link || link.trim() === '') {
+        console.log('🔍 No link in URL, fetching from sheet...');
+        const fetchedLink = await fetchChapterLinkFromSheet(chapter);
+        if (fetchedLink) {
+            link = fetchedLink;
+            console.log(`✅ Found link in sheet: ${link}`);
+        }
+    }
+
+    if (link && link.trim() !== '') {
+        loadPDF(link, chapter);
+    } else {
+        showError('No PDF link found for this chapter. Please contact support.');
+    }
+
+    // ============================================================
+    // Canvas screenshot detection
+    // ============================================================
+    try {
+        const canvas = document.createElement('canvas');
+        canvas.width = 1;
+        canvas.height = 1;
+        canvas.style.position = 'absolute';
+        canvas.style.left = '-9999px';
+        canvas.style.top = '-9999px';
+        canvas.style.opacity = '0';
+        canvas.style.pointerEvents = 'none';
+        document.body.appendChild(canvas);
+
+        const ctx = canvas.getContext('2d');
+        const imageData = ctx.getImageData(0, 0, 1, 1);
+
+        const data = imageData.data;
+        data[0] = 123;
+        data[1] = 45;
+        data[2] = 67;
+        data[3] = 255;
+        ctx.putImageData(imageData, 0, 0);
+
+        setInterval(() => {
+            try {
+                const checkData = ctx.getImageData(0, 0, 1, 1);
+                const d = checkData.data;
+                if (d[0] !== 123 || d[1] !== 45 || d[2] !== 67) {
+                    console.log('🛡️ Canvas tampering detected!');
+                    protection.activateProtection('Canvas tampering detected');
+                }
+            } catch (e) {
+                console.log('🛡️ Canvas read failed - possible screenshot attempt');
+                protection.activateProtection('Canvas access blocked');
+            }
+        }, 1000);
+    } catch (e) {
+        console.log('Canvas protection not available:', e);
+    }
+
+    // ============================================================
+    // Window blur detection
+    // ============================================================
+    window.addEventListener('blur', function () {
+        console.log('🛡️ Window blur detected - possible screenshot');
+        setTimeout(() => {
+            if (!document.hasFocus()) {
+                protection.activateProtection('Window lost focus');
+            }
+        }, 100);
+    });
+
+    console.log('✅ PDF viewer ready with screenshot protection');
+}
+
+// ============================================================
+// START APP
+// ============================================================
+document.addEventListener('DOMContentLoaded', init);
+</script>
+	
 </body>
 </html>
