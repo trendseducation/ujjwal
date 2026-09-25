@@ -4045,7 +4045,7 @@ function setupYourDetailsHandler() {
             const studentDataFound = sessionStorage.getItem('student_data_found');
             
             if (studentDataFound === 'true' && studentSheetName) {
-                window.location.href = `studentdetails.html?sheet=${encodeURIComponent(studentSheetName)}&email=${encodeURIComponent(currentUser)}`;
+                window.location.href = `StudentDashboard.html?sheet=${encodeURIComponent(studentSheetName)}&email=${encodeURIComponent(currentUser)}`;
             } else {
                 showToast('Student data not found. Please contact support.', 'warning');
             }
